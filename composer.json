@@ -1,0 +1,31 @@
+{
+    "name": "crukorg/event-sdk",
+    "description": "CRUK Event Web Services SDK",
+    "authors": [
+        {
+            "name": "David Collard",
+            "email": "david.collard@cancer.org.uk"
+        }
+    ],
+    "scripts": {
+        "test": "phpunit",
+        "lint": "phpcs --standard=PSR2 src/ test/"
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.0",
+        "squizlabs/PHP_CodeSniffer": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cruk\\EventSdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cruk\\EventSdk\\Test\\": "test/"
+        }
+    }
+}
