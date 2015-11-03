@@ -65,6 +65,32 @@ class EventClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test that getEvents() uses the access token to authenticate.
+     */
+    public function testGetEventsAuthenticates()
+    {
+        $history = [];
+
+        $ews = new EventClient($this->getHttpClient($history));
+        $ews->setAccessToken(
+            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
+        );
+
+        // Execute the API call.
+        $ews->getEvents();
+
+        // Get the headers from the request in the history.
+        $request = $history[0]['request'];
+        $headers = $request->getHeaders();
+
+        // Assert that the Authorization header contains the same access token.
+        $this->assertSame(
+            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
+            $headers['Authorization'][0]
+        );
+    }
+
+    /**
      * Test that getEvents() passes query parameters to the GET /events
      * endpoint.
      */
