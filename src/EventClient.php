@@ -16,6 +16,11 @@ class EventClient
      * @var string
      */
     private $accessToken;
+    
+    /**
+     * Base URL of API (includes version number)
+     */
+    private static $baseUrl = '/app_dev.php/api/v1';
 
     /**
      * Create a new EventClient
@@ -71,11 +76,78 @@ class EventClient
      */
     public function getEvents(array $query = [])
     {
-        return $this->http->get('/api/v1/events', [
+        return $this->http->get(self::$baseUrl . '/events', [
             'query' => $query,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
+    }
+    
+    /**
+     * Get the availability for a specific event
+     *
+     * Returns a registration object (or array - need to check).
+     *
+     * @param
+     *          $eventCode
+     * @return ??
+     */
+    public function getEventAvailability($eventCode)
+    {
+        return $this->http->get(self::$baseUrl . '/events/' . $eventCode . '/availability', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken
+            ]
+        ]);
+    }
+    
+    /**
+     * Get the "next" registration ID for a specific event
+     *
+     * @TODO: This should pull out the registration ID from the response and
+     * return it, returning FALSE if that fails
+     *
+     * @param
+     *          $eventCode
+     * @return ??
+     */
+    public function getNextRegistrationId($eventCode)
+    {
+        return $this->http->get(self::$baseUrl . '/events/' . $eventCode . '/registration', [
+            'query' => [ ],
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken
+            ]
+        ]);
+    }
+    
+    /**
+     * Get a single registration object
+     *
+     * @param
+     *          $eventCode
+     * @param
+     *          $registrationId
+     */
+    public function getRegistration($eventCode, $registrationId)
+    {
+        return $this->http->get(self::$baseUrl . '/events/' . $eventCode . '/registrations/' . $registrationId, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken
+            ]
+        ]);
+    }
+    
+    /**
+     * Set the participant data for a registration
+     */
+    public function setParticipant($eventCode, $registrationId, $participant)
+    {
+        // /events/[EVENT-CODE]/registrations/[REGISTRATION-ID]/participant
+        return $this->http->post(self::$baseUrl . '/events/' . $eventCode . '/registrations/' .
+            $registrationId . '/participant', [
+            'participant' => $participant
+            ]);
     }
 }
