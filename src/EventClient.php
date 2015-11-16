@@ -16,14 +16,14 @@ class EventClient
      * @var string
      */
     private $accessToken;
-    
+
     /**
      * Base URL of API (includes version number)
      */
-    private static $baseUrl = '/app_dev.php/api/v1';
+    const PATH_V1 = 'api/v1';
 
     /**
-     * Create a new EventClient
+     * Create a new EventClient.
      *
      * @param ClientInterface $http Guzzle HTTP client, used to issue
      *   requests to EWS endpoints
@@ -35,7 +35,7 @@ class EventClient
     }
 
     /**
-     * Set the OAuth access token
+     * Set the OAuth access token.
      *
      * @param string $accessToken
      * @return void
@@ -46,11 +46,12 @@ class EventClient
     }
 
     /**
-     * Request an OAuth access token from the server
+     * Request an OAuth access token from the server.
      *
      * @param string $clientId OAuth client ID
      * @param string $clientSecret OAuth client secret
-     * @return Response Response containing the access token
+     * @return Response
+     *   Response containing the access token
      */
     public function requestAccessToken($clientId, $clientSecret)
     {
@@ -66,89 +67,110 @@ class EventClient
     }
 
     /**
-     * Get a list of events
+     * Get a list of events.
      *
      * The keys allowed in the query parameters are: orderBy, orderDir, limit,
      * page, fields, dateRangeStart, dateRangeEnd.
      *
      * @param array $query
-     * @return Response Response containing a list of events
+     * @return Response
+     *   Response containing a list of events
      */
     public function getEvents(array $query = [])
     {
-        return $this->http->get(self::$baseUrl . '/events', [
+        return $this->http->get(self::PATH_V1 . '/events', [
             'query' => $query,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
     }
-    
+
     /**
-     * Get the availability for a specific event
+     * Get the availability for a specific event.
      *
-     * Returns a registration object (or array - need to check).
-     *
-     * @param
-     *          $eventCode
-     * @return ??
+     * @param string $eventCode
+     * @return Response
+     *   Response containing the event capacity and remaining ticket capacity
      */
     public function getEventAvailability($eventCode)
     {
-        return $this->http->get(self::$baseUrl . '/events/' . $eventCode . '/availability', [
+        return $this->http->get(self::PATH_V1 . "/events/$eventCode/availability", [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken
+                'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
     }
-    
+
     /**
-     * Get the "next" registration ID for a specific event
+     * Create a new registration for an event.
      *
-     * @TODO: This should pull out the registration ID from the response and
-     * return it, returning FALSE if that fails
-     *
-     * @param
-     *          $eventCode
-     * @return ??
+     * @param string $eventCode Event code.
+     * @return Response
+     *   Response containing the new registration's ID.
      */
-    public function getNextRegistrationId($eventCode)
+    public function createEventRegistration($eventCode)
     {
-        return $this->http->get(self::$baseUrl . '/events/' . $eventCode . '/registration', [
-            'query' => [ ],
+        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registration", [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken
+                'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
     }
-    
+
     /**
-     * Get a single registration object
+     * Get a registration.
      *
-     * @param
-     *          $eventCode
-     * @param
-     *          $registrationId
+     * @param string $eventCode
+     * @param string $registrationId
+     * @return Response
+     *   Response containing the registration
      */
-    public function getRegistration($eventCode, $registrationId)
+    public function getEventRegistration($eventCode, $registrationId)
     {
-        return $this->http->get(self::$baseUrl . '/events/' . $eventCode . '/registrations/' . $registrationId, [
+        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId", [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken
+                'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
     }
-    
+
     /**
-     * Set the participant data for a registration
+     * Add participant data to a registration.
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $participant ??
+     * @return Response
      */
-    public function setParticipant($eventCode, $registrationId, $participant)
+    public function createEventRegistrationParticipant($eventCode, $registrationId, $participant)
     {
-        // /events/[EVENT-CODE]/registrations/[REGISTRATION-ID]/participant
-        return $this->http->post(self::$baseUrl . '/events/' . $eventCode . '/registrations/' .
-            $registrationId . '/participant', [
-            'participant' => $participant
-            ]);
+        return $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participant", [
+            'form_params' => $participant,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ],
+        ]);
+    }
+
+    /**
+     * Update a participant's status.
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $statusCode
+     * @return Response
+     */
+    public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
+    {
+        return $this->http->patch(
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode",
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                ]
+            ]
+        );
     }
     
     /**
