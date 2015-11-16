@@ -154,7 +154,7 @@ class EventClient
     }
 
     /**
-     * Update a participant's status.
+     * Update an event registration's status.
      *
      * @param string $eventCode
      * @param string $registrationId
