@@ -172,15 +172,4 @@ class EventClient
             ]
         );
     }
-    
-    /**
-     * Update the participant, adding extra details
-     *
-     * This is useful for adding JustGiving details or payment status
-     */
-    public function updateParticipant($eventCode, $registrationId, $urn, $updateData)
-    {
-        return $this->http->patch(self::$baseUrl . '/events/' . $eventCode . '/registrations/' .
-            $registrationId . '/participant/' . $urn, $updateData);
-    }
 }
