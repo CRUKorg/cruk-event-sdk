@@ -78,7 +78,7 @@ class EventClient
      */
     public function getEvents(array $query = [])
     {
-        return $this->http->get(self::PATH_V1 . '/events', [
+        return $this->http->get(self::PATH_V1 . '/events.json', [
             'query' => $query,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -95,7 +95,7 @@ class EventClient
      */
     public function getEventAvailability($eventCode)
     {
-        return $this->http->get(self::PATH_V1 . "/events/$eventCode/availability", [
+        return $this->http->get(self::PATH_V1 . "/events/$eventCode/availability.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
@@ -111,7 +111,7 @@ class EventClient
      */
     public function createEventRegistration($eventCode)
     {
-        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registration", [
+        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registration.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
@@ -128,7 +128,7 @@ class EventClient
      */
     public function getEventRegistration($eventCode, $registrationId)
     {
-        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId", [
+        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
@@ -145,7 +145,7 @@ class EventClient
      */
     public function createEventRegistrationParticipant($eventCode, $registrationId, $participant)
     {
-        return $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participant", [
+        return $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participant.json", [
             'form_params' => $participant,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -164,7 +164,7 @@ class EventClient
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
         return $this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode",
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode.json",
             [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
