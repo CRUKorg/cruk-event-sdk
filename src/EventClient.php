@@ -78,12 +78,12 @@ class EventClient
      */
     public function getEvents(array $query = [])
     {
-        return $this->http->get(self::PATH_V1 . '/events', [
+        return json_decode((string)$this->http->get(self::PATH_V1 . '/events.json', [
             'query' => $query,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ]);
+        ])->getBody(), true);
     }
 
     /**
@@ -92,14 +92,16 @@ class EventClient
      * @param string $eventCode
      * @return Response
      *   Response containing the event capacity and remaining ticket capacity
+     *
+     * @TODO: Should this simply return a numeric value?
      */
     public function getEventAvailability($eventCode)
     {
-        return $this->http->get(self::PATH_V1 . "/events/$eventCode/availability", [
+        return json_decode((string)$this->http->get(self::PATH_V1 . "/events/$eventCode/availability.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ]);
+        ])->getBody(), true);
     }
 
     /**
@@ -111,11 +113,11 @@ class EventClient
      */
     public function createEventRegistration($eventCode)
     {
-        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registration", [
+        return json_decode((string)$this->http->post(self::PATH_V1 . "/events/$eventCode/registrations.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ]);
+        ])->getBody(), true);
     }
 
     /**
@@ -128,11 +130,12 @@ class EventClient
      */
     public function getEventRegistration($eventCode, $registrationId)
     {
-        return $this->http->get(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId", [
+        return json_decode((string)$this->http->get(self::PATH_V1 .
+            "/events/$eventCode/registrations/$registrationId.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ]);
+            ])->getBody(), true);
     }
 
     /**
@@ -145,12 +148,12 @@ class EventClient
      */
     public function createEventRegistrationParticipant($eventCode, $registrationId, $participant)
     {
-        return $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participant", [
-            'form_params' => $participant,
+        return json_decode((string)$this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants.json", [
+            'json' => $participant,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ],
-        ]);
+        ])->getBody(), true);
     }
 
     /**
@@ -163,13 +166,13 @@ class EventClient
      */
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
-        return $this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode",
+        return json_decode((string)$this->http->patch(
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode.json",
             [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
             ]
-        );
+        )->getBody(), true);
     }
 }
