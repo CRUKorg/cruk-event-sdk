@@ -167,8 +167,28 @@ class EventClient
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
         return json_decode((string)$this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode.json",
-            [
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json", [
+                'json' => array('statusCode' => $statusCode),
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                ]
+            ]
+        )->getBody(), true);
+    }
+
+    /**
+     * Update an event registration's participant date.
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $participant
+     * @return Response
+     */
+    public function updateEventRegistrationParticipant($eventCode, $registrationId, $participant)
+    {
+        return json_decode((string)$this->http->patch(
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants/{$participant->participantUniqueId}.json", [
+                'json' => $participant,
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
