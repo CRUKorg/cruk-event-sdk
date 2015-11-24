@@ -168,7 +168,7 @@ class EventClient
     {
         return json_decode((string)$this->http->patch(
             self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json", [
-                'json' => array('statusCode' => $statusCode),
+                'json' => array('status' => $statusCode),
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
@@ -184,10 +184,10 @@ class EventClient
      * @param string $participant
      * @return Response
      */
-    public function updateEventRegistrationParticipant($eventCode, $registrationId, $participant)
+    public function updateEventRegistrationParticipant($eventCode, $registrationId, $participant, $uniqueId)
     {
         return json_decode((string)$this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants/{$participant->participantUniqueId}.json", [
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants/{$uniqueId}.json", [
                 'json' => $participant,
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
