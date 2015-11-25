@@ -78,12 +78,16 @@ class EventClient
      */
     public function getEvents(array $query = [])
     {
-        return json_decode((string)$this->http->get(self::PATH_V1 . '/events.json', [
+        $response = $this->http->get(self::PATH_V1 . '/events.json', [
             'query' => $query,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ])->getBody(), true);
+        ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
     }
 
     /**
@@ -97,11 +101,15 @@ class EventClient
      */
     public function getEventAvailability($eventCode)
     {
-        return json_decode((string)$this->http->get(self::PATH_V1 . "/events/$eventCode/availability.json", [
+        $response = $this->http->get(self::PATH_V1 . "/events/$eventCode/availability.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ])->getBody(), true);
+        ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
     }
 
     /**
@@ -113,11 +121,16 @@ class EventClient
      */
     public function createEventRegistration($eventCode)
     {
-        return json_decode((string)$this->http->post(self::PATH_V1 . "/events/$eventCode/registrations.json", [
+        $response = $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-        ])->getBody(), true);
+        ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
+        
     }
 
     /**
@@ -130,12 +143,16 @@ class EventClient
      */
     public function getEventRegistration($eventCode, $registrationId)
     {
-        return json_decode((string)$this->http->get(self::PATH_V1 .
+        $response = $this->http->get(self::PATH_V1 .
             "/events/$eventCode/registrations/$registrationId.json", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
-            ])->getBody(), true);
+            ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
     }
 
     /**
@@ -148,12 +165,16 @@ class EventClient
      */
     public function createEventRegistrationParticipant($eventCode, $registrationId, $participant)
     {
-        return json_decode((string)$this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants.json", [
+        $response = $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants.json", [
             'json' => $participant,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ],
-        ])->getBody(), true);
+        ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
     }
 
     /**
@@ -166,14 +187,18 @@ class EventClient
      */
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
-        return json_decode((string)$this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json", [
-                'json' => array('status' => $statusCode),
+        $response = $this->http->patch(
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode.json",
+            [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
             ]
-        )->getBody(), true);
+        );
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
     }
 
     /**
@@ -186,13 +211,18 @@ class EventClient
      */
     public function updateEventRegistrationParticipant($eventCode, $registrationId, $participant, $uniqueId)
     {
-        return json_decode((string)$this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants/{$uniqueId}.json", [
+        $response = $this->http->patch(
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants/{$uniqueId}.json",
+            [
                 'json' => $participant,
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
             ]
-        )->getBody(), true);
+        );
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
     }
 }
