@@ -130,7 +130,7 @@ class EventClient
             return json_decode((string)$response->getBody(), true);
         }
         throw new \Exception((string)$response->getBody());
-        
+
     }
 
     /**
@@ -170,7 +170,9 @@ class EventClient
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ],
+            'debug' => TRUE,
         ]);
+        error_log("STATUS CODE ".print_r($response->getStatusCode(),1));
         if (substr($response->getStatusCode(), 0, 2) == 20) {
             return json_decode((string)$response->getBody(), true);
         }
@@ -188,8 +190,9 @@ class EventClient
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
         $response = $this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode.json",
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json",
             [
+                'json' => array('status' => $statusCode),
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
@@ -225,4 +228,32 @@ class EventClient
         }
         throw new \Exception((string)$response->getBody());
     }
+
+
+    /**
+     * create a registration donation record
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $donation
+     * @return Response
+     */
+    public function createEventRegistrationDonation($eventCode, $registrationId, $donation)
+    {
+        $response = $this->http->post(
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/donations.json",
+            [
+                'json' => $donation,
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                ]
+            ]
+        );
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
+    }
 }
+
+
