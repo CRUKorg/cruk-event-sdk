@@ -188,8 +188,9 @@ class EventClient
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
         $response = $this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status/$statusCode.json",
+            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json",
             [
+                'json' => array('status' => $statusCode),
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
                 ]
