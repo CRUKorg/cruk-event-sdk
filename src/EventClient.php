@@ -253,6 +253,26 @@ class EventClient
         }
         throw new \Exception((string)$response->getBody());
     }
+
+    /**
+     * Get a donation record
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $donationId
+     * @return Response
+     */
+    public function getEventRegistrationDonation($eventCode, $registrationId, $donationId)
+    {
+        $response = $this->http->get(self::PATH_V1 .
+            "/events/$eventCode/registrations/$registrationId/donations/$donationId.json", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ]
+            ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
+    }
 }
-
-
