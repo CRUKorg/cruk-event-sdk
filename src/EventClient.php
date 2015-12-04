@@ -170,9 +170,9 @@ class EventClient
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ],
-            'debug' => TRUE,
+            'debug' => true,
         ]);
-        error_log("STATUS CODE ".print_r($response->getStatusCode(),1));
+        error_log("STATUS CODE ".print_r($response->getStatusCode(), true));
         if (substr($response->getStatusCode(), 0, 2) == 20) {
             return json_decode((string)$response->getBody(), true);
         }
@@ -229,7 +229,6 @@ class EventClient
         throw new \Exception((string)$response->getBody());
     }
 
-
     /**
      * create a registration donation record
      *
@@ -254,6 +253,26 @@ class EventClient
         }
         throw new \Exception((string)$response->getBody());
     }
+
+    /**
+     * Get a donation record
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $donationId
+     * @return Response
+     */
+    public function getEventRegistrationDonation($eventCode, $registrationId, $donationId)
+    {
+        $response = $this->http->get(self::PATH_V1 .
+            "/events/$eventCode/registrations/$registrationId/donations/$donationId.json", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ]
+            ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
+    }
 }
-
-
