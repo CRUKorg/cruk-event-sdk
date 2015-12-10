@@ -170,9 +170,7 @@ class EventClient
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ],
-            'debug' => true,
         ]);
-        error_log("STATUS CODE ".print_r($response->getStatusCode(), true));
         if (substr($response->getStatusCode(), 0, 2) == 20) {
             return json_decode((string)$response->getBody(), true);
         }
