@@ -23,11 +23,10 @@ class EventClient
     const PATH_V1 = 'api/v1';
 
     /**
-     * Create a new EventClient.
+     * Create a new EventClient
      *
-     * @param ClientInterface $http Guzzle HTTP client, used to issue
-     *   requests to EWS endpoints
-     * @param string OAuth access token
+     * @param ClientInterface $http
+     *   Guzzle HTTP client, used to issue requests to EWS endpoints
      */
     public function __construct(ClientInterface $http)
     {
@@ -35,23 +34,40 @@ class EventClient
     }
 
     /**
-     * Set the OAuth access token.
+     * Create and send an HTTP request and return the decoded JSON response
+     * body
      *
-     * @param string $accessToken
-     * @return void
+     * @param string $method
+     *   HTTP method e.g. GET, POST, DELETE
+     * @param string $uri
+     *   URI string
+     * @param array $options
+     *   Request options to apply
      */
-    public function setAccessToken($accessToken)
+    public function requestJson($method, $uri, array $options = [])
     {
-        $this->accessToken = $accessToken;
+        // Add the OAuth access token to the request headers
+        $options = array_merge($options, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ]
+        ]);
+
+        $response = $this->http->request($method, $uri, $options);
+        $body = (string) $response->getBody();
+
+        return json_decode($body, true);
     }
 
     /**
-     * Request an OAuth access token from the server.
+     * Request an OAuth access token from the server
      *
-     * @param string $clientId OAuth client ID
-     * @param string $clientSecret OAuth client secret
-     * @return Response
-     *   Response containing the access token
+     * @param string $clientId
+     *   OAuth client ID
+     * @param string $clientSecret
+     *   OAuth client secret
+     * @return array
+     *   Response body containing the access token
      */
     public function requestAccessToken($clientId, $clientSecret)
     {
@@ -61,238 +77,215 @@ class EventClient
             'grant_type' => 'client_credentials',
         ];
 
-        return $this->http->get('/oauth/v2/token', [
+        $response = $this->http->get('/oauth/v2/token', [
             'query' => $query,
         ]);
+
+        $body = (string) $response->getBody();
+
+        return json_decode($body, true);
     }
 
     /**
-     * Get a list of events.
+     * Set the OAuth access token
+     *
+     * @param string $accessToken
+     *   New OAuth access token
+     * @return void
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    /**
+     * Get a list of events
      *
      * The keys allowed in the query parameters are: orderBy, orderDir, limit,
      * page, fields, dateRangeStart, dateRangeEnd.
      *
      * @param array $query
+     *   Request filtering and pagination options
      * @return Response
      *   Response containing a list of events
      */
     public function getEvents(array $query = [])
     {
-        $response = $this->http->get(self::PATH_V1 . '/events.json', [
+        $uri = self::PATH_V1 . '/events.json';
+
+        return $this->requestJson('GET', $uri, [
             'query' => $query,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
         ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
     }
 
     /**
-     * Get the availability for a specific event.
+     * Get the availability for a specific event
      *
      * @param string $eventCode
-     * @return Response
-     *   Response containing the event capacity and remaining ticket capacity
-     *
-     * @TODO: Should this simply return a numeric value?
+     *   Event code
+     * @return array
+     *   Response body containing the event capacity and remaining ticket capacity
      */
     public function getEventAvailability($eventCode)
     {
-        $response = $this->http->get(self::PATH_V1 . "/events/$eventCode/availability.json", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-        ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+        $uri = self::PATH_V1 . "/events/$eventCode/availability.json";
+
+        return $this->requestJson('GET', $uri);
     }
 
     /**
-     * Create a new registration for an event.
-     *
-     * @param string $eventCode Event code.
-     * @return Response
-     *   Response containing the new registration's ID.
-     */
-    public function createEventRegistration($eventCode)
-    {
-        $response = $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations.json", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-        ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
-
-    }
-
-    /**
-     * Get a registration.
+     * Get a registration
      *
      * @param string $eventCode
+     *   Event code
      * @param string $registrationId
-     * @return Response
+     *   Registration ID for the event
+     * @return array
      *   Response containing the registration
      */
     public function getEventRegistration($eventCode, $registrationId)
     {
-        $response = $this->http->get(self::PATH_V1 .
-            "/events/$eventCode/registrations/$registrationId.json", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-            ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId.json";
+
+        return $this->requestJson('GET', $uri);
     }
 
     /**
-     * Add participant data to a registration.
+     * Create a new registration for an event
      *
      * @param string $eventCode
-     * @param string $registrationId
-     * @param string $participant ??
-     * @return Response
+     *   Event code
+     * @return array
+     *   Response body containing the new registration
      */
-    public function createEventRegistrationParticipant($eventCode, $registrationId, $participant)
+    public function createEventRegistration($eventCode)
     {
-        $response = $this->http->post(self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants.json", [
-            'json' => $participant,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ],
-        ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
-    }
-    
-    /**
-     * Get an event registration participant.
-     *
-     * @param string $eventCode
-     * @param string $registrationId
-     * @param string $participant ??
-     * @return Response
-     */
-    public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
-    {
-        $response = $this->http->get(self::PATH_V1 .
-            "/events/{$eventCode}/registrations/{$registrationId}/participants/{$participantUniqueId}.json", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ],
-            ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+        $uri = self::PATH_V1 . "/events/$eventCode/registrations.json";
+
+        return $this->requestJson('POST', $uri);
     }
 
     /**
-     * Update an event registration's status.
+     * Update an event registration's status
      *
      * @param string $eventCode
+     *   Event code
      * @param string $registrationId
+     *   Registration ID for the event
      * @param string $statusCode
-     * @return Response
+     *   New status code for the registration
+     * @return array
      */
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
-        $response = $this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json",
-            [
-                'json' => array('status' => $statusCode),
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
-                ]
-            ]
-        );
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json";
+
+        return $this->requestJson('PATCH', $uri, [
+            'json' => ['status' => $statusCode],
+        ]);
     }
 
     /**
-     * Update an event registration's participant date.
+     * Get an event registration participant
      *
      * @param string $eventCode
+     *   Event code
      * @param string $registrationId
+     *   Registration ID for the event
+     * @param string $participantUniqueId
+     *   Participant's generated Siebel ID
+     * @return array
+     */
+    public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
+    {
+        $uri = self::PATH_V1
+            . "/events/{$eventCode}/registrations/{$registrationId}/participants/{$participantUniqueId}.json";
+
+        return $this->requestJson('GET', $uri);
+    }
+
+    /**
+     * Add participant data to a registration
+     *
+     * @param string $eventCode
+     *   Event code
+     * @param string $registrationId
+     *   Registration ID for the event
      * @param string $participant
-     * @return Response
+     *   New participant data
+     * @return array
      */
-    public function updateEventRegistrationParticipant($eventCode, $registrationId, $participant, $uniqueId)
+    public function createEventRegistrationParticipant($eventCode, $registrationId, array $participant)
     {
-        $response = $this->http->patch(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants/{$uniqueId}.json",
-            [
-                'json' => $participant,
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
-                ]
-            ]
-        );
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants.json";
+
+        return $this->requestJson('POST', $uri, [
+            'json' => $participant,
+        ]);
     }
 
     /**
-     * create a registration donation record
+     * Update an event registration's participant data
      *
      * @param string $eventCode
+     *   Event code
      * @param string $registrationId
-     * @param string $donation
-     * @return Response
+     *   Registration ID for the event
+     * @param string $participantUniqueId
+     *   Participant's generated Siebel ID
+     * @param string $participant
+     *   New participant data
+     * @return array
      */
-    public function createEventRegistrationDonation($eventCode, $registrationId, $donation)
-    {
-        $response = $this->http->post(
-            self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/donations.json",
-            [
-                'json' => $donation,
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
-                ]
-            ]
-        );
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+    public function updateEventRegistrationParticipant(
+        $eventCode,
+        $registrationId,
+        $participantUniqueId,
+        array $participant
+    ) {
+        $uri = self::PATH_V1
+            . "/events/$eventCode/registrations/$registrationId/participants/{$participantUniqueId}.json";
+
+        return $this->requestJson('PATCH', $uri, [
+            'json' => $participant
+        ]);
     }
 
     /**
      * Get a donation record
      *
      * @param string $eventCode
+     *   Event code
      * @param string $registrationId
-     * @param string $donationId
-     * @return Response
+     *   Registration ID for the event
+     * @param string $participant
+     *   Donation ID for the registration
+     * @return array
      */
     public function getEventRegistrationDonation($eventCode, $registrationId, $donationId)
     {
-        $response = $this->http->get(self::PATH_V1 .
-            "/events/$eventCode/registrations/$registrationId/donations/$donationId.json", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-            ]);
-        if (substr($response->getStatusCode(), 0, 2) == 20) {
-            return json_decode((string)$response->getBody(), true);
-        }
-        throw new \Exception((string)$response->getBody());
+        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/donations/$donationId.json";
+
+        return $this->requestJson('GET', $uri);
+    }
+
+    /**
+     * Create a registration donation record
+     *
+     * @param string $eventCode
+     *   Event code
+     * @param string $registrationId
+     *   Registration ID for the event
+     * @param string $participant
+     *   New donation data
+     * @return array
+     */
+    public function createEventRegistrationDonation($eventCode, $registrationId, array $donation)
+    {
+        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/donations.json";
+
+        return $this->requestJson('POST', $uri, [
+            'json' => $donation,
+        ]);
     }
 }

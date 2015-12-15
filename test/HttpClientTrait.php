@@ -11,11 +11,12 @@ use GuzzleHttp\Psr7\Response;
 trait HttpClientTrait
 {
     /**
-     * Create a mock HTTP client that logs its reponses into a variable.
+     * Create a mock HTTP client that logs its reponses into a variable
      *
-     * @param array &$history Array where requests will be logged
-     * @param array $responses Queue of dummy responses for the MockHandler.
-     *   Default is one blank response with a status code of 200.
+     * @param array &$history
+     *   Array where requests will be logged
+     * @param array $responses
+     *   Queue of dummy responses for the MockHandler. Default is one blank response with a status code of 200
      * @return Client
      */
     public function getHttpClient(array &$history, array $responses = null)
@@ -31,8 +32,7 @@ trait HttpClientTrait
         $handler = HandlerStack::create($handler);
         $handler->push($historyMiddleware);
 
-        // Return a Guzzle client with the history logger and mock handler
-        // attached.
+        // Return a Guzzle client with the history logger and mock handler attached
         return new Client(['handler' => $handler]);
     }
 }
