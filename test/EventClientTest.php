@@ -4,106 +4,63 @@ namespace Cruk\EventSdk\Test;
 
 use Cruk\EventSdk\EventClient;
 
-/**
- * Tests for EventClient
- */
-class EventClientTest extends \PHPUnit_Framework_TestCase
+class EventClientTest extends TestCase
 {
     use HttpClientTrait;
 
-    /**
-     * Test that requestAccessToken() makes a GET request to /oauth/v2/token,
-     * and passes the client ID and secret in the query string.
-     */
+    const ACCESS_TOKEN = 'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw';
+
+    /** @var EventClient */
+    private $ews;
+
+    /** @var array */
+    private $history;
+
+    public function setUp()
+    {
+        $this->history = [];
+
+        $this->ews = new EventClient($this->getHttpClient($this->history));
+        $this->ews->setAccessToken(self::ACCESS_TOKEN);
+    }
+
     public function testRequestAccessToken()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->requestAccessToken('my_client_id', 'my_client_secret');
 
-        $ews = new EventClient($this->getHttpClient($history));
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->requestAccessToken('my_client_id', 'my_client_secret');
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('/oauth/v2/token', $request);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
-
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertSame('/oauth/v2/token', $request->getUri()->getPath());
-
-        // Parse the request's query string into an array.
-        $query = [];
-        parse_str($request->getUri()->getQuery(), $query);
-
-        // Assert that the query parameters are correct.
-        $this->assertSame('my_client_id', $query['client_id']);
-        $this->assertSame('my_client_secret', $query['client_secret']);
+        // Assert that the query parameters are correct
+        $this->assertRequestQueryParameterSame('client_id', 'my_client_id', $request);
+        $this->assertRequestQueryParameterSame('client_secret', 'my_client_secret', $request);
     }
 
-    /**
-     * Test that getEvents() makes a GET request to the /events endpoint, to
-     * retrieve a list of events.
-     */
     public function testGetEvents()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->getEvents();
 
-        $ews = new EventClient($this->getHttpClient($history));
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->getEvents();
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('api/v1/events.json', $request);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
-
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertSame('api/v1/events', $request->getUri()->getPath());
-
-        // Assert the request includes no query parameters by default.
-        $this->assertSame('', $request->getUri()->getQuery());
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that getEvents() uses the access token to authenticate.
-     */
-    public function testGetEventsAuthenticates()
-    {
-        $history = [];
-
-        $ews = new EventClient($this->getHttpClient($history));
-        $ews->setAccessToken(
-            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
-        );
-
-        // Execute the API call.
-        $ews->getEvents();
-
-        // Get the headers from the request in the history.
-        $request = $history[0]['request'];
-        $headers = $request->getHeaders();
-
-        // Assert that the Authorization header contains the same access token.
-        $this->assertSame(
-            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
-            $headers['Authorization'][0]
-        );
-    }
-
-    /**
-     * Test that getEvents() passes query parameters to the GET /events
-     * endpoint.
-     */
     public function testGetEventsOptions()
     {
-        $history = [];
-
-        $ews = new EventClient(
-            $this->getHttpClient($history)
-        );
-
-        // Execute the API call.
-        $ews->getEvents([
+        // Execute the API call
+        $this->ews->getEvents([
             'orderBy' => 'eventCode',
             'orderDir' => 'ASC',
             'limit' => 30,
@@ -113,287 +70,178 @@ class EventClientTest extends \PHPUnit_Framework_TestCase
             'dateRangeEnd' => '2015-10-29 12:34:30',
         ]);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Parse the request's query string into an array.
-        $query = [];
-        parse_str($request->getUri()->getQuery(), $query);
-
-        // Assert that the query parameters are correct.
-        $this->assertSame('eventCode', $query['orderBy']);
-        $this->assertSame('ASC', $query['orderDir']);
-        $this->assertSame('30', $query['limit']);
-        $this->assertSame('1', $query['page']);
-        $this->assertSame('eventCode,eventName,eventDateTime', $query['fields']);
-        $this->assertSame('2015-10-29 12:34:30', $query['dateRangeStart']);
-        $this->assertSame('2015-10-29 12:34:30', $query['dateRangeEnd']);
+        // Assert that the query parameters are correct
+        $this->assertRequestQueryParameterSame('orderBy', 'eventCode', $request);
+        $this->assertRequestQueryParameterSame('orderDir', 'ASC', $request);
+        $this->assertRequestQueryParameterSame('limit', '30', $request);
+        $this->assertRequestQueryParameterSame('page', '1', $request);
+        $this->assertRequestQueryParameterSame('fields', 'eventCode,eventName,eventDateTime', $request);
+        $this->assertRequestQueryParameterSame('dateRangeStart', '2015-10-29 12:34:30', $request);
+        $this->assertRequestQueryParameterSame('dateRangeEnd', '2015-10-29 12:34:30', $request);
     }
 
-    /**
-     * Test that getEventAvailability() makes a GET request to the
-     * /events/[eventCode]/availability endpoint, to retrieve the availability
-     * for an event.
-     */
     public function testGetEventAvailability()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->getEventAvailability('N15RLM');
 
-        $ews = new EventClient($this->getHttpClient($history));
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->getEventAvailability('N15RLM');
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/availability.json', $request);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
-
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertSame('api/v1/events/N15RLM/availability', $request->getUri()->getPath());
-
-        // Assert the request includes no query parameters by default.
-        $this->assertSame('', $request->getUri()->getQuery());
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that getEventAvailability() uses the access token to authenticate.
-     */
-    public function testGetEventAvailabilityAuthenticates()
-    {
-        $history = [];
-
-        $ews = new EventClient($this->getHttpClient($history));
-        $ews->setAccessToken(
-            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
-        );
-
-        // Execute the API call.
-        $ews->getEventAvailability('N15RLM');
-
-        // Get the headers from the request in the history.
-        $request = $history[0]['request'];
-        $headers = $request->getHeaders();
-
-        // Assert that the Authorization header contains the same access token.
-        $this->assertSame(
-            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
-            $headers['Authorization'][0]
-        );
-    }
-
-    /**
-     * Test that createEventRegistration() makes a GET request to the
-     * /events/[eventCode]/registration endpoint, to create a new registration
-     * for an event.
-     */
-    public function testCreateEventRegistration()
-    {
-        $history = [];
-
-        $ews = new EventClient($this->getHttpClient($history));
-
-        // Execute the API call.
-        $ews->createEventRegistration('N15RLM');
-
-        // Get the request from the history.
-        $request = $history[0]['request'];
-
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertSame('api/v1/events/N15RLM/registration', $request->getUri()->getPath());
-
-        // Assert the request includes no query parameters by default.
-        $this->assertSame('', $request->getUri()->getQuery());
-    }
-
-    /**
-     * Test that createEventRegistration() uses the access token to authenticate.
-     */
-    public function testCreateEventRegistrationAuthenticates()
-    {
-        $history = [];
-
-        $ews = new EventClient($this->getHttpClient($history));
-        $ews->setAccessToken(
-            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
-        );
-
-        // Execute the API call.
-        $ews->createEventRegistration('N15RLM');
-
-        // Get the headers from the request in the history.
-        $request = $history[0]['request'];
-        $headers = $request->getHeaders();
-
-        // Assert that the Authorization header contains the same access token.
-        $this->assertSame(
-            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
-            $headers['Authorization'][0]
-        );
-    }
-
-    /**
-     * Test that getEventRegistration() makes a GET request to the
-     * /events/[eventCode]/registrations/[registrationId] endpoint, to retrieve
-     * data about an event registration.
-     */
     public function testGetEventRegistration()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->getEventRegistration('N15RLM', 123);
 
-        $ews = new EventClient($this->getHttpClient($history));
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->getEventRegistration('N15RLM', 123);
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123.json', $request);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
-
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertSame('api/v1/events/N15RLM/registrations/123', $request->getUri()->getPath());
-
-        // Assert the request includes no query parameters by default.
-        $this->assertSame('', $request->getUri()->getQuery());
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that getEventAvailability() uses the access token to authenticate.
-     */
-    public function testGetEventRegistrationAuthenticates()
+    public function testCreateEventRegistration()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->createEventRegistration('N15RLM');
 
-        $ews = new EventClient($this->getHttpClient($history));
-        $ews->setAccessToken(
-            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
-        );
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->getEventRegistration('N15RLM', 123);
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('POST', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations.json', $request);
 
-        // Get the headers from the request in the history.
-        $request = $history[0]['request'];
-        $headers = $request->getHeaders();
-
-        // Assert that the Authorization header contains the same access token.
-        $this->assertSame(
-            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
-            $headers['Authorization'][0]
-        );
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that createEventRegistration() makes a POST request to the
-     * /events/[eventCode]/registrations/[registrationId]/participant endpoint,
-     * to add data about a participant to an event registration.
-     */
+    public function testUpdateEventRegistrationStatus()
+    {
+        // Execute the API call
+        $this->ews->updateEventRegistrationStatus('N15RLM', 123, 'everything-is-ok');
+
+        // Get the request from the history
+        $request = $this->history[0]['request'];
+
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('PATCH', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/status.json', $request);
+
+        // Assert the body contains the new participant status
+        $this->assertRequestBodyParameterSame('status', 'everything-is-ok', $request);
+
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
+    }
+
+    public function testGetEventRegistrationParticipant()
+    {
+        // Execute the API call
+        $this->ews->getEventRegistrationParticipant('N15RLM', 123, 'a1b2c3d4');
+
+        // Get the request from the history
+        $request = $this->history[0]['request'];
+
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants/a1b2c3d4.json', $request);
+
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
+    }
+
     public function testCreateEventRegistrationParticipant()
     {
-        $history = [];
-
-        $ews = new EventClient($this->getHttpClient($history));
-
-        // Execute the API call.
-        $ews->createEventRegistrationParticipant('N15RLM', 123, [
-            'field' => 'key',
+        // Execute the API call
+        $this->ews->createEventRegistrationParticipant('N15RLM', 123, [
+            'participant_key' => 'participant_value',
         ]);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('POST', $request->getMethod());
-        $this->assertSame('api/v1/events/N15RLM/registrations/123/participant', $request->getUri()->getPath());
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('POST', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants.json', $request);
 
-        // Parse the request body into an array.
-        $body = [];
-        parse_str($request->getBody()->read(1024), $body);
+        // Assert the body contains the participant details
+        $this->assertRequestBodyParameterSame('participant_key', 'participant_value', $request);
 
-        // Assert the body contains the participant details.
-        $this->assertSame('key', $body['field']);
-
-        // Assert the request includes no query parameters by default.
-        $this->assertSame('', $request->getUri()->getQuery());
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that getEventAvailability() uses the access token to authenticate.
-     */
-    public function testCreateEventRegistrationParticipantAuthenticates()
+    public function testUpdateEventRegistrationParticipant()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->updateEventRegistrationParticipant('N15RLM', 123, 'abc', [
+            'participant_key' => 'participant_value',
+        ]);
 
-        $ews = new EventClient($this->getHttpClient($history));
-        $ews->setAccessToken(
-            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
-        );
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->getEventRegistration('N15RLM', 123);
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('PATCH', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants/abc.json', $request);
 
-        // Get the headers from the request in the history.
-        $request = $history[0]['request'];
-        $headers = $request->getHeaders();
+        // Assert the body contains the participant details
+        $this->assertRequestBodyParameterSame('participant_key', 'participant_value', $request);
 
-        // Assert that the Authorization header contains the same access token.
-        $this->assertSame(
-            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
-            $headers['Authorization'][0]
-        );
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that updateEventRegistrationStatus() makes a PATCH request to the
-     * /events/[eventCode]/registrations/[registrationId]/status endpoint,
-     * to update a registration's status.
-     */
-    public function testUpdateEventRegistrationParticipantStatus()
+    public function testGetEventRegistrationDonation()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->getEventRegistrationDonation('N15RLM', 123, 456);
 
-        $ews = new EventClient($this->getHttpClient($history));
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->updateEventRegistrationStatus('N15RLM', 123, 'everything-is-ok');
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/donations/456.json', $request);
 
-        // Get the request from the history.
-        $request = $history[0]['request'];
-
-        // Assert the request is made to the correct endpoint.
-        $this->assertSame('PATCH', $request->getMethod());
-        $this->assertSame(
-            'api/v1/events/N15RLM/registrations/123/status/everything-is-ok',
-            $request->getUri()->getPath()
-        );
-
-        // Assert the request includes no query parameters by default.
-        $this->assertSame('', $request->getUri()->getQuery());
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
-    /**
-     * Test that updateEventRegistrationStatus() uses the access token to authenticate.
-     */
-    public function testUpdateEventRegistrationStatusAuthenticates()
+    public function testCreateEventRegistrationDonation()
     {
-        $history = [];
+        // Execute the API call
+        $this->ews->createEventRegistrationDonation('N15RLM', 123, [
+            'donation_key' => 'donation_value',
+        ]);
 
-        $ews = new EventClient($this->getHttpClient($history));
-        $ews->setAccessToken(
-            'MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw'
-        );
+        // Get the request from the history
+        $request = $this->history[0]['request'];
 
-        // Execute the API call.
-        $ews->updateEventRegistrationStatus('N15RLM', 123, 'everything-is-ok');
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('POST', $request);
+        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/donations.json', $request);
 
-        // Get the headers from the request in the history.
-        $request = $history[0]['request'];
-        $headers = $request->getHeaders();
+        // Assert the body contains the donation details
+        $this->assertRequestBodyParameterSame('donation_key', 'donation_value', $request);
 
-        // Assert that the Authorization header contains the same access token.
-        $this->assertSame(
-            'Bearer MGNjNjNhNDg2YWVhODFhNmY3NjMyODY0YWI3MTYzMzdlMWM0Yjk4MWY0OTNkYzNhMjQ4MGQzZGEwY2Q3NmRhNw',
-            $headers['Authorization'][0]
-        );
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 }
