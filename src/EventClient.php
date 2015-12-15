@@ -176,6 +176,28 @@ class EventClient
         }
         throw new \Exception((string)$response->getBody());
     }
+    
+    /**
+     * Get an event registration participant.
+     *
+     * @param string $eventCode
+     * @param string $registrationId
+     * @param string $participant ??
+     * @return Response
+     */
+    public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
+    {
+        $response = $this->http->get(self::PATH_V1 .
+            "/events/{$eventCode}/registrations/{$registrationId}/participants/{$participantUniqueId}.json", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ],
+            ]);
+        if (substr($response->getStatusCode(), 0, 2) == 20) {
+            return json_decode((string)$response->getBody(), true);
+        }
+        throw new \Exception((string)$response->getBody());
+    }
 
     /**
      * Update an event registration's status.
