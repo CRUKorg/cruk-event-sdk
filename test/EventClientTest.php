@@ -57,6 +57,22 @@ class EventClientTest extends TestCase
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
     }
 
+    public function testGetEventsV2()
+    {
+        // Create a client that uses V2 of the EWS API
+        $this->ews = new EventClient($this->getHttpClient($this->history), EventClient::EWS_VERSION_2);
+        $this->ews->setAccessToken(self::ACCESS_TOKEN);
+
+        // Execute the API call
+        $this->ews->getEvents();
+
+        // Get the request from the history
+        $request = $this->history[0]['request'];
+
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestUriPathSame('api/v2/events.json', $request);
+    }
+
     public function testGetEventsOptions()
     {
         // Execute the API call
