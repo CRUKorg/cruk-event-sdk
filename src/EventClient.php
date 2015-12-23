@@ -22,13 +22,6 @@ class EventClient
      */
     private $path = 'api/v1';
 
-    /**
-     * Base URL of API (includes version number)
-     *
-     * @deprecated
-     */
-    const PATH_V1 = 'api/v1';
-
     const EWS_VERSION_1 = 'EWS_VERSION_1';
     const EWS_VERSION_2 = 'EWS_VERSION_2';
 
