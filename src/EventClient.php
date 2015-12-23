@@ -18,19 +18,41 @@ class EventClient
     private $accessToken;
 
     /**
+     * Base URL of API including version number
+     */
+    private $path = 'api/v1';
+
+    /**
      * Base URL of API (includes version number)
+     *
+     * @deprecated
      */
     const PATH_V1 = 'api/v1';
+
+    const EWS_VERSION_1 = 'EWS_VERSION_1';
+    const EWS_VERSION_2 = 'EWS_VERSION_2';
 
     /**
      * Create a new EventClient
      *
      * @param ClientInterface $http
      *   Guzzle HTTP client, used to issue requests to EWS endpoints
+     * @param string $ewsVersion
+     *   EWS API version
      */
-    public function __construct(ClientInterface $http)
+    public function __construct(ClientInterface $http, $ewsVersion = self::EWS_VERSION_1)
     {
         $this->http = $http;
+
+        switch ($ewsVersion) {
+            case self::EWS_VERSION_1:
+                $this->path = 'api/v1';
+                break;
+
+            case self::EWS_VERSION_2:
+                $this->path = 'api/v2';
+                break;
+        }
     }
 
     /**
@@ -111,7 +133,7 @@ class EventClient
      */
     public function getEvents(array $query = [])
     {
-        $uri = self::PATH_V1 . '/events.json';
+        $uri = $this->path . '/events.json';
 
         return $this->requestJson('GET', $uri, [
             'query' => $query,
@@ -128,7 +150,7 @@ class EventClient
      */
     public function getEventAvailability($eventCode)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/availability.json";
+        $uri = $this->path . "/events/$eventCode/availability.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -145,7 +167,7 @@ class EventClient
      */
     public function getEventRegistration($eventCode, $registrationId)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId.json";
+        $uri = $this->path . "/events/$eventCode/registrations/$registrationId.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -160,7 +182,7 @@ class EventClient
      */
     public function createEventRegistration($eventCode)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/registrations.json";
+        $uri = $this->path . "/events/$eventCode/registrations.json";
 
         return $this->requestJson('POST', $uri);
     }
@@ -178,7 +200,7 @@ class EventClient
      */
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/status.json";
+        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/status.json";
 
         return $this->requestJson('PATCH', $uri, [
             'json' => ['status' => $statusCode],
@@ -198,7 +220,7 @@ class EventClient
      */
     public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
     {
-        $uri = self::PATH_V1
+        $uri = $this->path
             . "/events/{$eventCode}/registrations/{$registrationId}/participants/{$participantUniqueId}.json";
 
         return $this->requestJson('GET', $uri);
@@ -217,7 +239,7 @@ class EventClient
      */
     public function createEventRegistrationParticipant($eventCode, $registrationId, array $participant)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/participants.json";
+        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/participants.json";
 
         return $this->requestJson('POST', $uri, [
             'json' => $participant,
@@ -243,7 +265,7 @@ class EventClient
         $participantUniqueId,
         array $participant
     ) {
-        $uri = self::PATH_V1
+        $uri = $this->path
             . "/events/$eventCode/registrations/$registrationId/participants/{$participantUniqueId}.json";
 
         return $this->requestJson('PATCH', $uri, [
@@ -264,7 +286,7 @@ class EventClient
      */
     public function getEventRegistrationDonation($eventCode, $registrationId, $donationId)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/donations/$donationId.json";
+        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/donations/$donationId.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -282,7 +304,7 @@ class EventClient
      */
     public function createEventRegistrationDonation($eventCode, $registrationId, array $donation)
     {
-        $uri = self::PATH_V1 . "/events/$eventCode/registrations/$registrationId/donations.json";
+        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/donations.json";
 
         return $this->requestJson('POST', $uri, [
             'json' => $donation,
