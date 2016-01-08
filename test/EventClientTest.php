@@ -143,8 +143,23 @@ class EventClientTest extends TestCase
         $this->assertRequestMethodSame('POST', $request);
         $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations.json', $request);
 
+        // Assert that the body contains a number of tickets to reserve
+        $this->assertRequestBodyParameterSame('tickets', 1, $request);
+
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
+    }
+
+    public function testCreateEventRegistrationTickets()
+    {
+        // Execute the API call
+        $this->ews->createEventRegistration('N15RLM', 4);
+
+        // Get the request from the history
+        $request = $this->history[0]['request'];
+
+        // Assert that the body contains the correct number of tickets to reserve
+        $this->assertRequestBodyParameterSame('tickets', 4, $request);
     }
 
     public function testUpdateEventRegistrationStatus()
