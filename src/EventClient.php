@@ -177,7 +177,7 @@ class EventClient
      *
      * @param string $eventCode
      *   Event code
-     * @param integer $num_tickets
+     * @param integer $numTickets
      *   Number of tickets required (must be an integer between 1 and 10).
      * @return array
      *   Response body containing the new registration
@@ -187,7 +187,7 @@ class EventClient
         $uri = $this->path . "/events/$eventCode/registrations.json";
 
         return $this->requestJson('POST', $uri, [
-            'json' => ['tickets' => $numTickets]
+            'json' => ['tickets' => $numTickets],
         ]);
     }
 
