@@ -51,7 +51,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/availability.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/availability.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -67,7 +67,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -83,7 +83,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('POST', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -99,7 +99,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('PATCH', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/status.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/status.json', $request);
 
         // Assert the body contains the new participant status
         $this->assertRequestBodyParameterSame('status', 'everything-is-ok', $request);
@@ -118,7 +118,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants/a1b2c3d4.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participants/a1b2c3d4.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -136,7 +136,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('POST', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participants.json', $request);
 
         // Assert the body contains the participant details
         $this->assertRequestBodyParameterSame('participant_key', 'participant_value', $request);
@@ -157,7 +157,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('PATCH', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants/abc.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participants/abc.json', $request);
 
         // Assert the body contains the participant details
         $this->assertRequestBodyParameterSame('participant_key', 'participant_value', $request);
@@ -176,7 +176,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/donations/456.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/donations/456.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -194,7 +194,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('POST', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/donations.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/donations.json', $request);
 
         // Assert the body contains the donation details
         $this->assertRequestBodyParameterSame('donation_key', 'donation_value', $request);
