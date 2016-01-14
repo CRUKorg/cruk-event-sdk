@@ -20,32 +20,17 @@ class EventClient
     /**
      * Base URL of API including version number
      */
-    private $path = 'api/v1';
-
-    const EWS_VERSION_1 = 'EWS_VERSION_1';
-    const EWS_VERSION_2 = 'EWS_VERSION_2';
+    private $path = 'api/v2';
 
     /**
      * Create a new EventClient
      *
      * @param ClientInterface $http
      *   Guzzle HTTP client, used to issue requests to EWS endpoints
-     * @param string $ewsVersion
-     *   EWS API version
      */
-    public function __construct(ClientInterface $http, $ewsVersion = self::EWS_VERSION_1)
+    public function __construct(ClientInterface $http)
     {
         $this->http = $http;
-
-        switch ($ewsVersion) {
-            case self::EWS_VERSION_1:
-                $this->path = 'api/v1';
-                break;
-
-            case self::EWS_VERSION_2:
-                $this->path = 'api/v2';
-                break;
-        }
     }
 
     /**
