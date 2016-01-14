@@ -114,26 +114,6 @@ class EventClient
     }
 
     /**
-     * Get a list of events
-     *
-     * The keys allowed in the query parameters are: orderBy, orderDir, limit,
-     * page, fields, dateRangeStart, dateRangeEnd.
-     *
-     * @param array $query
-     *   Request filtering and pagination options
-     * @return Response
-     *   Response containing a list of events
-     */
-    public function getEvents(array $query = [])
-    {
-        $uri = $this->path . '/events.json';
-
-        return $this->requestJson('GET', $uri, [
-            'query' => $query,
-        ]);
-    }
-
-    /**
      * Get the availability for a specific event
      *
      * @param string $eventCode
