@@ -99,6 +99,21 @@ class EventClient
     }
 
     /**
+     * Get an event
+     *
+     * @param string $eventCode
+     *   Event code
+     * @return array
+     *   Response body containing the event details
+     */
+    public function getEvent($eventCode)
+    {
+        $uri = $this->path . "/events/$eventCode.json";
+
+        return $this->requestJson('GET', $uri);
+    }
+
+    /**
      * Get the availability for a specific event
      *
      * @param string $eventCode
