@@ -41,6 +41,22 @@ class EventClientTest extends TestCase
         $this->assertRequestQueryParameterSame('client_secret', 'my_client_secret', $request);
     }
 
+    public function testGetEvent()
+    {
+        // Execute the API call
+        $this->ews->getEvent('N15RLM');
+
+        // Get the request from the history
+        $request = $this->history[0]['request'];
+
+        // Assert that the request is made to the correct endpoint
+        $this->assertRequestMethodSame('GET', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM.json', $request);
+
+        // Assert that the request uses the OAuth access token to authenticate
+        $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
+    }
+
     public function testGetEventAvailability()
     {
         // Execute the API call
