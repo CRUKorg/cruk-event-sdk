@@ -11,7 +11,7 @@ use GuzzleHttp\Psr7\Response;
 trait HttpClientTrait
 {
     /**
-     * Create a mock HTTP client that logs its reponses into a variable
+     * Create a mock HTTP client that logs its responses into a variable
      *
      * @param array &$history
      *   Array where requests will be logged
@@ -22,7 +22,7 @@ trait HttpClientTrait
     public function getHttpClient(array &$history, array $responses = null)
     {
         if ($responses === null) {
-            $responses = [new Response(200)];
+            $responses = [new Response(200, [], json_encode(['response']))];
         }
 
         $handler = new MockHandler($responses);
