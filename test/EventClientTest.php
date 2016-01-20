@@ -78,7 +78,9 @@ class EventClientTest extends TestCase
     public function testGetEventAvailabiltiyFailure()
     {
         // Create a new EventClient just for this test which returns a failure.
-        $new_ews = new EventClient($this->getHttpClient($this->history, [new Psr7\Response(200, [], json_encode(['error' => 'error', 'errorDescription' => 'errorDescription', 'data' => []]))]));
+        $json = json_encode(['error' => 'error', 'errorDescription' => 'errorDescription', 'data' => []]);
+        $response = [new Psr7\Response(200, [], $json)];
+        $new_ews = new EventClient($this->getHttpClient($this->history, $response));
         // Execute the API call
         $this->setExpectedException(EventClientError::class);
         $new_ews->getEventAvailability('MISSING');
