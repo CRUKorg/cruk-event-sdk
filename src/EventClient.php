@@ -78,7 +78,12 @@ class EventClient
         $response = $this->http->request($method, $uri, $options);
         $body = (string) $response->getBody();
 
-        return json_decode($body, true);
+        $body = json_decode($body, true);
+
+        if (!$body || (isset($body['error']) && isset($body['errorDescription']))) {
+            throw new EventClientError($body['errorDescription'], 0, null, $body['data']);
+        }
+        return $body;
     }
 
     /**

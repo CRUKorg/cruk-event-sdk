@@ -3,6 +3,8 @@
 namespace Cruk\EventSdk\Test;
 
 use Cruk\EventSdk\EventClient;
+use Cruk\EventSdk\EventClientError;
+use GuzzleHttp\Psr7;
 
 class EventClientTest extends TestCase
 {
@@ -113,6 +115,15 @@ class EventClientTest extends TestCase
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
+    }
+
+    public function testGetEventAvailabiltiyFailure()
+    {
+        // Create a new EventClient just for this test which returns a failure.
+        $new_ews = new EventClient($this->getHttpClient($this->history, [new Psr7\Response(200, [], json_encode(['error' => 'error', 'errorDescription' => 'errorDescription', 'data' => []]))]));
+        // Execute the API call
+        $this->setExpectedException(EventClientError::class);
+        $new_ews->getEventAvailability('MISSING');
     }
 
     public function testGetEventRegistration()
