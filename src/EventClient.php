@@ -219,7 +219,7 @@ class EventClient
     public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
     {
         $uri = $this->path
-            . "/events/{$eventCode}/registrations/{$registrationId}/participants/{$participantUniqueId}.json";
+            . "/events/{$eventCode}/registrations/{$registrationId}/participantInfos/{$participantUniqueId}.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -237,7 +237,7 @@ class EventClient
      */
     public function createEventRegistrationParticipant($eventCode, $registrationId, array $participant)
     {
-        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/participants.json";
+        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/participantInfos.json";
 
         return $this->requestJson('POST', $uri, [
             'json' => $participant,
