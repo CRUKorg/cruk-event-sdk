@@ -55,8 +55,29 @@ class EventClient
 
         $response = $this->http->request($method, $uri, $options);
         $body = (string) $response->getBody();
+        $body = json_decode($body, true);
 
-        return json_decode($body, true);
+        if (!is_array($body)) {
+            throw new EventClientError('Could not parse response JSON');
+        }
+
+        if (isset($body['error'])) {
+            if (isset($body['errorDescription'])) {
+                $errorDescription = $body['errorDescription'];
+            } else {
+                $errorDescription = '';
+            }
+
+            if (isset($body['data'])) {
+                $data = $body['data'];
+            } else {
+                $data = [];
+            }
+
+            throw new EventClientError($errorDescription, 0, null, $data);
+        }
+
+        return $body;
     }
 
     /**
