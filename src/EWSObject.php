@@ -91,12 +91,12 @@ abstract class EWSObject
     }
 
     /**
-     * Append data to an existing object (effectively uses patch)
+     * Patch data to an existing object (effectively uses patch)
      *
      * @param mixed $data
      * @return EWSObject
      */
-    public function append($data)
+    public function patch($data)
     {
         $response = $this->client->requestJson('PATCH', $this->getUri(), ['json' => $data]);
         $this->populate($response);
