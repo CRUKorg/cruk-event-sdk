@@ -356,7 +356,7 @@ class Event extends EWSObject
      */
     protected function getArrayStructure()
     {
-        return array(
+        return [
             'eventCode',
             'eventName',
             'eventType',
@@ -369,6 +369,6 @@ class Event extends EWSObject
             'gender',
             'defaultSiebelRegistrationStatus',
             'waves',
-        );
+        ];
     }
 }
