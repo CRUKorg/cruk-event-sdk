@@ -14,22 +14,18 @@ abstract class EWSObject
     protected $client;
 
     /**
-     * Simple function to return the idKey of a class. This allows us to use
-     * a common populate function across all objects/classes.
-     */
-    abstract protected function getIdKey();
-    abstract protected function getGetUri();
-    abstract protected function getPostUri();
-
-    /**
      * Create a new EWSObject
      *
      * @param EWSClient $client
      *   EWSClient which does all the HTTP requests for us.
+     * @param mixed $data
+     *   Either an ID, or an array to populate the object.
      */
-    public function __construct(EWSClient $client)
+    public function __construct(EWSClient $client, $data)
     {
         $this->client = $client;
+        $this->populate($data);
+        return $this;
     }
 
     /**
@@ -47,7 +43,7 @@ abstract class EWSObject
                     $this->$setter($value);
                 }
             }
-        } elseif (is_string($data) && strlen($data)) {
+        } elseif ($data) {
             $key = $this->getIdKey();
             $setter = 'set' . ucfirst($key);
             if (method_exists($this, $setter)) {
@@ -55,7 +51,14 @@ abstract class EWSObject
                 $this->load();
             }
         }
+        return $this;
     }
+
+    /**
+     * Simple function to return the idKey of a class. This allows us to use
+     * a common populate function across all objects/classes.
+     */
+    abstract protected function getIdKey();
 
     /**
      * Load an object from the EWS and set the local variables.
@@ -70,14 +73,93 @@ abstract class EWSObject
     }
 
     /**
+     * Simple function to return the URI that should be used to GET this object
+     * from the EWS.
+     */
+    abstract protected function getGetUri();
+
+    /**
      * Create a new object on the EWS and set the local variables
      *
      * @return EWSObject
      */
     public function create()
     {
-        $response = $this->client->requestJson('GET', $this->getPostUri());
+        $response = $this->client->requestJson('POST', $this->getPostUri(), ['json' => $this->asArray()]);
         $this->populate($response);
         return $this;
+    }
+
+    /**
+     * Simple function to return the URI that should be used to POST/UPDATE this object
+     * from the EWS.
+     */
+    abstract protected function getPostUri();
+
+    /**
+     * Create an array that can be used to send to the EWS or simply to send to Drupal
+     * or any other client.
+     *
+     * TODO: Convert this to use array_walk or to recurse. This currently only works with
+     * two levels.
+     *
+     * @return array
+     */
+    public function asArray()
+    {
+        $returnArray = [];
+        foreach ($this->getArrayStructure() as $array_key => $key) {
+            if (is_array($key)) {
+                foreach ($key as $key2) {
+                    $value = $this->getValueFromKey($key2);
+                    if (!is_null($value)) {
+                        $returnArray[$array_key][$key2] = $value;
+                    }
+                }
+            } else {
+                $value = $this->getValueFromKey($key);
+                if (!is_null($value)) {
+                    $returnArray[$key] = $value;
+                }
+            }
+        }
+        return $returnArray;
+    }
+
+    /**
+     * Simple helper function to get a value from a key
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function getValueFromKey($key)
+    {
+        $getter = 'get' . ucfirst($key);
+        if (method_exists($this, $getter)) {
+            return $this->$getter();
+        }
+        return null;
+    }
+
+    /**
+     * Simple function to return the structure of the class. This defines how the
+     * object should be built and delivered as an array.
+     */
+    abstract protected function getArrayStructure();
+
+    /**
+     * @return EWSClient
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param EWSClient $client
+     */
+    public function setClient($client)
+    {
+        $this->client = $client;
     }
 }
