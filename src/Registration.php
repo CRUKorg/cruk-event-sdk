@@ -2,38 +2,36 @@
 
 namespace Cruk\EventSdk;
 
-use GuzzleHttp\ClientInterface;
-
 class Registration extends EWSObject
 {
+    /**
+     * idKey
+     */
+    private static $idKey = 'registrationId';
     /**
      * registrationId
      *
      * @var integer
      */
     private $registrationId;
-
     /**
      * timeOut
      *
      * @var string
      */
     private $timeOut;
-
     /**
      * unixTimeOut
      *
      * @var integer
      */
     private $unixTimeOut;
-
     /**
      * status
      *
      * @var string
      */
     private $status;
-
     /**
      * event
      *
@@ -48,14 +46,44 @@ class Registration extends EWSObject
     private $donationId;
 
     /**
-     * idKey
+     * tickets
+     *
+     * @var integer
      */
-    private static $idKey = 'registrationId';
+    private $tickets;
 
-    public function __construct(ClientInterface $http, $event, $numTickets)
+    /**
+     * participants
+     *
+     * @var array
+     */
+    private $participants;
+
+    /**
+     * Registration constructor.
+     * @param EWSClient $client
+     * @param Event $event
+     * @param mixed $data
+     */
+    public function __construct(EWSClient $client, Event $event, $data)
     {
         $this->event = $event;
-        $this->populate($data);
+        parent::__construct($client, $data);
+    }
+
+    /**
+     * Simple function to create a participant associated with this registration
+     *
+     * @param mixed $data
+     *
+     * @return Participant
+     */
+    public function createParticipant($data)
+    {
+        $participant = new Participant($this->client, $this->event, $this, $data);
+        $this->participants[] = $participant;
+        $participant->create();
+        return $participant;
     }
 
     /**
@@ -64,6 +92,38 @@ class Registration extends EWSObject
     public function getRegistrationId()
     {
         return $this->registrationId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTickets()
+    {
+        return $this->tickets;
+    }
+
+    /**
+     * @param int $tickets
+     */
+    public function setTickets($tickets)
+    {
+        $this->tickets = $tickets;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParticipants()
+    {
+        return $this->participants;
+    }
+
+    /**
+     * @param mixed $participants
+     */
+    public function setParticipants(array $participants)
+    {
+        $this->participants = $participants;
     }
 
     /**
@@ -132,6 +192,27 @@ class Registration extends EWSObject
     }
 
     /**
+     * Simple function to return the structure of the class. This defines how the
+     * object should be built and delivered as an array.
+     */
+    protected function getArrayStructure()
+    {
+        // We return a different array depending on whether we have the
+        // registrationId set.
+        if ($this->registrationId) {
+            return [
+                'registrationId',
+                'timeOut',
+                'status',
+                'donationId',
+            ];
+        }
+        return [
+            'tickets',
+        ];
+    }
+
+    /**
      * Simple function to return the idKey of a class. This allows us to use
      * a common populate function across all objects/classes.
      */
@@ -142,11 +223,11 @@ class Registration extends EWSObject
 
     protected function getGetUri()
     {
-        return $this->path . "/events/{$this->event->getEventCode()}/registrations/{$this->eventCode}.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registrationId}.json";
     }
 
     protected function getPostUri()
     {
-        return $this->path . "/events/{$this->event->getEventCode()}/registrations.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations.json";
     }
 }

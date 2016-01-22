@@ -2,81 +2,73 @@
 
 namespace Cruk\EventSdk;
 
-use GuzzleHttp\ClientInterface;
-
 class Event extends EWSObject
 {
 
+    /**
+     * idKey
+     */
+    private static $idKey = 'eventCode';
     /**
      * Event name
      *
      * @var string
      */
     private $eventName;
-
     /**
      * Event type
      *
      * @var string
      */
     private $eventType;
-
     /**
      * eventDistance
      *
      * @var string
      */
     private $eventDistance;
-
     /**
      * EventDistanceUOM
      *
      * @var string
      */
     private $eventDistanceUOM;
-
     /**
      * sponsorshipPageCreationDuration
      *
      * @var string
      */
     private $sponsorshipPageCreationDuration;
-
     /**
      * ageFrom
      *
      * @var integer
      */
     private $ageFrom;
-
     /**
      * ageTo
      *
      * @var integer
      */
     private $ageTo;
-
     /**
      * ageCriteria
      *
      * @var string
      */
     private $ageCriteria;
-
     /**
      * gender
      *
      * @var gender
      */
     private $gender;
-
     /**
      * defaultSiebelRegistrationStatus
      *
      * @var string
      */
     private $defaultSiebelRegistrationStatus;
-
     /**
      * Waves
      *
@@ -85,7 +77,6 @@ class Event extends EWSObject
      * @var array
      */
     private $waves;
-
     /**
      * Registrations that are associated with this event.
      *
@@ -94,38 +85,13 @@ class Event extends EWSObject
     private $registrations;
 
     /**
-     * idKey
-     */
-    private static $idKey = 'eventCode';
-
-    /**
-     * Create a new Event
-     *
-     * @param ClientInterface $http
-     *   Guzzle HTTP client, used to issue requests to EWS endpoints
-     */
-    public function __construct(EWSClient $client, $data = false)
-    {
-        parent::__construct($data);
-    }
-
-    /**
-     * Simple function to return the idKey of a class. This allows us to use
-     * a common populate function across all objects/classes.
-     */
-    protected function getIdKey()
-    {
-        return self::$idKey;
-    }
-
-    /**
      * Simple function to return the URI for loading the Event.
      *
      * @return string
      */
     public function getGetUri()
     {
-        return $this->path . "/events/{$this->eventCode}.json";
+        return $this->client->getPath() . "/events/{$this->eventCode}.json";
     }
 
     /**
@@ -136,7 +102,7 @@ class Event extends EWSObject
     public function getPostUri()
     {
         // Should possibly throw an error here, as this does not exist.
-        return $this->path . "/events.json";
+        return $this->client->getPath() . "/events.json";
     }
 
     /**
@@ -147,7 +113,7 @@ class Event extends EWSObject
      */
     public function getAvailability()
     {
-        $uri = $this->path . "/events/{$this->eventCode}/availability.json";
+        $uri = $this->client->getPath() . "/events/{$this->eventCode}/availability.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -157,13 +123,14 @@ class Event extends EWSObject
      *
      * @param integer $numTickets
      *   Number of tickets required (must be an integer between 1 and 10).
-     * @return array
+     * @return Registration
      *   Response body containing the new registration
      */
     public function createRegistration($numTickets = 1)
     {
-        $registration = new Registration($this->client, $numTickets);
+        $registration = new Registration($this->client, $this, ['tickets' => $numTickets]);
         $this->registrations[] = $registration;
+        $registration->create();
         return $registration;
     }
 
@@ -177,7 +144,7 @@ class Event extends EWSObject
      */
     public function getEventRegistration($registrationId)
     {
-        $uri = $this->path . "/events/{$this->eventCode}/registrations/$registrationId.json";
+        $uri = $this->client->getPath() . "/events/{$this->eventCode}/registrations/$registrationId.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -195,7 +162,7 @@ class Event extends EWSObject
      */
     public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
     {
-        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/status.json";
+        $uri = $this->client->getPath() . "/events/$eventCode/registrations/$registrationId/status.json";
 
         return $this->requestJson('PATCH', $uri, [
             'json' => ['status' => $statusCode],
@@ -215,7 +182,7 @@ class Event extends EWSObject
      */
     public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
     {
-        $uri = $this->path
+        $uri = $this->client->getPath()
             . "/events/{$eventCode}/registrations/{$registrationId}/participantInfos/{$participantUniqueId}.json";
 
         return $this->requestJson('GET', $uri);
@@ -282,7 +249,7 @@ class Event extends EWSObject
      */
     public function getEventRegistrationDonation($eventCode, $registrationId, $donationId)
     {
-        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/donations/$donationId.json";
+        $uri = $this->client->getPath() . "/events/$eventCode/registrations/$registrationId/donations/$donationId.json";
 
         return $this->requestJson('GET', $uri);
     }
@@ -300,7 +267,7 @@ class Event extends EWSObject
      */
     public function createEventRegistrationDonation($eventCode, $registrationId, array $donation)
     {
-        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/donations.json";
+        $uri = $this->client->getPath() . "/events/$eventCode/registrations/$registrationId/donations.json";
 
         return $this->requestJson('POST', $uri, [
             'json' => $donation,
@@ -513,6 +480,37 @@ class Event extends EWSObject
     public function setRegistrations($registrations)
     {
         $this->registrations = $registrations;
+    }
+
+    /**
+     * Simple function to return the idKey of a class. This allows us to use
+     * a common populate function across all objects/classes.
+     */
+    protected function getIdKey()
+    {
+        return self::$idKey;
+    }
+
+    /**
+     * Simple function to return the structure of the class. This defines how the
+     * object should be built and delivered as an array.
+     */
+    protected function getArrayStructure()
+    {
+        return array(
+            'eventCode',
+            'eventName',
+            'eventType',
+            'eventDistance',
+            'eventDistanceUOM',
+            'sponsorshipPageCreationDuration',
+            'ageFrom',
+            'ageTo',
+            'ageCriteria',
+            'gender',
+            'defaultSiebelRegistrationStatus',
+            'waves',
+        );
     }
 
 
