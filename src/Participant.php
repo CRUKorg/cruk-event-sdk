@@ -476,6 +476,7 @@ class Participant extends EWSObject
     public function setFundraisingUrl($fundraisingUrl)
     {
         $this->fundraisingUrl = $fundraisingUrl;
+        $this->fieldsToPatch['eventSpecific'] = 'fundraisingUrl';
     }
 
     /**

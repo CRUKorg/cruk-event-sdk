@@ -14,6 +14,13 @@ abstract class EWSObject
     protected $client;
 
     /**
+     * List of fields that have been updated. This allows us to use the patch function in a stupid way.
+     *
+     * @var array
+     */
+    protected $fieldsToPatch;
+
+    /**
      * Create a new EWSObject
      *
      * @param EWSClient $client
@@ -23,6 +30,7 @@ abstract class EWSObject
      */
     public function __construct(EWSClient $client, $data)
     {
+        $this->fieldsToPatch = [];
         $this->client = $client;
         $this->populate($data);
         return $this;
@@ -96,8 +104,13 @@ abstract class EWSObject
      * @param mixed $data
      * @return EWSObject
      */
-    public function patch($data)
+    public function patch($data = false)
     {
+        if (!$data) {
+            // We haven't been sent any data, so we attempt to build it based on the values of $fieldsToPatch
+            $data = $this->_asArray($this->fieldsToPatch);
+        }
+        $this->fieldsToPatch = [];
         $response = $this->client->requestJson('PATCH', $this->getUri(), ['json' => $data]);
         $this->populate($response);
         return $this;
@@ -132,8 +145,13 @@ abstract class EWSObject
      */
     public function asArray()
     {
+        $this->_asArray($this->getArrayStructure());
+    }
+
+    private function _asArray($structure)
+    {
         $returnArray = [];
-        foreach ($this->getArrayStructure() as $array_key => $key) {
+        foreach ($structure as $array_key => $key) {
             if (is_array($key)) {
                 foreach ($key as $key2) {
                     $value = $this->getValueFromKey($key2);
@@ -148,7 +166,7 @@ abstract class EWSObject
                 }
             }
         }
-        return $returnArray;
+
     }
 
     /**
