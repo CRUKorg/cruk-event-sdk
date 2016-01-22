@@ -172,7 +172,23 @@ class Donation extends EWSObject
      */
     protected function getArrayStructure()
     {
-        // TODO: Implement getArrayStructure() method.
+        return [
+            'id',
+            'amount',
+            'bankAccountCode',
+            'dataSource',
+            'dateReceived',
+            'donationType',
+            'financialPaymentReference',
+            'paymentMethod',
+            'paymentStatus',
+            'personalGiftAid',
+            'product',
+            'source',
+            'originalPaymentId',
+            'toBeGiftAided',
+            'paymentProviderTransactionId',
+        ];
     }
 
 
