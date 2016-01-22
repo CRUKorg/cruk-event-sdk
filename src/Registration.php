@@ -99,7 +99,7 @@ class Registration extends EWSObject
      */
     public function updateStatus($statusCode)
     {
-        $this->append(['status' => $statusCode]);
+        $this->patch(['status' => $statusCode]);
     }
 
     /**
