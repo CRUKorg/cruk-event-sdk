@@ -587,7 +587,7 @@ class Participant extends EWSObject
      * Simple function to return the URI that should be used to GET this object
      * from the EWS.
      */
-    protected function getGetUri()
+    protected function getUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/participantInfos/{$this->uniqueId}.json";
     }
@@ -596,7 +596,7 @@ class Participant extends EWSObject
      * Simple function to return the URI that should be used to POST/UPDATE this object
      * from the EWS.
      */
-    protected function getPostUri()
+    protected function getCreateUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/participantInfos.json";
     }

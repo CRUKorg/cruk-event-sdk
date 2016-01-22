@@ -87,6 +87,22 @@ class Registration extends EWSObject
     }
 
     /**
+     * Update an event registration's status
+     *
+     * @param string $eventCode
+     *   Event code
+     * @param string $registrationId
+     *   Registration ID for the event
+     * @param string $statusCode
+     *   New status code for the registration
+     * @return array
+     */
+    public function updateStatus($statusCode)
+    {
+        $this->append(['status' => $statusCode]);
+    }
+
+    /**
      * @return int
      */
     public function getRegistrationId()
@@ -192,6 +208,23 @@ class Registration extends EWSObject
     }
 
     /**
+     * Simple function to create a donation associated with this Registration
+     */
+    public function createDonation($data)
+    {
+        $donation = new Donation($this->client, $this->event, $this, $data);
+        $donation->create();
+        $this->setDonationId($donation->getId());
+        return $donation;
+    }
+
+    /**
+     * Create a donation
+     *
+     *
+     */
+
+    /**
      * Simple function to return the structure of the class. This defines how the
      * object should be built and delivered as an array.
      */
@@ -221,12 +254,12 @@ class Registration extends EWSObject
         return self::$idKey;
     }
 
-    protected function getGetUri()
+    protected function getUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registrationId}.json";
     }
 
-    protected function getPostUri()
+    protected function getCreateUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations.json";
     }
