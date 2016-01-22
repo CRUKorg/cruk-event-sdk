@@ -89,7 +89,7 @@ class Event extends EWSObject
      *
      * @return string
      */
-    public function getGetUri()
+    public function getUri()
     {
         return $this->client->getPath() . "/events/{$this->eventCode}.json";
     }
@@ -99,7 +99,7 @@ class Event extends EWSObject
      *
      * @return string
      */
-    public function getPostUri()
+    public function getCreateUri()
     {
         // Should possibly throw an error here, as this does not exist.
         return $this->client->getPath() . "/events.json";
@@ -114,7 +114,6 @@ class Event extends EWSObject
     public function getAvailability()
     {
         $uri = $this->client->getPath() . "/events/{$this->eventCode}/availability.json";
-
         return $this->requestJson('GET', $uri);
     }
 
@@ -132,146 +131,6 @@ class Event extends EWSObject
         $this->registrations[] = $registration;
         $registration->create();
         return $registration;
-    }
-
-    /**
-     * Get a registration
-     *
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @return array
-     *   Response containing the registration
-     */
-    public function getEventRegistration($registrationId)
-    {
-        $uri = $this->client->getPath() . "/events/{$this->eventCode}/registrations/$registrationId.json";
-
-        return $this->requestJson('GET', $uri);
-    }
-
-    /**
-     * Update an event registration's status
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $statusCode
-     *   New status code for the registration
-     * @return array
-     */
-    public function updateEventRegistrationStatus($eventCode, $registrationId, $statusCode)
-    {
-        $uri = $this->client->getPath() . "/events/$eventCode/registrations/$registrationId/status.json";
-
-        return $this->requestJson('PATCH', $uri, [
-            'json' => ['status' => $statusCode],
-        ]);
-    }
-
-    /**
-     * Get an event registration participant
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $participantUniqueId
-     *   Participant's generated Siebel ID
-     * @return array
-     */
-    public function getEventRegistrationParticipant($eventCode, $registrationId, $participantUniqueId)
-    {
-        $uri = $this->client->getPath()
-            . "/events/{$eventCode}/registrations/{$registrationId}/participantInfos/{$participantUniqueId}.json";
-
-        return $this->requestJson('GET', $uri);
-    }
-
-    /**
-     * Add participant data to a registration
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $participant
-     *   New participant data
-     * @return array
-     */
-    public function createEventRegistrationParticipant($eventCode, $registrationId, array $participant)
-    {
-        $uri = $this->path . "/events/$eventCode/registrations/$registrationId/participantInfos.json";
-
-        return $this->requestJson('POST', $uri, [
-            'json' => $participant,
-        ]);
-    }
-
-    /**
-     * Update an event registration's participant data
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $participantUniqueId
-     *   Participant's generated Siebel ID
-     * @param string $participant
-     *   New participant data
-     * @return array
-     */
-    public function updateEventRegistrationParticipant(
-        $eventCode,
-        $registrationId,
-        $participantUniqueId,
-        array $participant
-    )
-    {
-        $uri = $this->path
-            . "/events/$eventCode/registrations/$registrationId/participants/{$participantUniqueId}.json";
-
-        return $this->requestJson('PATCH', $uri, [
-            'json' => $participant
-        ]);
-    }
-
-    /**
-     * Get a donation record
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $participant
-     *   Donation ID for the registration
-     * @return array
-     */
-    public function getEventRegistrationDonation($eventCode, $registrationId, $donationId)
-    {
-        $uri = $this->client->getPath() . "/events/$eventCode/registrations/$registrationId/donations/$donationId.json";
-
-        return $this->requestJson('GET', $uri);
-    }
-
-    /**
-     * Create a registration donation record
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $participant
-     *   New donation data
-     * @return array
-     */
-    public function createEventRegistrationDonation($eventCode, $registrationId, array $donation)
-    {
-        $uri = $this->client->getPath() . "/events/$eventCode/registrations/$registrationId/donations.json";
-
-        return $this->requestJson('POST', $uri, [
-            'json' => $donation,
-        ]);
     }
 
     /**
@@ -512,6 +371,4 @@ class Event extends EWSObject
             'waves',
         );
     }
-
-
 }

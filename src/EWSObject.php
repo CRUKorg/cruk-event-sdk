@@ -67,7 +67,7 @@ abstract class EWSObject
      */
     public function load()
     {
-        $response = $this->client->requestJson('GET', $this->getGetUri());
+        $response = $this->client->requestJson('GET', $this->getUri());
         $this->populate($response);
         return $this;
     }
@@ -76,7 +76,7 @@ abstract class EWSObject
      * Simple function to return the URI that should be used to GET this object
      * from the EWS.
      */
-    abstract protected function getGetUri();
+    abstract protected function getUri();
 
     /**
      * Create a new object on the EWS and set the local variables
@@ -85,7 +85,32 @@ abstract class EWSObject
      */
     public function create()
     {
-        $response = $this->client->requestJson('POST', $this->getPostUri(), ['json' => $this->asArray()]);
+        $response = $this->client->requestJson('POST', $this->getCreateUri(), ['json' => $this->asArray()]);
+        $this->populate($response);
+        return $this;
+    }
+
+    /**
+     * Append data to an existing object (effectively uses patch)
+     *
+     * @param mixed $data
+     * @return EWSObject
+     */
+    public function append($data)
+    {
+        $response = $this->client->requestJson('PATCH', $this->getUri(), ['json' => $data]);
+        $this->populate($response);
+        return $this;
+    }
+
+    /**
+     * Update an existing object
+     *
+     * @return EWSObject
+     */
+    public function update()
+    {
+        $response = $this->client->requestJson('PUT', $this->getUri(), ['json' => $this->asArray()]);
         $this->populate($response);
         return $this;
     }
@@ -94,7 +119,7 @@ abstract class EWSObject
      * Simple function to return the URI that should be used to POST/UPDATE this object
      * from the EWS.
      */
-    abstract protected function getPostUri();
+    abstract protected function getCreateUri();
 
     /**
      * Create an array that can be used to send to the EWS or simply to send to Drupal
