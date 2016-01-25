@@ -97,7 +97,7 @@ class EWSClient
 
         // Check for errors.
         if (!$body || (isset($body['error']) && isset($body['errorDescription']))) {
-            throw new EWSClientError($body['errorDescription'], 0, null, $body['data']);
+            throw new EWSClientError($body['errorDescription'], 0, null, ($body ? $body['data'] : []));
         }
 
         return json_decode($body, true);
