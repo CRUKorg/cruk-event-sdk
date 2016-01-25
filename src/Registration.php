@@ -209,6 +209,9 @@ class Registration extends EWSObject
 
     /**
      * Simple function to create a donation associated with this Registration
+     *
+     * @param array $data
+     * @return Donation
      */
     public function createDonation($data)
     {
@@ -227,6 +230,8 @@ class Registration extends EWSObject
     /**
      * Simple function to return the structure of the class. This defines how the
      * object should be built and delivered as an array.
+     *
+     * @return array
      */
     protected function getArrayStructure()
     {
