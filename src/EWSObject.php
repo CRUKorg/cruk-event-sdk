@@ -39,8 +39,6 @@ abstract class EWSObject
     /**
      * Populate an EWSClient Object with data sent through to us.
      *
-     * TODO: As with the toArray() function below, this should be converted.
-     *
      * @param mixed $data
      * @return EWSObject
      */
@@ -48,13 +46,7 @@ abstract class EWSObject
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $key2 => $value2) {
-                        $value = $this->setValueFromKey($key2, $value2);
-                    }
-                } else {
-                    $value = $this->setValueFromKey($key, $value);
-                }
+                $value = $this->setValueFromKey($key, $value);
             }
         } elseif ($data) {
             $key = $this->getIdKey();
