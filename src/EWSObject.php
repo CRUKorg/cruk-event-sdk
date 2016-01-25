@@ -46,7 +46,11 @@ abstract class EWSObject
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $value = $this->setValueFromKey($key, $value);
+                if(!$this->setValueFromKey($key, $value) && is_array($value)){
+                    foreach($value as $key2 => $value2){
+                        $this->setValueFromKey($key2, $value2);
+                    }
+                }
             }
         } elseif ($data) {
             $key = $this->getIdKey();
@@ -177,7 +181,7 @@ abstract class EWSObject
         if (method_exists($this, $setter)) {
             return $this->$setter($value);
         }
-        return $this;
+        return FALSE;
     }
 
     /**
