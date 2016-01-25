@@ -142,6 +142,8 @@ class Donation extends EWSObject
     /**
      * Simple function to return the idKey of a class. This allows us to use
      * a common populate function across all objects/classes.
+     *
+     * @return string
      */
     protected function getIdKey()
     {
@@ -151,6 +153,8 @@ class Donation extends EWSObject
     /**
      * Simple function to return the URI that should be used to GET this object
      * from the EWS.
+     *
+     * @return string
      */
     protected function getUri()
     {
@@ -160,6 +164,8 @@ class Donation extends EWSObject
     /**
      * Simple function to return the URI that should be used to POST/UPDATE this object
      * from the EWS.
+     *
+     * @return string
      */
     protected function getCreateUri()
     {
@@ -169,6 +175,8 @@ class Donation extends EWSObject
     /**
      * Simple function to return the structure of the class. This defines how the
      * object should be built and delivered as an array.
+     *
+     * @return array
      */
     protected function getArrayStructure()
     {

@@ -2,7 +2,7 @@
 
 namespace Cruk\EventSdk;
 
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client;
 
 /**
  * @file
@@ -12,7 +12,11 @@ use GuzzleHttp\ClientInterface;
 class EWSClient
 {
 
-    /** @var ClientInterface */
+    /**
+     * GuzzleHttp\Client
+     *
+     * @var Client
+     */
     protected $http;
     /**
      * OAuth access token
@@ -28,7 +32,7 @@ class EWSClient
     /**
      * Create the EWS client.
      */
-    public function __construct(ClientInterface $http, $clientIdOrAccessToken, $clientSecret = false)
+    public function __construct(Client $http, $clientIdOrAccessToken, $clientSecret = false)
     {
         $this->http = $http;
         // Set the accessToken depending on whether we've been sent it, or
@@ -51,7 +55,7 @@ class EWSClient
      * @return array
      *   Response body containing the access token
      */
-    public static function requestAccessToken(ClientInterface $http, $clientId, $clientSecret)
+    public static function requestAccessToken(Client $http, $clientId, $clientSecret)
     {
         $query = [
             'client_id' => $clientId,
