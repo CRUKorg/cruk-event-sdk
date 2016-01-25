@@ -62,10 +62,10 @@ class Registration extends EWSObject
     /**
      * Registration constructor.
      * @param EWSClient $client
-     * @param Event $event
      * @param mixed $data
+     * @param Event $event
      */
-    public function __construct(EWSClient $client, Event $event, $data)
+    public function __construct(EWSClient $client, $data, Event $event)
     {
         $this->event = $event;
         parent::__construct($client, $data);

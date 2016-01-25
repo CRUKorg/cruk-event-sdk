@@ -178,11 +178,11 @@ class Participant extends EWSObject
     /**
      * Participant constructor.
      * @param EWSClient $client
+     * @param $data
      * @param Event $event
      * @param Registration $registration
-     * @param $data
      */
-    public function __construct(EWSClient $client, Event $event, Registration $registration, $data)
+    public function __construct(EWSClient $client, $data, Event $event, Registration $registration)
     {
         $this->event = $event;
         $this->registration = $registration;
