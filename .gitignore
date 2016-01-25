@@ -1,3 +1,9 @@
+# PHPStorm
+.idea
+
+# behat output
 /coverage/
+
+# Composer
 /vendor/
 composer.lock
