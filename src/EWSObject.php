@@ -39,6 +39,8 @@ abstract class EWSObject
     /**
      * Populate an EWSClient Object with data sent through to us.
      *
+     * TODO: As with the toArray() function below, this should be converted.
+     *
      * @param mixed $data
      * @return EWSObject
      */
@@ -46,9 +48,12 @@ abstract class EWSObject
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $setter = 'set' . ucfirst($key);
-                if (method_exists($this, $setter)) {
-                    $this->$setter($value);
+                if (is_array($value)) {
+                    foreach ($value as $key2 => $value2) {
+                        $value = $this->setValueFromKey($key2, $value2);
+                    }
+                } else {
+                    $value = $this->setValueFromKey($key, $value);
                 }
             }
         } elseif ($data) {
@@ -165,6 +170,22 @@ abstract class EWSObject
             return $this->$getter();
         }
         return null;
+    }
+
+    /**
+     * Simple helper function to set a value from a key and value
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return EWSObject
+     */
+    public function setValueFromKey($key, $value)
+    {
+        $setter = 'set' . ucfirst($key);
+        if (method_exists($this, $setter)) {
+            return $this->$setter($value);
+        }
+        return $this;
     }
 
     /**
