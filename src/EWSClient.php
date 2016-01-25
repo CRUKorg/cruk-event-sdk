@@ -74,6 +74,8 @@ class EWSClient
      * Create and send an HTTP request and return the decoded JSON response
      * body
      *
+     * @throws EWSClientError
+     *
      * @param string $method
      *   HTTP method e.g. GET, POST, DELETE
      * @param string $uri
@@ -92,6 +94,11 @@ class EWSClient
 
         $response = $this->http->request($method, $uri, $options);
         $body = (string)$response->getBody();
+
+        // Check for errors.
+        if (!$body || (isset($body['error']) && isset($body['errorDescription']))) {
+            throw new EWSClientError($body['errorDescription'], 0, null, $body['data']);
+        }
 
         return json_decode($body, true);
     }

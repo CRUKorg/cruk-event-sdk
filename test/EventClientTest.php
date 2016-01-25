@@ -3,7 +3,7 @@
 namespace Cruk\EventSdk\Test;
 
 use Cruk\EventSdk\EventClient;
-use Cruk\EventSdk\EventClientError;
+use Cruk\EventSdk\EWSClientError;
 use GuzzleHttp\Psr7\Response;
 
 class EventClientTest extends TestCase
@@ -77,7 +77,7 @@ class EventClientTest extends TestCase
 
     public function testGetEventAvailabiltiyFailure()
     {
-        $this->setExpectedException(EventClientError::class);
+        $this->setExpectedException(EWSClientError::class);
 
         // Create a new EventClient just for this test which returns a failure.
 
