@@ -99,36 +99,6 @@ abstract class EWSObject
     }
 
     /**
-     * Patch data to an existing object (effectively uses patch)
-     *
-     * @param mixed $data
-     * @return EWSObject
-     */
-    public function patch($data = false)
-    {
-        if (!$data) {
-            // We haven't been sent any data, so we attempt to build it based on the values of $fieldsToPatch
-            $data = $this->_asArray($this->fieldsToPatch);
-        }
-        $this->fieldsToPatch = [];
-        $response = $this->client->requestJson('PATCH', $this->getUri(), ['json' => $data]);
-        $this->populate($response);
-        return $this;
-    }
-
-    /**
-     * Update an existing object
-     *
-     * @return EWSObject
-     */
-    public function update()
-    {
-        $response = $this->client->requestJson('PUT', $this->getUri(), ['json' => $this->asArray()]);
-        $this->populate($response);
-        return $this;
-    }
-
-    /**
      * Simple function to return the URI that should be used to POST/UPDATE this object
      * from the EWS.
      */
@@ -189,6 +159,36 @@ abstract class EWSObject
      * object should be built and delivered as an array.
      */
     abstract protected function getArrayStructure();
+
+    /**
+     * Patch data to an existing object (effectively uses patch)
+     *
+     * @param mixed $data
+     * @return EWSObject
+     */
+    public function patch($data = false)
+    {
+        if (!$data) {
+            // We haven't been sent any data, so we attempt to build it based on the values of $fieldsToPatch
+            $data = $this->_asArray($this->fieldsToPatch);
+        }
+        $this->fieldsToPatch = [];
+        $response = $this->client->requestJson('PATCH', $this->getUri(), ['json' => $data]);
+        $this->populate($response);
+        return $this;
+    }
+
+    /**
+     * Update an existing object
+     *
+     * @return EWSObject
+     */
+    public function update()
+    {
+        $response = $this->client->requestJson('PUT', $this->getUri(), ['json' => $this->asArray()]);
+        $this->populate($response);
+        return $this;
+    }
 
     /**
      * @return EWSClient
