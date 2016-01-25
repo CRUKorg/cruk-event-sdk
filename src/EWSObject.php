@@ -42,7 +42,7 @@ abstract class EWSObject
      * @param mixed $data
      * @return void
      */
-    public function populate($data)
+    protected function populate($data)
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
