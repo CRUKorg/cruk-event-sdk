@@ -5,10 +5,6 @@ namespace Cruk\EventSdk;
 class Registration extends EWSObject
 {
     /**
-     * idKey
-     */
-    private static $idKey = 'registrationId';
-    /**
      * registrationId
      *
      * @var integer
@@ -80,7 +76,7 @@ class Registration extends EWSObject
      */
     public function createParticipant($data)
     {
-        $participant = new Participant($this->client, $this->event, $this, $data);
+        $participant = new Participant($this->client, $data, $this->event, $this);
         $this->participants[] = $participant;
         $participant->create();
         return $participant;
@@ -176,7 +172,7 @@ class Registration extends EWSObject
     }
 
     /**
-     * @return status
+     * @return string
      */
     public function getStatus()
     {
@@ -184,7 +180,7 @@ class Registration extends EWSObject
     }
 
     /**
-     * @param status $status
+     * @param string $status
      */
     public function setStatus($status)
     {
@@ -192,7 +188,7 @@ class Registration extends EWSObject
     }
 
     /**
-     * @return donationId
+     * @return string
      */
     public function getDonationId()
     {
@@ -200,7 +196,7 @@ class Registration extends EWSObject
     }
 
     /**
-     * @param donationId $donationId
+     * @param string $donationId
      */
     public function setDonationId($donationId)
     {
@@ -215,17 +211,11 @@ class Registration extends EWSObject
      */
     public function createDonation($data)
     {
-        $donation = new Donation($this->client, $this->event, $this, $data);
+        $donation = new Donation($this->client, $data, $this->event, $this);
         $donation->create();
         $this->setDonationId($donation->getId());
         return $donation;
     }
-
-    /**
-     * Create a donation
-     *
-     *
-     */
 
     /**
      * Simple function to return the structure of the class. This defines how the
@@ -253,17 +243,31 @@ class Registration extends EWSObject
     /**
      * Simple function to return the idKey of a class. This allows us to use
      * a common populate function across all objects/classes.
+     *
+     * @return string
      */
     protected function getIdKey()
     {
-        return self::$idKey;
+        return 'registrationId';
     }
 
+    /**
+     * Simple function to return the URI that should be used to GET this object
+     * from the EWS.
+     *
+     * @return string
+     */
     protected function getUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registrationId}.json";
     }
 
+    /**
+     * Simple function to return the URI that should be used to POST/UPDATE this object
+     * from the EWS.
+     *
+     * @return string
+     */
     protected function getCreateUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations.json";

@@ -4,11 +4,13 @@ namespace Cruk\EventSdk;
 
 class Event extends EWSObject
 {
-
     /**
-     * idKey
+     * Event code
+     *
+     * @var string
      */
-    private static $idKey = 'eventCode';
+    private $eventCode;
+
     /**
      * Event name
      *
@@ -60,7 +62,7 @@ class Event extends EWSObject
     /**
      * gender
      *
-     * @var gender
+     * @var string
      */
     private $gender;
     /**
@@ -114,7 +116,7 @@ class Event extends EWSObject
     public function getAvailability()
     {
         $uri = $this->client->getPath() . "/events/{$this->eventCode}/availability.json";
-        return $this->requestJson('GET', $uri);
+        return $this->client->requestJson('GET', $uri);
     }
 
     /**
@@ -127,7 +129,7 @@ class Event extends EWSObject
      */
     public function createRegistration($numTickets = 1)
     {
-        $registration = new Registration($this->client, $this, ['tickets' => $numTickets]);
+        $registration = new Registration($this->client, ['tickets' => $numTickets], $this);
         $this->registrations[] = $registration;
         $registration->create();
         return $registration;
@@ -347,7 +349,7 @@ class Event extends EWSObject
      */
     protected function getIdKey()
     {
-        return self::$idKey;
+        return 'eventCode';
     }
 
     /**

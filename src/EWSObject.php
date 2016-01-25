@@ -40,7 +40,7 @@ abstract class EWSObject
      * Populate an EWSClient Object with data sent through to us.
      *
      * @param mixed $data
-     * @return void
+     * @return EWSObject
      */
     protected function populate($data)
     {
@@ -65,6 +65,8 @@ abstract class EWSObject
     /**
      * Simple function to return the idKey of a class. This allows us to use
      * a common populate function across all objects/classes.
+     *
+     * @return string
      */
     abstract protected function getIdKey();
 
@@ -83,6 +85,8 @@ abstract class EWSObject
     /**
      * Simple function to return the URI that should be used to GET this object
      * from the EWS.
+     *
+     * @return string
      */
     abstract protected function getUri();
 
@@ -101,6 +105,8 @@ abstract class EWSObject
     /**
      * Simple function to return the URI that should be used to POST/UPDATE this object
      * from the EWS.
+     *
+     * @return string
      */
     abstract protected function getCreateUri();
 
@@ -115,9 +121,16 @@ abstract class EWSObject
      */
     public function asArray()
     {
-        $this->_asArray($this->getArrayStructure());
+        return $this->_asArray($this->getArrayStructure());
     }
 
+    /**
+     * Helper function to return an array of this object. This allows us to
+     * filter the array for patch calls.
+     *
+     * @param $structure
+     * @return array;
+     */
     private function _asArray($structure)
     {
         $returnArray = [];
@@ -136,7 +149,7 @@ abstract class EWSObject
                 }
             }
         }
-
+        return $returnArray;
     }
 
     /**
@@ -157,6 +170,8 @@ abstract class EWSObject
     /**
      * Simple function to return the structure of the class. This defines how the
      * object should be built and delivered as an array.
+     *
+     * @return array
      */
     abstract protected function getArrayStructure();
 
