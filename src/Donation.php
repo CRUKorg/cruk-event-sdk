@@ -37,7 +37,7 @@ class Donation extends EWSObject
      *
      * @var string
      */
-    private $dataRecevied;
+    private $dateReceived;
 
     /**
      * donationType
@@ -267,17 +267,17 @@ class Donation extends EWSObject
     /**
      * @return string
      */
-    public function getDataRecevied()
+    public function getdateReceived()
     {
-        return $this->dataRecevied;
+        return $this->dateReceived;
     }
 
     /**
-     * @param string $dataRecevied
+     * @param string $dateReceived
      */
-    public function setDataRecevied($dataRecevied)
+    public function setdateReceived($dateReceived)
     {
-        $this->dataRecevied = $dataRecevied;
+        $this->dateReceived = $dateReceived;
     }
 
     /**
