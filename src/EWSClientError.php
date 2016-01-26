@@ -2,7 +2,7 @@
 
 namespace Cruk\EventSdk;
 
-class EventClientError extends \Exception
+class EWSClientError extends \Exception
 {
     /**
      * @var array $data

@@ -3,7 +3,7 @@
 namespace Cruk\EventSdk\Test;
 
 use Cruk\EventSdk\EventClient;
-use Cruk\EventSdk\EventClientError;
+use Cruk\EventSdk\EWSClientError;
 use GuzzleHttp\Psr7\Response;
 
 class EventClientTest extends TestCase
@@ -43,62 +43,20 @@ class EventClientTest extends TestCase
         $this->assertRequestQueryParameterSame('client_secret', 'my_client_secret', $request);
     }
 
-    public function testGetEvents()
+    public function testGetEvent()
     {
         // Execute the API call
-        $this->ews->getEvents();
+        $this->ews->getEvent('N15RLM');
 
         // Get the request from the history
         $request = $this->history[0]['request'];
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
-    }
-
-    public function testGetEventsV2()
-    {
-        // Create a client that uses V2 of the EWS API
-        $this->ews = new EventClient($this->getHttpClient($this->history), EventClient::EWS_VERSION_2);
-        $this->ews->setAccessToken(self::ACCESS_TOKEN);
-
-        // Execute the API call
-        $this->ews->getEvents();
-
-        // Get the request from the history
-        $request = $this->history[0]['request'];
-
-        // Assert that the request is made to the correct endpoint
-        $this->assertRequestUriPathSame('api/v2/events.json', $request);
-    }
-
-    public function testGetEventsOptions()
-    {
-        // Execute the API call
-        $this->ews->getEvents([
-            'orderBy' => 'eventCode',
-            'orderDir' => 'ASC',
-            'limit' => 30,
-            'page' => 1,
-            'fields' => 'eventCode,eventName,eventDateTime',
-            'dateRangeStart' => '2015-10-29 12:34:30',
-            'dateRangeEnd' => '2015-10-29 12:34:30',
-        ]);
-
-        // Get the request from the history
-        $request = $this->history[0]['request'];
-
-        // Assert that the query parameters are correct
-        $this->assertRequestQueryParameterSame('orderBy', 'eventCode', $request);
-        $this->assertRequestQueryParameterSame('orderDir', 'ASC', $request);
-        $this->assertRequestQueryParameterSame('limit', '30', $request);
-        $this->assertRequestQueryParameterSame('page', '1', $request);
-        $this->assertRequestQueryParameterSame('fields', 'eventCode,eventName,eventDateTime', $request);
-        $this->assertRequestQueryParameterSame('dateRangeStart', '2015-10-29 12:34:30', $request);
-        $this->assertRequestQueryParameterSame('dateRangeEnd', '2015-10-29 12:34:30', $request);
     }
 
     public function testGetEventAvailability()
@@ -111,7 +69,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/availability.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/availability.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -119,7 +77,7 @@ class EventClientTest extends TestCase
 
     public function testGetEventAvailabiltiyFailure()
     {
-        $this->setExpectedException(EventClientError::class);
+        $this->setExpectedException(EWSClientError::class);
 
         // Create a new EventClient just for this test which returns a failure.
 
@@ -146,7 +104,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -162,7 +120,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('POST', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations.json', $request);
 
         // Assert that the body contains a number of tickets to reserve
         $this->assertRequestBodyParameterSame('tickets', 1, $request);
@@ -193,7 +151,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('PATCH', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/status.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/status.json', $request);
 
         // Assert the body contains the new participant status
         $this->assertRequestBodyParameterSame('status', 'everything-is-ok', $request);
@@ -212,7 +170,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants/a1b2c3d4.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participants/a1b2c3d4.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -230,7 +188,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('POST', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participants.json', $request);
 
         // Assert the body contains the participant details
         $this->assertRequestBodyParameterSame('participant_key', 'participant_value', $request);
@@ -251,7 +209,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('PATCH', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/participants/abc.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participants/abc.json', $request);
 
         // Assert the body contains the participant details
         $this->assertRequestBodyParameterSame('participant_key', 'participant_value', $request);
@@ -270,7 +228,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/donations/456.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/donations/456.json', $request);
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
@@ -288,7 +246,7 @@ class EventClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('POST', $request);
-        $this->assertRequestUriPathSame('api/v1/events/N15RLM/registrations/123/donations.json', $request);
+        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/donations.json', $request);
 
         // Assert the body contains the donation details
         $this->assertRequestBodyParameterSame('donation_key', 'donation_value', $request);

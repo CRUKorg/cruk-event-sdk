@@ -2,14 +2,14 @@
 
 namespace Cruk\EventSdk\Test;
 
-use Cruk\EventSdk\EventClientError;
+use Cruk\EventSdk\EWSClientError;
 
-class EventClientErrorTest extends TestCase
+class EWSClientErrorTest extends TestCase
 {
     public function testDataCanBeRetrieved()
     {
         $data = ['foo' => 'bar'];
-        $error = new EventClientError('', 0, null, $data);
+        $error = new EWSClientError('', 0, null, $data);
 
         $this->assertSame($data, $error->getData());
     }
