@@ -95,7 +95,20 @@ class Registration extends EWSObject
      */
     public function updateStatus($statusCode)
     {
-        $this->patch(['status' => $statusCode]);
+        $data = [
+            'status' => $statusCode,
+        ];
+        $response = $this->client->requestJson('PATCH', str_replace('.json', '/status.json', $this->getUri()), ['json' => $data]);
+        $this->populate($response);
+        return $this;
+    }
+
+    /**
+     * Override the patch function and throw an error.
+     */
+    public function patch($data = false)
+    {
+        throw new EWSClientError('Unable to PATCH Registration objects.');
     }
 
     /**
