@@ -37,9 +37,15 @@ class Registration extends EWSObject
     /**
      * donation
      *
-     * @var string
+     * @var Donation
      */
     private $donation;
+    /**
+     * donationId
+     *
+     * @var string
+     */
+    private $donationId;
 
     /**
      * tickets
@@ -205,15 +211,15 @@ class Registration extends EWSObject
      */
     public function getDonationId()
     {
-        return $this->donation;
+        return $this->donationId;
     }
 
     /**
      * @param string $donation
      */
-    public function setDonationId($donation)
+    public function setDonationId($donationId)
     {
-        $this->donationId = $donation;
+        $this->donationId = $donationId;
     }
 
     /**
@@ -229,6 +235,7 @@ class Registration extends EWSObject
      */
     public function setDonation($donation)
     {
+        $this->setDonationId($donation->getId());
         $this->donation = $donation;
     }
 
@@ -242,7 +249,7 @@ class Registration extends EWSObject
     {
         $donation = new Donation($this->client, $data, $this->event, $this);
         $donation->create();
-        $this->setDonation($donation->getId());
+        $this->setDonation($donation);
         return $donation;
     }
 

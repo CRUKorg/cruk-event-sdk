@@ -3,6 +3,7 @@
 namespace Cruk\EventSdk;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * @file
@@ -89,16 +90,20 @@ class EWSClient
      */
     public function requestJson($method, $uri, array $options = [])
     {
-        // Add the OAuth access token to the request headers
-        $options = array_merge($options, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-        ]);
+        try {
+            // Add the OAuth access token to the request headers
+            $options = array_merge($options, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                ]
+            ]);
 
-        $response = $this->http->request($method, $uri, $options);
+            $response = $this->http->request($method, $uri, $options);
 
-        $body = (string)$response->getBody();
+            $body = (string)$response->getBody();
+        } catch(ClientException $e){
+            throw new EWSClientError($e->getCode() . ' error', 0, null, []);
+        }
 
         // Throw an error if we didn't get a 200 code
         if ($response->getStatusCode() != 200) {
