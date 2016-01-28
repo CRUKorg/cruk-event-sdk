@@ -31,7 +31,7 @@ class EWSClientTest extends TestCase
     private $responses;
 
     /**
-     * @var GuzzleHttp\Client
+     * @var Client
      */
     private $httpClient;
 
