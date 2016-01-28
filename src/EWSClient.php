@@ -97,10 +97,15 @@ class EWSClient
         ]);
 
         $response = $this->http->request($method, $uri, $options);
+
         $body = (string)$response->getBody();
 
+        // Throw an error if we didn't get a 200 code
+        if ($response->getStatusCode() != 200) {
+            throw new EWSClientError($response->getStatusCode() . ' error', 0, null, []);
+        }
         // Check for errors.
-        if (!$body || ($body = json_decode($body, true)) === FALSE || (isset($body['error']) && isset($body['errorDescription']))) {
+        if (($body = json_decode($body, true)) === FALSE || (isset($body['error']) && isset($body['errorDescription']))) {
             throw new EWSClientError($body['errorDescription'], 0, null, (isset($body['data']) ? $body['data'] : []));
         }
 
