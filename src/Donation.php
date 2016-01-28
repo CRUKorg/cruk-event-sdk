@@ -135,7 +135,6 @@ class Donation extends EWSObject
         $this->event = $event;
         $this->registration = $registration;
         parent::__construct($client, $data);
-        return $this;
     }
 
 
@@ -267,7 +266,7 @@ class Donation extends EWSObject
     /**
      * @return string
      */
-    public function getdateReceived()
+    public function getDateReceived()
     {
         return $this->dateReceived;
     }
@@ -275,7 +274,7 @@ class Donation extends EWSObject
     /**
      * @param string $dateReceived
      */
-    public function setdateReceived($dateReceived)
+    public function setDateReceived($dateReceived)
     {
         $this->dateReceived = $dateReceived;
     }
