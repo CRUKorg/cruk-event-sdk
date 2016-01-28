@@ -9,6 +9,7 @@ use Cruk\EventSdk\EWSClientError;
 use Cruk\EventSdk\Registration;
 use Cruk\EventSdk\Participant;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Client;
 
 class EWSClientTest extends TestCase
 {
@@ -22,22 +23,42 @@ class EWSClientTest extends TestCase
     /** @var array */
     private $history;
 
+    /**
+     * Responses from HTTP Client
+     *
+     * @var array
+     */
+    private $responses;
+
+    /**
+     * @var GuzzleHttp\Client
+     */
+    private $httpClient;
+
     public function setUp()
     {
+        $response_body = [
+            'registrationId' => 123,
+            'access_token' => 'here-be-my-token',
+        ];
+        $this->responses = [
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body))
+        ];
+        // History that's going to be populated by the HTTP Client.
         $this->history = [];
-
-        $this->ews = new EWSClient($this->getHttpClient($this->history), self::ACCESS_TOKEN);
+        // Create httpClient
+        $this->httpClient = $this->getHttpClient($this->history, $this->responses);
+        // Create the client with responses.
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
     }
 
     public function testRequestAccessToken()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([
-            'access_token' => 'here-be-my-token',
-        ]);
-        $responses = [new Response(200, [], $body)];
         // Execute the API call
-        EWSClient::requestAccessToken($this->getHttpClient($this->history, $responses), 'my_client_id', 'my_client_secret');
+        EWSClient::requestAccessToken($this->httpClient, 'my_client_id', 'my_client_secret');
 
         // Get the request from the history
         $request = $this->history[0]['request'];
@@ -69,11 +90,6 @@ class EWSClientTest extends TestCase
 
     public function testGetEventAvailability()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -95,7 +111,6 @@ class EWSClientTest extends TestCase
         $this->setExpectedException(EWSClientError::class);
 
         // Create a new EWSClient just for this test which returns a failure.
-
         $body = json_encode([
             'error' => 'error',
             'errorDescription' => 'errorDescription',
@@ -111,11 +126,6 @@ class EWSClientTest extends TestCase
 
     public function testGetEventRegistration()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -134,11 +144,6 @@ class EWSClientTest extends TestCase
 
     public function testCreateEventRegistration()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -175,12 +180,6 @@ class EWSClientTest extends TestCase
 
     public function testUpdateEventRegistrationStatus()
     {
-
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode(['registrationId' => 123]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -204,11 +203,6 @@ class EWSClientTest extends TestCase
 
     public function testGetEventRegistrationParticipant()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -229,11 +223,6 @@ class EWSClientTest extends TestCase
 
     public function testCreateEventRegistrationParticipant()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -260,11 +249,6 @@ class EWSClientTest extends TestCase
 
     public function testUpdateEventRegistrationParticipant()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode(['registrationId' => 123]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -292,11 +276,6 @@ class EWSClientTest extends TestCase
 
     public function testGetEventRegistrationDonation()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
@@ -318,11 +297,6 @@ class EWSClientTest extends TestCase
 
     public function testCreateEventRegistrationDonation()
     {
-        // Create a new EWSClient just for this test which returns a failure.
-        $body = json_encode([]);
-        $responses = [new Response(200, [], $body), new Response(200, [], $body), new Response(200, [], $body)];
-        // Create the client with responses.
-        $this->ews = new EWSClient($this->getHttpClient($this->history, $responses), self::ACCESS_TOKEN);
         // Create the Event. (Response 0)
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
