@@ -187,7 +187,6 @@ class Participant extends EWSObject
         $this->event = $event;
         $this->registration = $registration;
         parent::__construct($client, $data);
-        return $this;
     }
 
     /**
