@@ -163,7 +163,11 @@ abstract class EWSObject
     {
         $getter = 'get' . ucfirst($key);
         if (method_exists($this, $getter)) {
-            return $this->$getter();
+            $value = $this->$getter();
+            if (is_object($value)) {
+                $value = $value->asArray();
+            }
+            return $value;
         }
         return null;
     }
