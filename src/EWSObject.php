@@ -177,9 +177,11 @@ abstract class EWSObject
      */
     public function setValueFromKey($key, $value)
     {
-        $setter = 'set' . ucfirst($key);
-        if (method_exists($this, $setter)) {
-            return $this->$setter($value);
+        if (!is_null($value)) {
+            $setter = 'set' . ucfirst($key);
+            if (method_exists($this, $setter)) {
+                return $this->$setter($value);
+            }
         }
         return FALSE;
     }
