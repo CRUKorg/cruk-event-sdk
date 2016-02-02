@@ -223,7 +223,22 @@ abstract class EWSObject
      */
     public function update()
     {
-        $response = $this->client->requestJson('PUT', $this->getUri(), ['json' => $this->asArray()]);
+        $data = $this->asArray();
+        // EWS does not allow us to send the ID (it's in the URL), so we need to
+        // unset it.
+        $idKey = $this->getIdKey();
+        if (isset($data[$idKey])) {
+            unset($data[$idKey]);
+        }
+        else {
+            foreach ($data as $key => $value) {
+                if (is_array($value) && isset($data[$key][$idKey])) {
+                    unset($data[$key][$idKey]);
+                    break;
+                }
+            }
+        }
+        $response = $this->client->requestJson('PUT', $this->getUri(), ['json' => $data]);
         $this->populate($response);
         return $this;
     }
