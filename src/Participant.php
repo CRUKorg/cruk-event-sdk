@@ -70,10 +70,9 @@ class Participant extends EWSObject
     /**
      * address
      *
-     * TODO: Strip this out into a separate class, or at the very least tweak
      * this class to have accessors for each attribute of an address.
      *
-     * @var array
+     * @var Address
      */
     private $address;
 
@@ -366,7 +365,7 @@ class Participant extends EWSObject
     }
 
     /**
-     * @return array
+     * @return Address
      */
     public function getAddress()
     {
@@ -374,11 +373,16 @@ class Participant extends EWSObject
     }
 
     /**
-     * @param array $address
+     * @param mixed $address
      */
     public function setAddress($address)
     {
-        $this->address = $address;
+        if (is_array($address)) {
+            $this->address = new Address($this->client, $address, $this);
+        }
+        elseif (is_object($address)) {
+            $this->address = $address;
+        }
     }
 
     /**

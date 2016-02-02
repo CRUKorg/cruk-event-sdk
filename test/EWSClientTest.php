@@ -7,6 +7,7 @@ use Cruk\EventSdk\Event;
 use Cruk\EventSdk\EWSClient;
 use Cruk\EventSdk\EWSClientError;
 use Cruk\EventSdk\Registration;
+use Cruk\EventSdk\Address;
 use Cruk\EventSdk\Participant;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
@@ -483,7 +484,13 @@ class EWSClientTest extends TestCase
                 'dob' => '1969-01-01',
                 'primaryDataSourceCode' => 'yessir',
                 'address' => [
-                    'firstline' => 'First line'
+                    'validated' => true,
+                    'line1' => 'First line',
+                    'line2' => 'Second line',
+                    'line3' => 'Third line',
+                    'city' => 'London',
+                    'country' => 'GBR',
+                    'postalCode' => 'BD23 1UB',
                 ],
                 'emailAddress' => 'email@email.com',
                 'telephoneNumberLandline' => '02012345678',
@@ -517,6 +524,116 @@ class EWSClientTest extends TestCase
 
         // Check that a missing key returns null
         $this->assertEquals(null, $participant->getValueFromKey('trump'));
+    }
+
+    public function testCreateAddressFromArray()
+    {
+        // Create the Event. (Response 0)
+        $event = new Event($this->ews, 'N15RLM');
+        // Get availability. (Response 1)
+        $registration = new Registration($this->ews, 123, $event);
+        // Create the participant
+        $data = [
+            'primaryParticipant' => true,
+            'participant' => [
+                'siebelId' => 'siebelid',
+                'forename' => 'Wow',
+                'surname' => 'McPants',
+                'title' => 'Mrs',
+                'gender' => 'male',
+                'dob' => '1969-01-01',
+                'primaryDataSourceCode' => 'yessir',
+                'address' => [
+                    'validated' => true,
+                    'line1' => 'First line',
+                    'line2' => 'Second line',
+                    'line3' => 'Third line',
+                    'city' => 'London',
+                    'country' => 'GBR',
+                    'postalCode' => 'BD23 1UB',
+                ],
+                'emailAddress' => 'email@email.com',
+                'telephoneNumberLandline' => '02012345678',
+                'telephoneNumberMobile' => '07777777777',
+                'suppressions' => [
+                    'SUP'
+                ],
+            ],
+            'eventSpecific' => [
+                'tshirtSizeCode' => 'abcdef',
+                'fundraisingUrl' => 'http://www.justgiving.com/gimme-your-money',
+                'fundraisingTarget' => 10000,
+                'emergencyContactName' => 'Smarty McPants',
+                'emergencyContactNumber' => '07111111111111',
+                'runningNumber' => 1000,
+                'cancerType' => 'head cancer',
+                'motivation' => 'Head hurts',
+            ],
+        ];
+        $address = new Address($this->ews, $data['participant']['address']);
+        $participant_data = $data;
+        unset($participant_data['participant']['address']);
+        $participant = new Participant($this->ews, $participant_data, $event, $registration);
+        $participant->setAddress($address);
+        $this->assertEquals($data, $participant->asArray());
+    }
+
+    public function testMapInvalidCountryCode()
+    {
+        $this->setExpectedException(EWSClientError::class);
+        $address = new Address($this->ews, ['country' => 'ABCD']);
+    }
+
+    public function testMapInvalidCountryCodeCorrectLength()
+    {
+        $this->setExpectedException(EWSClientError::class);
+        $address = new Address($this->ews, ['country' => 'QQQ']);
+    }
+
+    public function testCountryCodeMapping()
+    {
+        // Create the Event. (Response 0)
+        $event = new Event($this->ews, 'N15RLM');
+        // Get availability. (Response 1)
+        $registration = new Registration($this->ews, 123, $event);
+        // Create the participant
+        $data = [
+            'primaryParticipant' => true,
+            'participant' => [
+                'siebelId' => 'siebelid',
+                'forename' => 'Wow',
+                'surname' => 'McPants',
+                'title' => 'Mrs',
+                'gender' => 'male',
+                'dob' => '1969-01-01',
+                'primaryDataSourceCode' => 'yessir',
+                'address' => [
+                    'line1' => 'First line',
+                    'line2' => 'Second line',
+                    'country' => 'GB',
+                ],
+                'emailAddress' => 'email@email.com',
+                'telephoneNumberLandline' => '02012345678',
+                'telephoneNumberMobile' => '07777777777',
+                'suppressions' => [
+                    'SUP'
+                ],
+            ],
+            'eventSpecific' => [
+                'tshirtSizeCode' => 'abcdef',
+                'fundraisingUrl' => 'http://www.justgiving.com/gimme-your-money',
+                'fundraisingTarget' => 10000,
+                'emergencyContactName' => 'Smarty McPants',
+                'emergencyContactNumber' => '07111111111111',
+                'runningNumber' => 1000,
+                'cancerType' => 'head cancer',
+                'motivation' => 'Head hurts',
+            ],
+        ];
+        $participant = new Participant($this->ews, $data, $event, $registration);
+        $this->assertEquals('GBR', $participant->getAddress()->getCountry());
+        $this->assertEquals('GB', $participant->getAddress()->getCountryISO2());
+        $this->assertEquals('United Kingdom', $participant->getAddress()->getCountryName());
     }
 
     public function testUpdateParticipant()
