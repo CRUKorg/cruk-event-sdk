@@ -288,6 +288,8 @@ class EWSClientTest extends TestCase
         $registration = $event->createRegistration(1);
         // Execute the API call
         $registration->updateStatus('everything-is-ok');
+        // Call update for code coverage and to ensure there are no adverse effects.
+        $registration->update();
 
         // Get the request from the history
         $request = $this->history[2]['request'];
@@ -658,7 +660,7 @@ class EWSClientTest extends TestCase
         // Get availability.
         $registration = new Registration($this->ews, [], $event);
         // Create the participant
-        $participant = new Participant($this->ews, [], $event, $registration);
+        $participant = new Participant($this->ews, ['uniqueId' => 'abc'], $event, $registration);
 
         $participant->setForename('Howard');
         $this->assertEquals('Howard', $participant->getForename());
