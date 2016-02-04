@@ -223,7 +223,7 @@ class Registration extends EWSObject
     }
 
     /**
-     * @return string
+     * @return Donation
      */
     public function getDonation()
     {
