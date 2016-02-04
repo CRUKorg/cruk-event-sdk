@@ -9,6 +9,7 @@ use Cruk\EventSdk\EWSClientError;
 use Cruk\EventSdk\Registration;
 use Cruk\EventSdk\Address;
 use Cruk\EventSdk\Participant;
+use Cruk\EventSdk\ParticipantStatus;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
 
@@ -677,5 +678,43 @@ class EWSClientTest extends TestCase
         // Get request from history
         $request = $this->history[1]['request'];
         $this->assertRequestMethodSame('PUT', $request);
+    }
+
+    public function testUpdateParticipantStatus()
+    {
+        // Update the participant status
+        $event = new Event($this->ews, []);
+        $registration = new Registration($this->ews, [], $event);
+        $participant = new Participant($this->ews, ['uniqueId' => 'abc'], $event, $registration);
+        $participantStatus = new ParticipantStatus($this->ews, [], $participant);
+
+        $participantStatus->setStatus('gerg please');
+        $status = $participantStatus->getStatus();
+        $this->assertSame('gerg please', $status);
+
+        $participantStatus->setParticipant($participant);
+        $newParticipant = $participantStatus->getParticipant();
+        $this->assertSame($participant, $newParticipant);
+
+        $participantStatus->patch();
+
+        // Get request from history
+        $request = $this->history[0]['request'];
+
+        $this->assertRequestMethodSame('PATCH', $request);
+    }
+
+    // There is no GET endpoint for participant status, so load() should do nothing.
+    public function testLoadParticipantStatusErrors()
+    {
+        try {
+            $event = new Event($this->ews, []);
+            $registration = new Registration($this->ews, [], $event);
+            $participant = new Participant($this->ews, ['uniqueId' => 'abc'], $event, $registration);
+            $participantStatus = new ParticipantStatus($this->ews, [], $participant);
+            $participantStatus->load();
+        } catch (\Exception $e) {
+            $this->fail();
+        }
     }
 }
