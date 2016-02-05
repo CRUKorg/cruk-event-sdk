@@ -678,4 +678,19 @@ class EWSClientTest extends TestCase
         $request = $this->history[1]['request'];
         $this->assertRequestMethodSame('PUT', $request);
     }
+
+    public function testPatchEventSpecificStatus()
+    {
+        $event = new Event($this->ews, ['eventCode' => 'N15FA2']);
+        $registration = new Registration($this->ews, ['registrationId' => 8008], $event);
+        $participant = new Participant($this->ews, ['uniqueId' => 'abc'], $event, $registration);
+
+        $participant->patchEventSpecificStatus('rejected');
+
+        $this->assertSame('rejected', $participant->getEventSpecificStatus());
+
+        // Get request from history
+        $request = $this->history[0]['request'];
+        $this->assertRequestBodyParameterSame('status', 'rejected', $request);
+    }
 }
