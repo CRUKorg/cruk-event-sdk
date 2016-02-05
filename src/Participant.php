@@ -161,6 +161,13 @@ class Participant extends EWSObject
     private $motivation;
 
     /**
+     * eventSpecificStatus
+     *
+     * @var string
+     */
+    private $eventSpecificStatus;
+
+    /**
      * event
      *
      * @var Event
@@ -576,6 +583,36 @@ class Participant extends EWSObject
     public function setMotivation($motivation)
     {
         $this->motivation = $motivation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEventSpecificStatus()
+    {
+        return $this->eventSpecificStatus;
+    }
+
+    /**
+     * @param mixed $eventSpecificStatus
+     */
+    public function setEventSpecificStatus($eventSpecificStatus)
+    {
+        $this->eventSpecificStatus = $eventSpecificStatus;
+    }
+
+    /**
+     * Call to set the status of a participant's registration for an event.
+     *
+     * @param string $eventSpecificStatus New status for this participant e.g. confirmed, application received
+     * @return void
+     */
+    public function patchEventSpecificStatus($eventSpecificStatus)
+    {
+        $uri = $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/participantInfos/{$this->uniqueId}/status.json";
+
+        $this->client->requestJson('PATCH', $uri, ['json' => ['status' => $eventSpecificStatus]]);
+        $this->setEventSpecificStatus($eventSpecificStatus);
     }
 
     /**
