@@ -227,6 +227,9 @@ class Registration extends EWSObject
      */
     public function getDonation()
     {
+        if (is_null($this->donation) && !is_null($this->donationId)) {
+            $this->donation = new Donation($this->client, $this->donationId, $this->event, $this);
+        }
         return $this->donation;
     }
 
