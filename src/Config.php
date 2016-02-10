@@ -30,18 +30,18 @@ class Config extends EWSObject
      * @param EWSClient $client
      * @param $data
      * @param Event $event
-     * @param Registration $registration
      */
     public function __construct(EWSClient $client, $data, Event $event)
     {
         $this->event = $event;
         parent::__construct($client, $data);
+        $this->event->addConfig($this);
     }
 
     /**
      * Simple function that allows us to get an array of configurations
      * @param Event $event
-     * return Config[]
+     * @return Config[]
      */
     public static function getConfigsForEvent($event)
     {
@@ -123,6 +123,18 @@ class Config extends EWSObject
     protected function getUri()
     {
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}/configs/{$this->configKey}.json";
+    }
+
+    /**
+     * Override the update function so that we call PATCH rather than PUT.
+     *
+     * @param string $method
+     *   Method used.
+     * @return EWSObject
+     */
+    public function update($method = 'PATCH')
+    {
+        parent::update($method);
     }
 
     /**
