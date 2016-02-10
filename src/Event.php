@@ -156,6 +156,14 @@ class Event extends EWSObject
     }
 
     /**
+     * @param Config $config
+     */
+    public function addConfig($config)
+    {
+        $this->configs[] = $config;
+    }
+
+    /**
      * Get the availability for this event. We do not store this locally, as it is a volatile value.
      *
      * @return array

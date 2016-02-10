@@ -219,9 +219,13 @@ abstract class EWSObject
     /**
      * Update an existing object
      *
-     * @return EWSObject
+     * @param string $method
+     *   HTTP method to use (either PUT or PATCH - patch should only be used with very specific objects)
+     * @return EWSObject $this
+     *   The object that has been updated
+     * @throws EWSClientError
      */
-    public function update()
+    public function update($method = 'PUT')
     {
         $data = $this->asArray();
         // EWS does not allow us to send the ID (it's in the URL), so we need to
@@ -238,7 +242,7 @@ abstract class EWSObject
                 }
             }
         }
-        $response = $this->client->requestJson('PUT', $this->getUri(), ['json' => $data]);
+        $response = $this->client->requestJson($method, $this->getUri(), ['json' => $data]);
         $this->populate($response);
         return $this;
     }
