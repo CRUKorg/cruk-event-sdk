@@ -49,7 +49,7 @@ class Config extends EWSObject
         $json = $event->client->requestJson('GET', $path);
         $configs = array();
         foreach ($json as $config) {
-            $config = new Configs($event->getClient(), $config, $event);
+            $config = new Config($event->getClient(), $config, $event);
             $configs[$config->getConfigKey()] = $config;
         }
         return $configs;
