@@ -2,15 +2,16 @@
 
 namespace Cruk\EventSdk\Test;
 
+use Cruk\EventSdk\Address;
 use Cruk\EventSdk\Donation;
 use Cruk\EventSdk\Event;
+use Cruk\EventSdk\Config;
 use Cruk\EventSdk\EWSClient;
 use Cruk\EventSdk\EWSClientError;
-use Cruk\EventSdk\Registration;
-use Cruk\EventSdk\Address;
 use Cruk\EventSdk\Participant;
-use GuzzleHttp\Psr7\Response;
+use Cruk\EventSdk\Registration;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 
 class EWSClientTest extends TestCase
 {
@@ -357,7 +358,7 @@ class EWSClientTest extends TestCase
         $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participantInfos.json', $request);
 
         // Parse the request body into an array
-        $body = (string) $request->getBody();
+        $body = (string)$request->getBody();
         $body = json_decode($body, true);
 
         // Assert the body contains the participant details
@@ -397,9 +398,14 @@ class EWSClientTest extends TestCase
         $event = new Event($this->ews, 'N15RLM');
         // Get availability. (Response 1)
         $registration = new Registration($this->ews, 123, $event);
+        $registration->setDonationId(456);
+        $registration->getDonation();
         // Get the donation. (Response 2)
-        new Donation($this->ews, 456, $event, $registration);
+        $donation = new Donation($this->ews, 456, $event, $registration);
 
+        $this->assertSame($donation, $registration->getDonation());
+        $registration->setDonation($donation->getId());
+        $this->assertSame($donation, $registration->getDonation());
 
         // Get the request from the history
         $request = $this->history[2]['request'];
@@ -692,5 +698,48 @@ class EWSClientTest extends TestCase
         // Get request from history
         $request = $this->history[0]['request'];
         $this->assertRequestBodyParameterSame('status', 'rejected', $request);
+    }
+
+    public function testConfig()
+    {
+        $configArray = [
+            'configKey' => 123,
+            'configValue' => 'Shorts',
+        ];
+        $response_body = [$configArray];
+        $this->responses = [
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body))
+        ];
+        // History that's going to be populated by the HTTP Client.
+        $this->history = [];
+        // Create httpClient
+        $this->httpClient = $this->getHttpClient($this->history, $this->responses);
+        // Create the client with responses.
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
+        $event = new Event($this->ews, ['eventCode' => 'N15FA2']);
+        $event->getConfigs();
+        $configs = $event->getConfigs();
+        $config = array_pop($configs);
+        $this->assertSame($configArray, $config->asArray());
+        $config->setConfigValue('Trousers');
+        $configArray['configValue'] = 'Trousers';
+        $this->assertSame($configArray, $config->asArray());
+        $config->update();
+        $this->assertSame($event, $config->getEvent());
+        $config->setEvent($event);
+        $this->assertSame($event, $config->getEvent());
+        $new_config = new Config($this->ews, [
+            'configKey' => 124,
+            'configValue' => 'Skirt',
+        ], $event);
+        $new_config->create();
+        $event->createOrUpdateConfig(123, 'Kilt');
+        $event->createOrUpdateConfig(125, 'Shirt');
+        $this->assertSame(3, count($event->getConfigs()));
+        $event->setConfigs($configs);
     }
 }

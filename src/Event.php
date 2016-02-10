@@ -87,6 +87,13 @@ class Event extends EWSObject
     private $registrations;
 
     /**
+     * Array of Config objects
+     *
+     * @var Config[]
+     */
+    private $configs;
+
+    /**
      * Simple function to return the URI for loading the Event.
      *
      * @return string
@@ -105,6 +112,55 @@ class Event extends EWSObject
     {
         // Should possibly throw an error here, as this does not exist.
         return $this->client->getPath() . "/events.json";
+    }
+
+    /**
+     * Simple function to create a new Config associated with this Event.
+     */
+    public function createOrUpdateConfig($key, $value)
+    {
+        // Ensure we've loaded our Configs.
+        $this->getConfigs();
+        // Check we haven't already got this Config (if we do, we update it).
+        if (isset($this->configs[$key])) {
+            $this->configs[$key]->setConfigValue($value);
+            $this->configs[$key]->update();
+        } else {
+            $data = array(
+                'configKey' => $key,
+                'configValue' => $value,
+            );
+            $config = new Config($this->client, $data, $this);
+            $this->configs[$key] = $config;
+            $this->configs[$key]->create();
+        }
+    }
+
+    /**
+     * @return Config[]
+     */
+    public function getConfigs()
+    {
+        if (is_null($this->configs)) {
+            $this->configs = Config::getConfigsForEvent($this);
+        }
+        return $this->configs;
+    }
+
+    /**
+     * @param Config[] $configs
+     */
+    public function setConfigs($configs)
+    {
+        $this->configs = $configs;
+    }
+
+    /**
+     * @param Config $config
+     */
+    public function addConfig($config)
+    {
+        $this->configs[] = $config;
     }
 
     /**
