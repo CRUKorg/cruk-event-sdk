@@ -9,7 +9,8 @@
     ],
     "scripts": {
         "test": "phpunit",
-        "lint": "phpcs --standard=PSR2 src/ test/"
+        "lint": "phpcs --standard=PSR2 src/ test/",
+        "upload-coverage": "codacycoverage phpunit coverage --git-commit=$(git rev-parse HEAD)"
     },
     "require": {
         "guzzlehttp/guzzle": "^6.1"
