@@ -386,8 +386,7 @@ class Participant extends EWSObject
     {
         if (is_array($address)) {
             $this->address = new Address($this->client, $address, $this);
-        }
-        elseif (is_object($address)) {
+        } elseif (is_object($address)) {
             $this->address = $address;
         }
     }
@@ -609,7 +608,10 @@ class Participant extends EWSObject
      */
     public function patchEventSpecificStatus($eventSpecificStatus)
     {
-        $uri = $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/participantInfos/{$this->uniqueId}/status.json";
+        $uri = $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registration->getRegistrationId()}"
+            . "/participantInfos/{$this->uniqueId}"
+            . "/status.json";
 
         $this->client->requestJson('PATCH', $uri, ['json' => ['status' => $eventSpecificStatus]]);
         $this->setEventSpecificStatus($eventSpecificStatus);
@@ -630,7 +632,9 @@ class Participant extends EWSObject
      */
     protected function getUri()
     {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/participantInfos/{$this->uniqueId}.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registration->getRegistrationId()}"
+            . "/participantInfos/{$this->uniqueId}.json";
     }
 
     /**
@@ -639,7 +643,9 @@ class Participant extends EWSObject
      */
     protected function getCreateUri()
     {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/participantInfos.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registration->getRegistrationId()}"
+            . "/participantInfos.json";
     }
 
     /**
