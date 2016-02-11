@@ -78,7 +78,7 @@ abstract class EWSObject
                 return $this->$setter($value);
             }
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -140,7 +140,7 @@ abstract class EWSObject
      */
     public function asArray()
     {
-        return $this->_asArray($this->getArrayStructure());
+        return $this->asArrayWithStructure($this->getArrayStructure());
     }
 
     /**
@@ -150,7 +150,7 @@ abstract class EWSObject
      * @param $structure
      * @return array;
      */
-    private function _asArray($structure)
+    private function asArrayWithStructure($structure)
     {
         $returnArray = [];
         foreach ($structure as $array_key => $key) {
@@ -208,7 +208,7 @@ abstract class EWSObject
     {
         if (!$data) {
             // We haven't been sent any data, so we attempt to build it based on the values of $fieldsToPatch
-            $data = $this->_asArray($this->fieldsToPatch);
+            $data = $this->asArrayWithStructure($this->fieldsToPatch);
         }
         $this->fieldsToPatch = [];
         $response = $this->client->requestJson('PATCH', $this->getUri(), ['json' => $data]);
