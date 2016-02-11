@@ -240,10 +240,12 @@ class Registration extends EWSObject
     {
         if (is_numeric($donation)) {
             $this->setDonationId($donation);
-        } else {
-            $this->setDonationId($donation->getId());
-            $this->donation = $donation;
+
+            return;
         }
+
+        $this->setDonationId($donation->getId());
+        $this->donation = $donation;
     }
 
     /**
