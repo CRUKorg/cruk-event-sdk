@@ -362,9 +362,9 @@ class Event extends EWSObject
     /**
      * @param mixed $defaultSiebelRegistrationStatus
      */
-    public function setDefaultSiebelRegistrationStatus($defaultSiebelRegistrationStatus)
+    public function setDefaultSiebelRegistrationStatus($dsrs)
     {
-        $this->defaultSiebelRegistrationStatus = $defaultSiebelRegistrationStatus;
+        $this->defaultSiebelRegistrationStatus = $dsrs;
     }
 
     /**

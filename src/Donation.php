@@ -307,9 +307,9 @@ class Donation extends EWSObject
     /**
      * @param string $financialPaymentReference
      */
-    public function setFinancialPaymentReference($financialPaymentReference)
+    public function setFinancialPaymentReference($fpr)
     {
-        $this->financialPaymentReference = $financialPaymentReference;
+        $this->financialPaymentReference = $fpr;
     }
 
     /**
@@ -435,9 +435,9 @@ class Donation extends EWSObject
     /**
      * @param mixed $paymentProviderTransactionId
      */
-    public function setPaymentProviderTransactionId($paymentProviderTransactionId)
+    public function setPaymentProviderTransactionId($ppti)
     {
-        $this->paymentProviderTransactionId = $paymentProviderTransactionId;
+        $this->paymentProviderTransactionId = $ppti;
     }
 
 

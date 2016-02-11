@@ -419,9 +419,9 @@ class Participant extends EWSObject
     /**
      * @param string $telephoneNumberLandline
      */
-    public function setTelephoneNumberLandline($telephoneNumberLandline)
+    public function setTelephoneNumberLandline($tnl)
     {
-        $this->telephoneNumberLandline = $telephoneNumberLandline;
+        $this->telephoneNumberLandline = $tnl;
     }
 
     /**
@@ -435,9 +435,9 @@ class Participant extends EWSObject
     /**
      * @param string $telephoneNumberMobile
      */
-    public function setTelephoneNumberMobile($telephoneNumberMobile)
+    public function setTelephoneNumberMobile($tnm)
     {
-        $this->telephoneNumberMobile = $telephoneNumberMobile;
+        $this->telephoneNumberMobile = $tnm;
     }
 
     /**

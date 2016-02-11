@@ -151,7 +151,7 @@ class EWSClientTest extends TestCase
         // Create the client with responses.
         $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
         // Create the Event.
-        $event = new Event($this->ews, 'N15RLM');
+        new Event($this->ews, 'N15RLM');
     }
 
     public function test201()
@@ -589,13 +589,13 @@ class EWSClientTest extends TestCase
     public function testMapInvalidCountryCode()
     {
         $this->setExpectedException(EWSClientError::class);
-        $address = new Address($this->ews, ['country' => 'ABCD']);
+        new Address($this->ews, ['country' => 'ABCD']);
     }
 
     public function testMapInvalidCountryCodeCorrectLength()
     {
         $this->setExpectedException(EWSClientError::class);
-        $address = new Address($this->ews, ['country' => 'QQQ']);
+        new Address($this->ews, ['country' => 'QQQ']);
     }
 
     public function testCountryCodeMapping()

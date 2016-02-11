@@ -40,9 +40,9 @@ class EWSClient
         // if we need to retrieve it.
         if (!$clientSecret) {
             $this->accessToken = $clientIdOrAccessToken;
-        } else {
-            $this->accessToken = self::requestAccessToken($http, $clientIdOrAccessToken, $clientSecret);
+            return $this;
         }
+        $this->accessToken = self::requestAccessToken($http, $clientIdOrAccessToken, $clientSecret);
         return $this;
     }
 
