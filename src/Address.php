@@ -317,9 +317,8 @@ class Address extends EWSObject
         $code = strtoupper($code);
         if (strlen($code) === 2 && isset(self::$countries[$code])) {
             return self::$countries[$code];
-        }
-        elseif (strlen($code) === 3) {
-            foreach(self::$countries as $country) {
+        } elseif (strlen($code) === 3) {
+            foreach (self::$countries as $country) {
                 if ($code == $country['alpha3']) {
                     return $country;
                 }
@@ -538,4 +537,3 @@ class Address extends EWSObject
         ];
     }
 }
-

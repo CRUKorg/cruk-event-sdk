@@ -104,7 +104,7 @@ class Registration extends EWSObject
         $data = [
             'status' => $statusCode,
         ];
-        $response = $this->client->requestJson('PATCH', str_replace('.json', '/status.json', $this->getUri()), ['json' => $data]);
+        $response = $this->client->requestJson('PATCH', $this->getStatusUri(), ['json' => $data]);
         $this->populate($response);
         return $this;
     }
@@ -240,10 +240,12 @@ class Registration extends EWSObject
     {
         if (is_numeric($donation)) {
             $this->setDonationId($donation);
-        } else {
-            $this->setDonationId($donation->getId());
-            $this->donation = $donation;
+
+            return;
         }
+
+        $this->setDonationId($donation->getId());
+        $this->donation = $donation;
     }
 
     /**
@@ -302,7 +304,21 @@ class Registration extends EWSObject
      */
     protected function getUri()
     {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registrationId}.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registrationId}.json";
+    }
+
+    /**
+     * Simple function to return the URI that should be used to GET the status of this object
+     * from the EWS.
+     *
+     * @return string
+     */
+    protected function getStatusUri()
+    {
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registrationId}"
+            . "/status.json";
     }
 
     /**

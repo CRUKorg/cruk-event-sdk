@@ -162,7 +162,7 @@ class EWSClientTest extends TestCase
         // Create the client with responses.
         $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
         // Create the Event.
-        $event = new Event($this->ews, 'N15RLM');
+        new Event($this->ews, 'N15RLM');
     }
 
     public function testGetEvent()
@@ -321,7 +321,10 @@ class EWSClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('api/v2/events/N15RLM/registrations/123/participantInfos/a1b2c3d4.json', $request);
+        $this->assertRequestUriPathSame(
+            'api/v2/events/N15RLM/registrations/123/participantInfos/a1b2c3d4.json',
+            $request
+        );
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);

@@ -90,18 +90,17 @@ class EWSClient
      */
     public function requestJson($method, $uri, array $options = [])
     {
+        // Add the OAuth access token to the request headers
+        $options = array_merge($options, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ]
+        ]);
+
         try {
-            // Add the OAuth access token to the request headers
-            $options = array_merge($options, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
-                ]
-            ]);
-
             $response = $this->http->request($method, $uri, $options);
-
             $body = (string)$response->getBody();
-        } catch(ClientException $e){
+        } catch (ClientException $e) {
             throw new EWSClientError($e->getCode() . ' error', 0, null, []);
         }
 
@@ -109,9 +108,27 @@ class EWSClient
         if ($response->getStatusCode() != 200) {
             throw new EWSClientError($response->getStatusCode() . ' error', 0, null, []);
         }
-        // Check for errors.
-        if (($body = json_decode($body, true)) === FALSE || (isset($body['error']) && isset($body['errorDescription']))) {
-            throw new EWSClientError($body['errorDescription'], 0, null, (isset($body['data']) ? $body['data'] : []));
+
+        $body = json_decode($body, true);
+
+        if ($body === false) {
+            throw new EWSClientError('Failed to decode JSON response');
+        }
+
+        // EWS returned an error response.
+        if (isset($body['error'])) {
+            $errorDescription = '';
+            $data = [];
+
+            if (isset($body['errorDescription'])) {
+                $errorDescription = $body['errorDescription'];
+            }
+
+            if (isset($body['data'])) {
+                $data = $body['data'];
+            }
+
+            throw new EWSClientError($errorDescription, 0, null, $data);
         }
 
         return $body;

@@ -158,7 +158,9 @@ class Donation extends EWSObject
      */
     protected function getUri()
     {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/donations/{$this->id}.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registration->getRegistrationId()}"
+            . "/donations/{$this->id}.json";
     }
 
     /**
@@ -169,7 +171,9 @@ class Donation extends EWSObject
      */
     protected function getCreateUri()
     {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations/{$this->registration->getRegistrationId()}/donations.json";
+        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
+            . "/registrations/{$this->registration->getRegistrationId()}"
+            . "/donations.json";
     }
 
     /**
@@ -439,6 +443,4 @@ class Donation extends EWSObject
     {
         $this->paymentProviderTransactionId = $ppti;
     }
-
-
 }

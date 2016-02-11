@@ -121,19 +121,23 @@ class Event extends EWSObject
     {
         // Ensure we've loaded our Configs.
         $this->getConfigs();
-        // Check we haven't already got this Config (if we do, we update it).
+
+        // Check if we already have this Config so we can update it.
         if (isset($this->configs[$key])) {
             $this->configs[$key]->setConfigValue($value);
             $this->configs[$key]->update();
-        } else {
-            $data = array(
-                'configKey' => $key,
-                'configValue' => $value,
-            );
-            $config = new Config($this->client, $data, $this);
-            $this->configs[$key] = $config;
-            $this->configs[$key]->create();
+
+            return;
         }
+
+        // Create a new Config instead.
+        $data = array(
+            'configKey' => $key,
+            'configValue' => $value,
+        );
+        $config = new Config($this->client, $data, $this);
+        $this->configs[$key] = $config;
+        $this->configs[$key]->create();
     }
 
     /**
