@@ -46,8 +46,8 @@ abstract class EWSObject
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                if(!$this->setValueFromKey($key, $value) && is_array($value)){
-                    foreach($value as $key2 => $value2){
+                if (!$this->setValueFromKey($key, $value) && is_array($value)) {
+                    foreach ($value as $key2 => $value2) {
                         $this->setValueFromKey($key2, $value2);
                     }
                 }
@@ -61,6 +61,24 @@ abstract class EWSObject
             }
         }
         return $this;
+    }
+
+    /**
+     * Simple helper function to set a value from a key and value
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return EWSObject
+     */
+    public function setValueFromKey($key, $value)
+    {
+        if (!is_null($value)) {
+            $setter = 'set' . ucfirst($key);
+            if (method_exists($this, $setter)) {
+                return $this->$setter($value);
+            }
+        }
+        return FALSE;
     }
 
     /**
@@ -173,24 +191,6 @@ abstract class EWSObject
     }
 
     /**
-     * Simple helper function to set a value from a key and value
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return EWSObject
-     */
-    public function setValueFromKey($key, $value)
-    {
-        if (!is_null($value)) {
-            $setter = 'set' . ucfirst($key);
-            if (method_exists($this, $setter)) {
-                return $this->$setter($value);
-            }
-        }
-        return FALSE;
-    }
-
-    /**
      * Simple function to return the structure of the class. This defines how the
      * object should be built and delivered as an array.
      *
@@ -229,8 +229,7 @@ abstract class EWSObject
         $idKey = $this->getIdKey();
         if (isset($data[$idKey])) {
             unset($data[$idKey]);
-        }
-        else {
+        } else {
             foreach ($data as $key => $value) {
                 if (is_array($value) && isset($data[$key][$idKey])) {
                     unset($data[$key][$idKey]);
