@@ -261,15 +261,6 @@ class Participant extends EWSObject
 
     /**
      * @return string
-     * @deprecated Replaced by getExternalReference
-     */
-    public function getSiebelId()
-    {
-        return $this->externalReference;
-    }
-
-    /**
-     * @return string
      */
     public function getExternalReference()
     {

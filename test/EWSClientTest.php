@@ -587,7 +587,6 @@ class EWSClientTest extends TestCase
         $participant = new Participant($this->ews, $participant_data, $event, $registration);
         $participant->setAddress($address);
         $this->assertEquals($data, $participant->asArray());
-        $this->assertEquals($participant->getSiebelId(), $participant->getExternalReference());
     }
 
     public function testMapInvalidCountryCode()
