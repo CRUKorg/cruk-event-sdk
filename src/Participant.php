@@ -19,11 +19,11 @@ class Participant extends EWSObject
     private $uniqueId;
 
     /**
-     * siebelId
+     * externalReference
      *
      * @var string
      */
-    private $siebelId;
+    private $externalReference;
 
     /**
      * forename
@@ -261,19 +261,30 @@ class Participant extends EWSObject
 
     /**
      * @return string
+     * @deprecated Replaced by getExternalReference
      */
     public function getSiebelId()
     {
-        return $this->siebelId;
+        return $this->externalReference;
     }
 
     /**
-     * @param string $siebelId
+     * @return string
      */
-    public function setSiebelId($siebelId)
+    public function getExternalReference()
     {
-        $this->siebelId = $siebelId;
+        return $this->externalReference;
     }
+
+    /**
+     * @param string $externalReference
+     */
+    public function setExternalReference($externalReference)
+    {
+        $this->externalReference = $externalReference;
+    }
+
+
 
     /**
      * @return string
@@ -658,7 +669,7 @@ class Participant extends EWSObject
             'primaryParticipant',
             'participant' => [
                 'uniqueId',
-                'siebelId',
+                'externalReference',
                 'forename',
                 'surname',
                 'title',
