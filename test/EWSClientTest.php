@@ -487,7 +487,7 @@ class EWSClientTest extends TestCase
         $data = [
             'primaryParticipant' => true,
             'participant' => [
-                'siebelId' => 'siebelid',
+                'externalReference' => 'externalReference',
                 'forename' => 'Wow',
                 'surname' => 'McPants',
                 'title' => 'Mrs',
@@ -547,7 +547,7 @@ class EWSClientTest extends TestCase
         $data = [
             'primaryParticipant' => true,
             'participant' => [
-                'siebelId' => 'siebelid',
+                'externalReference' => 'externalReference',
                 'forename' => 'Wow',
                 'surname' => 'McPants',
                 'title' => 'Mrs',
@@ -587,6 +587,7 @@ class EWSClientTest extends TestCase
         $participant = new Participant($this->ews, $participant_data, $event, $registration);
         $participant->setAddress($address);
         $this->assertEquals($data, $participant->asArray());
+        $this->assertEquals($participant->getSiebelId(), $participant->getExternalReference());
     }
 
     public function testMapInvalidCountryCode()
@@ -611,7 +612,7 @@ class EWSClientTest extends TestCase
         $data = [
             'primaryParticipant' => true,
             'participant' => [
-                'siebelId' => 'siebelid',
+                'externalReference' => 'externalReference',
                 'forename' => 'Wow',
                 'surname' => 'McPants',
                 'title' => 'Mrs',
