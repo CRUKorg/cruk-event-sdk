@@ -64,7 +64,7 @@ class EWSClient
             'grant_type' => 'client_credentials',
         ];
 
-        $response = $http->get('/oauth/v2/token', [
+        $response = $http->get('oauth/v2/token', [
             'query' => $query,
         ]);
 
@@ -87,6 +87,8 @@ class EWSClient
      *   URI string
      * @param array $options
      *   Request options to apply
+     * @return mixed
+     *   JSON decoded body from EWS
      */
     public function requestJson($method, $uri, array $options = [])
     {
