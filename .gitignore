@@ -3,6 +3,7 @@
 
 # behat output
 /coverage/
+/coverage-html/
 
 # Composer
 /vendor/
