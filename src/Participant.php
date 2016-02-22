@@ -161,6 +161,13 @@ class Participant extends EWSObject
     private $motivation;
 
     /**
+     * motivationOther
+     *
+     * @var string
+     */
+    private $motivationOther;
+
+    /**
      * eventSpecificStatus
      *
      * @var string
@@ -589,6 +596,22 @@ class Participant extends EWSObject
     /**
      * @return mixed
      */
+    public function getMotivationOther()
+    {
+        return $this->motivationOther;
+    }
+
+    /**
+     * @param mixed $motivationOther
+     */
+    public function setMotivationOther($motivationOther)
+    {
+        $this->motivationOther = $motivationOther;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getEventSpecificStatus()
     {
         return $this->eventSpecificStatus;
@@ -682,6 +705,7 @@ class Participant extends EWSObject
                 'runningNumber',
                 'cancerType',
                 'motivation',
+                'motivationOther',
             ],
         ];
     }
