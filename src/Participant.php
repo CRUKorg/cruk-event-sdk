@@ -188,7 +188,7 @@ class Participant extends EWSObject
      * @param Event $event
      * @param Registration $registration
      */
-    public function __construct(EWSClient $client, $data, Event $event, Registration $registration)
+    public function __construct(EWSClient $client, $data, Event $event = null, Registration $registration = null)
     {
         $this->event = $event;
         $this->registration = $registration;
@@ -684,5 +684,31 @@ class Participant extends EWSObject
                 'motivation',
             ],
         ];
+    }
+
+    /**
+     * Simple function to return an array of Participants based on search criteria.
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     *
+     * @return array
+     *
+     * @throws EWSClientError
+     */
+    public static function search($client, $query)
+    {
+        if (!isset($query['forename']) || !isset($query['surname']) || !isset($query['postalCode'])) {
+            throw new EWSClientError('Please ensure forename, surname and postalCode are set');
+        }
+        $path = $client->getPath() . "/participants.json?" . http_build_query($query);
+        $results = $client->requestJson('GET', $path);
+        $participants = [];
+        foreach ($results['results'] as $participant) {
+            $participants[] = new Participant($client, $participant);
+        }
+        return $participants;
     }
 }
