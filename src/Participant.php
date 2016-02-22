@@ -717,22 +717,17 @@ class Participant extends EWSObject
      *   Client.
      * @param array $query
      *   Query array for building the query string.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
      *
      * @return array
      *
      * @throws EWSClientError
      */
-    public static function search($client, $query)
+    public static function search($client, $query, $class = '\Cruk\EventSdk\Participant', $path = '/participants.json')
     {
-        if (!isset($query['forename']) || !isset($query['surname']) || !isset($query['postalCode'])) {
-            throw new EWSClientError('Please ensure forename, surname and postalCode are set');
-        }
-        $path = $client->getPath() . "/participants.json?" . http_build_query($query);
-        $results = $client->requestJson('GET', $path);
-        $participants = [];
-        foreach ($results['results'] as $participant) {
-            $participants[] = new Participant($client, $participant);
-        }
-        return $participants;
+        return parent::search($client, $query, $class, $path);
     }
 }
