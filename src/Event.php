@@ -446,4 +446,25 @@ class Event extends EWSObject
             'waves',
         ];
     }
+
+    /**
+     * Simple function to return an array of Events based on search criteria.
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     *
+     * @throws EWSClientError
+     */
+    public static function search($client, $query, $class = '\Cruk\EventSdk\Event', $path = '/events.json')
+    {
+        return parent::search($client, $query, $class, $path);
+    }
 }
