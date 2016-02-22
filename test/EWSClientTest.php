@@ -70,7 +70,7 @@ class EWSClientTest extends TestCase
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
-        $this->assertRequestUriPathSame('/oauth/v2/token', $request);
+        $this->assertRequestUriPathSame('oauth/v2/token', $request);
 
         // Assert that the query parameters are correct
         $this->assertRequestQueryParameterSame('client_id', 'my_client_id', $request);
@@ -519,6 +519,7 @@ class EWSClientTest extends TestCase
                 'runningNumber' => 1000,
                 'cancerType' => 'head cancer',
                 'motivation' => 'Head hurts',
+                'motivationOther' => 'Hurts really bad right on top',
             ],
         ];
         $participant = new Participant($this->ews, $data, $event, $registration);
@@ -579,6 +580,7 @@ class EWSClientTest extends TestCase
                 'runningNumber' => 1000,
                 'cancerType' => 'head cancer',
                 'motivation' => 'Head hurts',
+                'motivation' => 'Fried chicken required',
             ],
         ];
         $address = new Address($this->ews, $data['participant']['address']);
@@ -639,6 +641,7 @@ class EWSClientTest extends TestCase
                 'runningNumber' => 1000,
                 'cancerType' => 'head cancer',
                 'motivation' => 'Head hurts',
+                'motivation' => 'Give me more chicken',
             ],
         ];
         $participant = new Participant($this->ews, $data, $event, $registration);
