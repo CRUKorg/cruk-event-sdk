@@ -261,4 +261,29 @@ abstract class EWSObject
     {
         $this->client = $client;
     }
+
+    /**
+     * Simple function to return an array of Participants based on search criteria.
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     */
+    public static function search($client, $query, $class = '', $path = '')
+    {
+        $path = $client->getPath() . $path . "?" . http_build_query($query);
+        $results = $client->requestJson('GET', $path);
+        $objects = [];
+        foreach ($results['results'] as $result) {
+            $objects[] = new $class($client, $result);
+        }
+        return $objects;
+    }
 }
