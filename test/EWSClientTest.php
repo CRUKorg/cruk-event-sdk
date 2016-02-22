@@ -525,6 +525,7 @@ class EWSClientTest extends TestCase
                 'runningNumber' => 1000,
                 'cancerType' => 'head cancer',
                 'motivation' => 'Head hurts',
+                'motivationOther' => 'Hurts really bad right on top',
             ],
         ];
         $participant = new Participant($this->ews, $data, $event, $registration);
@@ -585,6 +586,7 @@ class EWSClientTest extends TestCase
                 'runningNumber' => 1000,
                 'cancerType' => 'head cancer',
                 'motivation' => 'Head hurts',
+                'motivation' => 'Fried chicken required',
             ],
         ];
         $address = new Address($this->ews, $data['participant']['address']);
@@ -645,6 +647,7 @@ class EWSClientTest extends TestCase
                 'runningNumber' => 1000,
                 'cancerType' => 'head cancer',
                 'motivation' => 'Head hurts',
+                'motivation' => 'Give me more chicken',
             ],
         ];
         $participant = new Participant($this->ews, $data, $event, $registration);
