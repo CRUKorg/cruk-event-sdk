@@ -45,7 +45,7 @@ class Extra extends EWSObject
      */
     public static function getExtrasForParticipant($participant)
     {
-        $path = "/events/{$participant->getEvent()->getEventCode()}"
+        $path = $participant->getClient()->getPath() . "/events/{$participant->getEvent()->getEventCode()}"
             ."/registrations/{$participant->getRegistration()->getRegistrationId()}"
             ."/participantInfos/{$participant->getUniqueId()}"
             ."/extras.json";
@@ -125,7 +125,8 @@ class Extra extends EWSObject
      */
     protected function getUri()
     {
-        return "/events/{$this->participant->getEvent()->getEventCode()}"
+        return $this->participant->getClient()->getPath()
+            ."/events/{$this->participant->getEvent()->getEventCode()}"
             ."/registrations/{$this->participant->getRegistration()->getRegistrationId()}"
             ."/participantInfos/{$this->participant->getUniqueId()}"
             ."/extras/{$this->extraKey}.json";
@@ -151,7 +152,8 @@ class Extra extends EWSObject
      */
     protected function getCreateUri()
     {
-        return "/events/{$this->participant->getEvent()->getEventCode()}"
+        return $this->participant->getClient()->getPath()
+        ."/events/{$this->participant->getEvent()->getEventCode()}"
         ."/registrations/{$this->participant->getRegistration()->getRegistrationId()}"
         ."/participantInfos/{$this->participant->getUniqueId()}"
         ."/extras.json";
