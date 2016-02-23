@@ -189,6 +189,13 @@ class Participant extends EWSObject
     private $registration;
 
     /**
+     * extras
+     *
+     * @var Extra[]
+     */
+    private $extras;
+
+    /**
      * Participant constructor.
      * @param EWSClient $client
      * @param $data
@@ -734,5 +741,63 @@ class Participant extends EWSObject
     public static function search($client, $query, $class = '\Cruk\EventSdk\Participant', $path = '/participants.json')
     {
         return parent::search($client, $query, $class, $path);
+    }
+
+    /**
+     * Simple function to create a new Extra associated with this Participant.
+     *
+     * @param string $key
+     *   Key to update or create.
+     * @param string $value
+     *   Value to set.
+     */
+    public function createOrUpdateExtra($key, $value)
+    {
+        // Ensure we've loaded our Extras.
+        $this->getExtras();
+
+        // Check if we already have this Extras so we can update it.
+        if (isset($this->extras[$key])) {
+            $this->extras[$key]->setExtraValue($value);
+            $this->extras[$key]->update();
+
+            return;
+        }
+
+        // Create a new Extra instead.
+        $data = array(
+            'extraKey' => $key,
+            'extraValue' => $value,
+        );
+        $extra = new Extra($this->client, $data, $this);
+        $this->extras[$key] = $extra;
+        $this->extras[$key]->create();
+    }
+
+    /**
+     * @return Extra[]
+     */
+    public function getExtras()
+    {
+        if (is_null($this->extras)) {
+            $this->extras = Extra::getExtrasForParticipant($this);
+        }
+        return $this->extras;
+    }
+
+    /**
+     * @param Extra[] $extras
+     */
+    public function setExtras($extras)
+    {
+        $this->extras = $extras;
+    }
+
+    /**
+     * @param Extra $extra
+     */
+    public function addExtra($extra)
+    {
+        $this->extras[$extra->getExtraKey()] = $extra;
     }
 }
