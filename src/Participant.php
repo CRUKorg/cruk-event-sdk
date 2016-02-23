@@ -631,9 +631,14 @@ class Participant extends EWSObject
     /**
      * Simple function to return the URI that should be used to GET this object
      * from the EWS.
+     *
+     * @throws EWSClientError
      */
     protected function getUri()
     {
+        if (is_null($this->registration)) {
+            throw new EWSClientError('Unable to update a participant without a registration.');
+        }
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
             . "/registrations/{$this->registration->getRegistrationId()}"
             . "/participantInfos/{$this->uniqueId}.json";
