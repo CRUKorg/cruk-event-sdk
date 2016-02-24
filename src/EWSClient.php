@@ -145,11 +145,7 @@ class EWSClient
      */
     private function handleResponse($response)
     {
-        try {
-            $body = (string)$response->getBody();
-        } catch (ClientException $e) {
-            throw new EWSClientError($e->getCode() . ' error', 0, null, []);
-        }
+        $body = (string)$response->getBody();
 
         // Throw an error if we didn't get a 200 code
         if ($response->getStatusCode() != 200) {
@@ -158,7 +154,7 @@ class EWSClient
 
         $body = json_decode($body, true);
 
-        if ($body === false) {
+        if (!$body) {
             throw new EWSClientError('Failed to decode JSON response');
         }
 
