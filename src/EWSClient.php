@@ -4,6 +4,7 @@ namespace Cruk\EventSdk;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Promise;
 
 /**
  * @file
@@ -92,15 +93,59 @@ class EWSClient
      */
     public function requestJson($method, $uri, array $options = [])
     {
+        $results = $this->requestJsons($method, [$uri], $options);
+        return $results[0];
+    }
+
+    /**
+     * Create and send an HTTP request and return the decoded JSON response
+     * body
+     *
+     * @throws EWSClientError
+     *
+     * @param string $method
+     *   HTTP method e.g. GET, POST, DELETE
+     * @param array $uris
+     *   URI strings
+     * @param array $options
+     *   Request options to apply
+     * @return mixed
+     *   JSON decoded body from EWS
+     */
+    public function requestJsons($method, $uris, array $options = [])
+    {
         // Add the OAuth access token to the request headers
         $options = array_merge($options, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
+        $promises = [];
+
+        foreach ($uris as $uri) {
+            $promises[] = $this->http->requestAsync($method, $uri, $options);
+        }
 
         try {
-            $response = $this->http->request($method, $uri, $options);
+            $responses = Promise\unwrap($promises);
+
+            $results = [];
+            foreach ($responses as $response) {
+                $results[] = $this->handleResponse($response);
+            }
+        } catch (ClientException $e) {
+            throw new EWSClientError($e->getCode() . ' error', 0, null, []);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Helper function for the above two methods.
+     */
+    private function handleResponse($response)
+    {
+        try {
             $body = (string)$response->getBody();
         } catch (ClientException $e) {
             throw new EWSClientError($e->getCode() . ' error', 0, null, []);

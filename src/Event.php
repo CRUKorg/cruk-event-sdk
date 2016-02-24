@@ -115,6 +115,19 @@ class Event extends EWSObject
     }
 
     /**
+     * Simple function to return the URI that should be used to search for objects
+     * from the EWS.
+     *
+     * @return string
+     */
+    protected function getSearchUri()
+    {
+        // Should possibly throw an error here, as this does not exist.
+        return $this->client->getPath() . "/events.json";
+    }
+
+
+    /**
      * Simple function to create a new Config associated with this Event.
      */
     public function createOrUpdateConfig($key, $value)
@@ -432,5 +445,47 @@ class Event extends EWSObject
             'defaultSiebelRegistrationStatus',
             'waves',
         ];
+    }
+
+    /**
+     * Simple function to return an array of Events based on search criteria.
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     *
+     * @throws EWSClientError
+     */
+    public static function search($client, $query, $class = '\Cruk\EventSdk\Event', $path = '/events.json')
+    {
+        return parent::search($client, $query, $class, $path);
+    }
+
+    /**
+     * Simple function to return an array of Events based on search criterias.
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $queries
+     *   Array of query arrays for building the query string.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     *
+     * @throws EWSClientError
+     */
+    public static function searches($client, $queries, $class = '\Cruk\EventSdk\Event', $path = '/events.json')
+    {
+        return parent::searches($client, $queries, $class, $path);
     }
 }

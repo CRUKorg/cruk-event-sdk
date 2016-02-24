@@ -195,7 +195,7 @@ class Participant extends EWSObject
      * @param Event $event
      * @param Registration $registration
      */
-    public function __construct(EWSClient $client, $data, Event $event, Registration $registration)
+    public function __construct(EWSClient $client, $data, Event $event = null, Registration $registration = null)
     {
         $this->event = $event;
         $this->registration = $registration;
@@ -638,9 +638,14 @@ class Participant extends EWSObject
     /**
      * Simple function to return the URI that should be used to GET this object
      * from the EWS.
+     *
+     * @throws EWSClientError
      */
     protected function getUri()
     {
+        if (is_null($this->registration)) {
+            throw new EWSClientError('Unable to update a participant without a registration.');
+        }
         return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
             . "/registrations/{$this->registration->getRegistrationId()}"
             . "/participantInfos/{$this->uniqueId}.json";
@@ -749,5 +754,26 @@ class Participant extends EWSObject
     public function addExtra($extra)
     {
         $this->extras[$extra->getExtraKey()] = $extra;
+    }
+
+    /**
+     * Simple function to return an array of Participants based on search criteria.
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     *
+     * @throws EWSClientError
+     */
+    public static function search($client, $query, $class = '\Cruk\EventSdk\Participant', $path = '/participants.json')
+    {
+        return parent::search($client, $query, $class, $path);
     }
 }
