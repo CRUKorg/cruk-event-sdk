@@ -748,4 +748,86 @@ class EWSClientTest extends TestCase
         $this->assertSame(3, count($event->getConfigs()));
         $event->setConfigs($configs);
     }
+
+    public function testSearchParticipant()
+    {
+        $response_body = [
+            'results' => [
+                [
+                    'uniqueId' => 123,
+                    'forename' => 'Banana',
+                    'surname' => 'Man',
+                ],
+            ],
+        ];
+        $this->responses = [
+            new Response(200, [], json_encode($response_body)),
+        ];
+        // History that's going to be populated by the HTTP Client.
+        $this->history = [];
+        // Create httpClient
+        $this->httpClient = $this->getHttpClient($this->history, $this->responses);
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
+        $participants = Participant::search($this->ews, []);
+        $this->assertEquals($participants[0]->asArray(), ['participant' => $response_body['results'][0]]);
+
+        $this->setExpectedException(EWSClientError::class);
+        $participants[0]->patch();
+    }
+
+    public function testSearchEvent()
+    {
+        $response_body = [
+            'results' => [
+                [
+                    'eventCode' => 123,
+                    'eventName' => 'Banana',
+                ],
+            ],
+        ];
+        $this->responses = [
+            new Response(200, [], json_encode($response_body)),
+        ];
+        // History that's going to be populated by the HTTP Client.
+        $this->history = [];
+        // Create httpClient
+        $this->httpClient = $this->getHttpClient($this->history, $this->responses);
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
+        $events = Event::search($this->ews, []);
+        $this->assertEquals($events[0]->asArray(), $response_body['results'][0]);
+    }
+
+    public function testSearchesEvent()
+    {
+        $response_body = [
+            'results' => [
+                [
+                    'eventCode' => 123,
+                    'eventName' => 'Banana',
+                ],
+            ],
+        ];
+        $this->responses = [
+            new Response(200, [], json_encode($response_body)),
+        ];
+        // History that's going to be populated by the HTTP Client.
+        $this->history = [];
+        // Create httpClient
+        $this->httpClient = $this->getHttpClient($this->history, $this->responses);
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
+        $events = Event::searches($this->ews, [[]]);
+        $this->assertEquals($events[0]->asArray(), $response_body['results'][0]);
+    }
+
+    public function testThrowsInvalidJson()
+    {
+        $this->setExpectedException(EWSClientError::class);
+        $this->responses = [
+            new Response(200, [], 'asdlfkjdslfj{}[]'),
+        ];
+        // Create httpClient
+        $this->httpClient = $this->getHttpClient($this->history, $this->responses);
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
+        Event::search($this->ews, []);
+    }
 }
