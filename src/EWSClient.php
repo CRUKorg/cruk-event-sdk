@@ -93,22 +93,8 @@ class EWSClient
      */
     public function requestJson($method, $uri, array $options = [])
     {
-        // Add the OAuth access token to the request headers
-        $options = array_merge($options, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ]
-        ]);
-
-        try {
-            $response = $this->http->request($method, $uri, $options);
-        } catch (ClientException $e) {
-            throw new EWSClientError($e->getCode() . ' error', 0, null, []);
-        }
-
-        return $this->handleResponse($response);
-
-        return $body;
+        $results = $this->requestJsons($method, [$uri], $options);
+        return $results[0];
     }
 
     /**
@@ -119,8 +105,8 @@ class EWSClient
      *
      * @param string $method
      *   HTTP method e.g. GET, POST, DELETE
-     * @param string $uri
-     *   URI string
+     * @param array $uris
+     *   URI strings
      * @param array $options
      *   Request options to apply
      * @return mixed
@@ -140,11 +126,15 @@ class EWSClient
             $promises[] = $this->http->requestAsync($method, $uri, $options);
         }
 
-        $responses = Promise\unwrap($promises);
+        try {
+            $responses = Promise\unwrap($promises);
 
-        $results = [];
-        foreach ($responses as $response) {
-            $results[] = $this->handleResponse($response);
+            $results = [];
+            foreach ($responses as $response) {
+                $results[] = $this->handleResponse($response);
+            }
+        } catch (ClientException $e) {
+            throw new EWSClientError($e->getCode() . ' error', 0, null, []);
         }
 
         return $results;
