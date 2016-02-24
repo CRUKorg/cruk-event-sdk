@@ -47,7 +47,11 @@ class EWSClientTest extends TestCase
             new Response(200, [], json_encode($response_body)),
             new Response(200, [], json_encode($response_body)),
             new Response(200, [], json_encode($response_body)),
-            new Response(200, [], json_encode($response_body))
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
+            new Response(200, [], json_encode($response_body)),
         ];
         // History that's going to be populated by the HTTP Client.
         $this->history = [];
@@ -328,6 +332,8 @@ class EWSClientTest extends TestCase
 
         // Assert that the request uses the OAuth access token to authenticate
         $this->assertRequestAuthenticates(self::ACCESS_TOKEN, $request);
+
+        return $participant;
     }
 
     public function testCreateEventRegistrationParticipant()
@@ -826,5 +832,18 @@ class EWSClientTest extends TestCase
         $this->httpClient = $this->getHttpClient($this->history, $this->responses);
         $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
         Event::search($this->ews, []);
+    }
+
+    public function testParticipantExtras()
+    {
+        $participant = $this->testGetEventRegistrationParticipant();
+        $participant->createOrUpdateExtra('123', 'Value');
+        $participant->createOrUpdateExtra('123456', 'Value');
+        $extras = $participant->getExtras();
+        $this->assertEquals($participant, $extras[123]->getParticipant());
+        $extras[123]->setParticipant($participant);
+        $this->assertEquals($participant, $extras[123]->getParticipant());
+        $participant->setExtras($extras);
+
     }
 }
