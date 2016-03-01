@@ -114,6 +114,18 @@ class Event extends EWSObject
         return $this->client->getPath() . "/events.json";
     }
 
+    /**
+     * Simple function to return the URI that should be used to search for objects
+     * from the EWS.
+     *
+     * @return string
+     */
+    protected function getSearchUri()
+    {
+        // Should possibly throw an error here, as this does not exist.
+        return $this->client->getPath() . "/events.json";
+    }
+
 
     /**
      * Simple function to create a new Config associated with this Event.
