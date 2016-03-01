@@ -154,7 +154,7 @@ class EWSClient
 
         $body = json_decode($body, true);
 
-        if (!$body) {
+        if ($body === false) {
             throw new EWSClientError('Failed to decode JSON response');
         }
 
