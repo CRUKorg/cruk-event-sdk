@@ -244,6 +244,7 @@ class Registration extends EWSObject
         }
         elseif (is_array($donation)) {
             $this->setDonationId($donation['id']);
+            return;
         }
         $this->setDonationId($donation->getId());
         $this->donation = $donation;
