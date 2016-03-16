@@ -738,7 +738,7 @@ class Participant extends EWSObject
      *
      * @throws EWSClientError
      */
-    public static function search($client, $query, $class = '\Cruk\EventSdk\Participant', $path = '/participants.json')
+    public static function search($client, $query, $class = '\Cruk\EventSdk\Participant', $path = '/participantInfos.json')
     {
         return parent::search($client, $query, $class, $path);
     }
