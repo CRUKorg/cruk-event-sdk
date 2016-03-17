@@ -112,6 +112,13 @@ class Participant extends EWSObject
     private $tshirtSizeCode;
 
     /**
+     * tshirtName
+     *
+     * @var string
+     */
+    private $tshirtName;
+
+    /**
      * fundraisingUrl
      *
      * @var string
@@ -490,6 +497,22 @@ class Participant extends EWSObject
     /**
      * @return string
      */
+    public function getTshirtName()
+    {
+        return $this->tshirtName;
+    }
+
+    /**
+     * @param string $tshirtName
+     */
+    public function setTshirtName($tshirtName)
+    {
+        $this->tshirtName = $tshirtName;
+    }
+
+    /**
+     * @return string
+     */
     public function getFundraisingUrl()
     {
         return $this->fundraisingUrl;
@@ -710,6 +733,7 @@ class Participant extends EWSObject
             ],
             'eventSpecific' => [
                 'tshirtSizeCode',
+                'tshirtName',
                 'fundraisingUrl',
                 'fundraisingTarget',
                 'emergencyContactName',

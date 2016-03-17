@@ -518,6 +518,7 @@ class EWSClientTest extends TestCase
             ],
             'eventSpecific' => [
                 'tshirtSizeCode' => 'abcdef',
+                'tshirtName' => 'ABCDEF',
                 'fundraisingUrl' => 'http://www.justgiving.com/gimme-your-money',
                 'fundraisingTarget' => 10000,
                 'emergencyContactName' => 'Smarty McPants',
@@ -579,6 +580,7 @@ class EWSClientTest extends TestCase
             ],
             'eventSpecific' => [
                 'tshirtSizeCode' => 'abcdef',
+                'tshirtName' => 'ABCDEF',
                 'fundraisingUrl' => 'http://www.justgiving.com/gimme-your-money',
                 'fundraisingTarget' => 10000,
                 'emergencyContactName' => 'Smarty McPants',
@@ -640,6 +642,7 @@ class EWSClientTest extends TestCase
             ],
             'eventSpecific' => [
                 'tshirtSizeCode' => 'abcdef',
+                'tshirtName' => 'ABCDEF',
                 'fundraisingUrl' => 'http://www.justgiving.com/gimme-your-money',
                 'fundraisingTarget' => 10000,
                 'emergencyContactName' => 'Smarty McPants',
