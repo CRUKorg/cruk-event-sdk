@@ -42,7 +42,7 @@ class EWSClient implements LoggerAwareInterface
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var UuidInterface */
+    /** @var string */
     private $logId;
 
     /**
@@ -55,7 +55,7 @@ class EWSClient implements LoggerAwareInterface
      */
     public function __construct(Client $http, $clientIdOrAccessToken, $clientSecret = false, LoggerInterface $logger = null)
     {
-        $this->setLogId(Uuid::uuid4());
+        $this->setLogId(Uuid::uuid4()->toString());
         if ($logger !== null) {
             $this->setLogger($logger);
         }
@@ -283,7 +283,7 @@ class EWSClient implements LoggerAwareInterface
     }
 
     /**
-     * @return UuidInterface
+     * @return string
      */
     public function getLogId()
     {
@@ -291,10 +291,10 @@ class EWSClient implements LoggerAwareInterface
     }
 
     /**
-     * @param UuidInterface $logId
+     * @param string $logId
      * @return EWSClient
      */
-    public function setLogId(UuidInterface $logId)
+    public function setLogId($logId)
     {
         $this->logId = $logId;
 
@@ -409,6 +409,6 @@ class EWSClient implements LoggerAwareInterface
      */
     private function formatLogMessage($method, $uri, $callType, $data = null)
     {
-        return implode("\t", [$this->getLogId()->toString(), $method, $uri, $callType, $data]);
+        return implode("\t", [$this->getLogId(), $method, $uri, $callType, $data]);
     }
 }
