@@ -5,15 +5,20 @@ namespace Cruk\EventSdk;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @file
  *
  * Simple file to create the EWS interface that all other EWS classes will implement.
  */
-class EWSClient
+class EWSClient implements LoggerAwareInterface
 {
-
     /**
      * GuzzleHttp\Client
      *
@@ -31,20 +36,38 @@ class EWSClient
      */
     protected $path = 'api/v2';
 
+    /** @var bool */
+    private $loggingEnabled = false;
+
+    /** @var LoggerInterface */
+    private $logger;
+
+    /** @var UuidInterface */
+    private $logId;
+
     /**
-     * Create the EWS client.
+     * EWSClient constructor.
+     *
+     * @param \GuzzleHttp\Client            $http
+     * @param mixed                         $clientIdOrAccessToken
+     * @param bool                          $clientSecret
+     * @param \Psr\Log\LoggerInterface|null $logger
      */
-    public function __construct(Client $http, $clientIdOrAccessToken, $clientSecret = false)
+    public function __construct(Client $http, $clientIdOrAccessToken, $clientSecret = false, LoggerInterface $logger = null)
     {
+        $this->setLogId(Uuid::uuid4());
+        if ($logger !== null) {
+            $this->setLogger($logger);
+        }
+
         $this->http = $http;
         // Set the accessToken depending on whether we've been sent it, or
         // if we need to retrieve it.
         if (!$clientSecret) {
             $this->accessToken = $clientIdOrAccessToken;
-            return $this;
         }
         $this->accessToken = self::requestAccessToken($http, $clientIdOrAccessToken, $clientSecret);
-        return $this;
+
     }
 
     /**
@@ -120,9 +143,11 @@ class EWSClient
                 'Authorization' => 'Bearer ' . $this->accessToken,
             ]
         ]);
+        /** @var Promise\PromiseInterface[] $promises */
         $promises = [];
 
         foreach ($uris as $uri) {
+            $this->logRequest($method, $uri, $options);
             $promises[] = $this->http->requestAsync($method, $uri, $options);
         }
 
@@ -130,7 +155,9 @@ class EWSClient
             $responses = Promise\unwrap($promises);
 
             $results = [];
+            $counter = 0;
             foreach ($responses as $response) {
+                $this->logResponse($method, $uris[$counter++], $response);
                 $results[] = $this->handleResponse($response);
             }
         } catch (ClientException $e) {
@@ -143,12 +170,12 @@ class EWSClient
     /**
      * Helper function for the above two methods.
      */
-    private function handleResponse($response)
+    private function handleResponse(Response $response)
     {
         $body = (string)$response->getBody();
 
         // Throw an error if we didn't get a 200 code
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             throw new EWSClientError($response->getStatusCode() . ' error', 0, null, []);
         }
 
@@ -213,5 +240,175 @@ class EWSClient
     public function setPath($path)
     {
         $this->path = $path;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isLoggingEnabled()
+    {
+        return $this->loggingEnabled;
+    }
+
+    /**
+     * @param boolean $loggingEnabled
+     * @return EWSObject
+     */
+    public function setLoggingEnabled($loggingEnabled)
+    {
+        $this->loggingEnabled = $loggingEnabled;
+
+        return $this;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     * @return EWSObject
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->setLoggingEnabled(true);
+
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
+     * @return UuidInterface
+     */
+    public function getLogId()
+    {
+        return $this->logId;
+    }
+
+    /**
+     * @param UuidInterface $logId
+     * @return EWSClient
+     */
+    public function setLogId(UuidInterface $logId)
+    {
+        $this->logId = $logId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array $options
+     */
+    private function logRequest($method, $uri, $options)
+    {
+        if ($this->isLoggingEnabled()) {
+            $data = $this->getRequestDataFromOptions($options);
+
+            $this->getLogger()->info($this->formatRequestLogMessage($method, $uri, $data));
+        }
+    }
+
+    /**
+     * @param string            $method
+     * @param string            $uri
+     * @param ResponseInterface $response
+     */
+    private function logResponse($method, $uri, ResponseInterface $response)
+    {
+        if ($this->isLoggingEnabled()) {
+            $data = $this->getResponseDataFromResponse($response);
+
+            $this->getLogger()->info($this->formatResponseLogMessage($method, $uri, $data));
+        }
+    }
+
+    /**
+     * @param array|null $options
+     * @return string|null
+     */
+    private function getRequestDataFromOptions($options = null)
+    {
+        if ($options !== null && array_key_exists('json', $options)) {
+            return json_encode($options['json']);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return string
+     */
+    private function getResponseDataFromResponse(ResponseInterface $response) {
+        return $response->getBody()->getContents();
+    }
+
+    /**
+     * @return array
+     */
+    private function getCallAndCallEntityFromBacktrace()
+    {
+        // This is a little bit of a 'dangerous' method as it's trying to guess at information based on what it knows
+        // about how things are formatted in this module. If the structure changes, this will break... Loudly!
+
+        $call = null;
+        $callEntity = null;
+        foreach (debug_backtrace() as $stepData) {
+            // Iterate back through the backtrack until we come to the first item that contains an 'object' that extends
+            // EWSObject, but that isn't it!
+
+            if (array_key_exists('object', $stepData) && $stepData['object'] instanceof EWSObject && substr(get_class($stepData['object']), -9, 9)) {
+                $call = $stepData['function'];
+                $callEntityParts = explode('\\', get_class($stepData['object']));
+                $callEntity = $callEntityParts[count($callEntityParts) - 1];
+            }
+        }
+
+        if ($call === null || $callEntity === null) {
+            throw new \RuntimeException('I cannot figure out what the caller was. getCallAndCallEntityFromBacktrace() needs work!');
+        }
+
+        return [$call, $callEntity];
+    }
+
+    /**
+     * @param string      $method
+     * @param string      $uri
+     * @param string|null $data
+     * @return mixed
+     */
+    private function formatRequestLogMessage($method, $uri, $data = null)
+    {
+        return $this->formatLogMessage($method, $uri, 'request', $data);
+    }
+
+    /**
+     * @param string      $method
+     * @param string      $uri
+     * @param string|null $data
+     * @return mixed
+     */
+    private function formatResponseLogMessage($method, $uri, $data = null)
+    {
+        return $this->formatLogMessage($method, $uri, 'response', $data);
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param string $callType
+     * @param string|null $data
+     * @return mixed
+     */
+    private function formatLogMessage($method, $uri, $callType, $data = null)
+    {
+        return implode("\t", [$this->getLogId()->toString(), $method, $uri, $callType, $data]);
     }
 }

@@ -12,6 +12,9 @@ use Cruk\EventSdk\Participant;
 use Cruk\EventSdk\Registration;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use Monolog\Handler\NullHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class EWSClientTest extends TestCase
 {
@@ -58,7 +61,11 @@ class EWSClientTest extends TestCase
         // Create httpClient
         $this->httpClient = $this->getHttpClient($this->history, $this->responses);
         // Create the client with responses.
-        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN);
+        $logger = new Logger('bdd');
+        $logger->pushHandler(new NullHandler());
+        $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN, false, $logger);
+
+        array_shift($this->history);
     }
 
     public function testRequestAccessToken()
@@ -70,7 +77,7 @@ class EWSClientTest extends TestCase
         new EWSClient($this->httpClient, 'my_client_id', 'my_client_secret');
 
         // Get the request from the history
-        $request = $this->history[0]['request'];
+        $request = $this->history[1]['request'];
 
         // Assert that the request is made to the correct endpoint
         $this->assertRequestMethodSame('GET', $request);
