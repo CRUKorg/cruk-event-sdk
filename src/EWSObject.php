@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+
 /**
  * @file
  *
@@ -19,7 +22,7 @@ abstract class EWSObject
      * @var array
      */
     protected $fieldsToPatch;
-
+    
     /**
      * Create a new EWSObject
      *
@@ -33,7 +36,6 @@ abstract class EWSObject
         $this->fieldsToPatch = [];
         $this->client = $client;
         $this->populate($data);
-        return $this;
     }
 
     /**
