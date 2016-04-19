@@ -63,6 +63,7 @@ class EWSClientTest extends TestCase
         // Create the client with responses.
         $logger = new Logger('bdd');
         $logger->pushHandler(new NullHandler());
+        //$logger->pushHandler(new StreamHandler('/tmp/bdd.log', Logger::INFO));
         $this->ews = new EWSClient($this->httpClient, self::ACCESS_TOKEN, false, $logger);
 
         array_shift($this->history);

@@ -10,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
 /**
  * @file
@@ -53,8 +52,12 @@ class EWSClient implements LoggerAwareInterface
      * @param bool                          $clientSecret
      * @param \Psr\Log\LoggerInterface|null $logger
      */
-    public function __construct(Client $http, $clientIdOrAccessToken, $clientSecret = false, LoggerInterface $logger = null)
-    {
+    public function __construct(
+        Client $http,
+        $clientIdOrAccessToken,
+        $clientSecret = false,
+        LoggerInterface $logger = null
+    ) {
         $this->setLogId(Uuid::uuid4()->toString());
         if ($logger !== null) {
             $this->setLogger($logger);
@@ -88,11 +91,14 @@ class EWSClient implements LoggerAwareInterface
             'grant_type' => 'client_credentials',
         ];
 
-        $response = $http->get('oauth/v2/token', [
-            'query' => $query,
-        ]);
+        $response = $http->get(
+            'oauth/v2/token',
+            [
+                'query' => $query,
+            ]
+        );
 
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
 
         $access_token = json_decode($body, true);
 
@@ -109,7 +115,7 @@ class EWSClient implements LoggerAwareInterface
      *   HTTP method e.g. GET, POST, DELETE
      * @param string $uri
      *   URI string
-     * @param array $options
+     * @param array  $options
      *   Request options to apply
      * @return mixed
      *   JSON decoded body from EWS
@@ -117,6 +123,7 @@ class EWSClient implements LoggerAwareInterface
     public function requestJson($method, $uri, array $options = [])
     {
         $results = $this->requestJsons($method, [$uri], $options);
+
         return $results[0];
     }
 
@@ -128,9 +135,9 @@ class EWSClient implements LoggerAwareInterface
      *
      * @param string $method
      *   HTTP method e.g. GET, POST, DELETE
-     * @param array $uris
+     * @param array  $uris
      *   URI strings
-     * @param array $options
+     * @param array  $options
      *   Request options to apply
      * @return mixed
      *   JSON decoded body from EWS
@@ -138,16 +145,23 @@ class EWSClient implements LoggerAwareInterface
     public function requestJsons($method, $uris, array $options = [])
     {
         // Add the OAuth access token to the request headers
-        $options = array_merge($options, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
+        $options = array_merge(
+            $options,
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$this->accessToken,
+                ],
             ]
-        ]);
+        );
         /** @var Promise\PromiseInterface[] $promises */
         $promises = [];
 
+        $transactionIds = [];
+        $counter = 0;
         foreach ($uris as $uri) {
-            $this->logRequest($method, $uri, $options);
+            $transactionIds[] = Uuid::uuid4()->toString();
+
+            $this->logRequest($transactionIds[$counter], $method, $uri, $options);
             $promises[] = $this->http->requestAsync($method, $uri, $options);
         }
 
@@ -157,11 +171,12 @@ class EWSClient implements LoggerAwareInterface
             $results = [];
             $counter = 0;
             foreach ($responses as $response) {
-                $this->logResponse($method, $uris[$counter++], $response);
+                $this->logResponse($transactionIds[$counter], $method, $uris[$counter], $response);
                 $results[] = $this->handleResponse($response);
+                $counter++;
             }
         } catch (ClientException $e) {
-            throw new EWSClientError($e->getCode() . ' error', 0, null, []);
+            throw new EWSClientError($e->getCode().' error', 0, null, []);
         }
 
         return $results;
@@ -172,11 +187,11 @@ class EWSClient implements LoggerAwareInterface
      */
     private function handleResponse(Response $response)
     {
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
 
         // Throw an error if we didn't get a 200 code
         if ($response->getStatusCode() !== 200) {
-            throw new EWSClientError($response->getStatusCode() . ' error', 0, null, []);
+            throw new EWSClientError($response->getStatusCode().' error', 0, null, []);
         }
 
         $body = json_decode($body, true);
@@ -302,30 +317,32 @@ class EWSClient implements LoggerAwareInterface
     }
 
     /**
+     * @param string $transactionId
      * @param string $method
      * @param string $uri
-     * @param array $options
+     * @param array  $options
      */
-    private function logRequest($method, $uri, $options)
+    private function logRequest($transactionId, $method, $uri, $options)
     {
         if ($this->isLoggingEnabled()) {
             $data = $this->getRequestDataFromOptions($options);
 
-            $this->getLogger()->info($this->formatRequestLogMessage($method, $uri, $data));
+            $this->getLogger()->info($this->formatRequestLogMessage($transactionId, $method, $uri, $data));
         }
     }
 
     /**
+     * @param string            $transactionId
      * @param string            $method
      * @param string            $uri
      * @param ResponseInterface $response
      */
-    private function logResponse($method, $uri, ResponseInterface $response)
+    private function logResponse($transactionId, $method, $uri, ResponseInterface $response)
     {
         if ($this->isLoggingEnabled()) {
             $data = $this->getResponseDataFromResponse($response);
 
-            $this->getLogger()->info($this->formatResponseLogMessage($method, $uri, $data));
+            $this->getLogger()->info($this->formatResponseLogMessage($transactionId, $method, $uri, $data));
         }
     }
 
@@ -346,69 +363,45 @@ class EWSClient implements LoggerAwareInterface
      * @param ResponseInterface $response
      * @return string
      */
-    private function getResponseDataFromResponse(ResponseInterface $response) {
+    private function getResponseDataFromResponse(ResponseInterface $response)
+    {
         return $response->getBody()->getContents();
     }
 
     /**
-     * @return array
-     */
-    private function getCallAndCallEntityFromBacktrace()
-    {
-        // This is a little bit of a 'dangerous' method as it's trying to guess at information based on what it knows
-        // about how things are formatted in this module. If the structure changes, this will break... Loudly!
-
-        $call = null;
-        $callEntity = null;
-        foreach (debug_backtrace() as $stepData) {
-            // Iterate back through the backtrack until we come to the first item that contains an 'object' that extends
-            // EWSObject, but that isn't it!
-
-            if (array_key_exists('object', $stepData) && $stepData['object'] instanceof EWSObject && substr(get_class($stepData['object']), -9, 9)) {
-                $call = $stepData['function'];
-                $callEntityParts = explode('\\', get_class($stepData['object']));
-                $callEntity = $callEntityParts[count($callEntityParts) - 1];
-            }
-        }
-
-        if ($call === null || $callEntity === null) {
-            throw new \RuntimeException('I cannot figure out what the caller was. getCallAndCallEntityFromBacktrace() needs work!');
-        }
-
-        return [$call, $callEntity];
-    }
-
-    /**
+     * @param string      $transactionId
      * @param string      $method
      * @param string      $uri
      * @param string|null $data
      * @return mixed
      */
-    private function formatRequestLogMessage($method, $uri, $data = null)
+    private function formatRequestLogMessage($transactionId, $method, $uri, $data = null)
     {
-        return $this->formatLogMessage($method, $uri, 'request', $data);
+        return $this->formatLogMessage($transactionId, $method, $uri, 'request', $data);
     }
 
     /**
+     * @param string      $transactionId
      * @param string      $method
      * @param string      $uri
      * @param string|null $data
      * @return mixed
      */
-    private function formatResponseLogMessage($method, $uri, $data = null)
+    private function formatResponseLogMessage($transactionId, $method, $uri, $data = null)
     {
-        return $this->formatLogMessage($method, $uri, 'response', $data);
+        return $this->formatLogMessage($transactionId, $method, $uri, 'response', $data);
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param string $callType
+     * @param string      $transactionId
+     * @param string      $method
+     * @param string      $uri
+     * @param string      $callType
      * @param string|null $data
      * @return mixed
      */
-    private function formatLogMessage($method, $uri, $callType, $data = null)
+    private function formatLogMessage($transactionId, $method, $uri, $callType, $data = null)
     {
-        return implode("\t", [$this->getLogId(), $method, $uri, $callType, $data]);
+        return implode("\t", [$this->getLogId(), $transactionId, $method, $uri, $callType, $data]);
     }
 }
