@@ -1,5 +1,8 @@
 {
     "name": "crukorg/cruk-event-sdk",
+    "version": "2.0.4",
+    "license": "proprietary",
+    "type": "library",
     "description": "CRUK Event Web Services SDK",
     "authors": [
         {
