@@ -158,9 +158,18 @@ abstract class EWSObject
         foreach ($structure as $array_key => $key) {
             if (is_array($key)) {
                 foreach ($key as $key2) {
-                    $value = $this->getValueFromKey($key2);
-                    if (!is_null($value)) {
-                        $returnArray[$array_key][$key2] = $value;
+                    if (is_array($key2)) {
+                        foreach ($key2 as $key3) {
+                            $value = $this->getValueFromKey($key3);
+                            if (!is_null($value)) {
+                                $returnArray[$array_key][$key3] = $value;
+                            }
+                        }
+                    } else {
+                        $value = $this->getValueFromKey($key2);
+                        if (!is_null($value)) {
+                            $returnArray[$key2] = $value;
+                        }
                     }
                 }
             } else {
