@@ -31,36 +31,42 @@ class TicketType extends EWSObject {
   private $cost;
 
   /**
-   * @var ArrayCollection|SalesChannel[] The sales channel
-   */
-  private $salesChannels;
-
-  /**
    * @var \DateTime Created timestamp
    */
   private $created;
 
   /**
-   * @var \DateTime Updated timestamp
+   * @var Updated timestamp
    */
   private $updated;
 
   /**
-   * @var ArrayCollection|Ticket[]
+   * @var Array|Ticket[]
    */
   private $tickets;
 
-  // @TODO: Remove once max / min is returned
-  private $minTickets = 1;
-  private $maxTickets = 10;
-  private $description = 'The Golden Ticket (remove when returned by API)';
+  /**
+   * @var Array|TicketTypeconstraint[]
+   */
+  private $constraint;
+
+  /**
+   * @var Array|TicketTyperequirement[]
+   */
+  private $requirement;
+
+  /**
+   * @var string
+   */
+  private $description;
 
   /**
    * TicketType constructor.
    */
   public function __construct(EWSClient $client, $data)
   {
-    $this->salesChannels = array();
+    $this->constraint = array();
+    $this->requirement = array();
     parent::__construct($client, $data);
   }
 
@@ -126,28 +132,6 @@ class TicketType extends EWSObject {
   public function getMaxTickets()
   {
     return $this->maxTickets;
-  }
-
-  /**
-   * @return int
-   */
-  public function getDescription()
-  {
-    return $this->description;
-  }
-
-  /**
-   * @param $salesChannels
-   * @return TicketType
-   */
-  public function setSalesChannels($salesChannels = [])
-  {
-    $this->salesChannels = array();
-    foreach ($salesChannels as $salesChannel) {
-      $this->salesChannels[] = $salesChannel;
-    }
-
-    return $this;
   }
 
   /**
@@ -220,6 +204,29 @@ class TicketType extends EWSObject {
   }
 
   /**
+   * Set description
+   *
+   * @param string $description
+   * @return TicketType
+   */
+  public function setDescription($description)
+  {
+    $this->description = $description;
+
+    return $this;
+  }
+
+  /**
+   * Get description
+   *
+   * @return string
+   */
+  public function getDescription()
+  {
+    return $this->description;
+  }
+
+  /**
    * @return \DateTime
    */
   public function getCreated()
@@ -266,6 +273,57 @@ class TicketType extends EWSObject {
   }
 
   /**
+   * @return getTicketTyperequirement[]|ArrayCollection
+   */
+  public function getRequirement()
+  {
+    return $this->requirement;
+  }
+
+  /**
+   * @param setrequirement[]|ArrayCollection $ticketTyperequirement
+   * @return TicketType
+   */
+  public function setRequirement($requirement)
+  {
+    if (is_array($requirement)) {
+      $this->requirement = new TicketTypeRequirement($this->client, $requirement, $this);
+    }
+    elseif (is_object($requirement)) {
+      $this->requirement = $requirement;
+    }
+
+    return $this;
+  }
+
+
+  /**
+   * @return TicketTypeconstraint[]|ArrayCollection
+   */
+  public function getConstraint()
+  {
+    return $this->constraint;
+  }
+
+  /**
+   * @param TicketTypeconstraint[]|ArrayCollection $ticketTypeconstraint
+   * @return TicketType
+   */
+  public function setConstraint($constraint)
+  {
+    $this->constraint = array();
+
+    if (is_array($constraint)) {
+      $this->constraint = new TicketTypeConstraint($this->client, $constraint, $this);
+    }
+    elseif (is_object($constraint)) {
+      $this->constraint = $constraint;
+    }
+
+    return $this;
+  }
+
+  /**
    * Simple function to return the URI for loading the ticket types.
    *
    * @return string
@@ -295,9 +353,10 @@ class TicketType extends EWSObject {
       'id',
       'ticketTypeCode',
       'ticketTypeName',
-      'capacityGroup',
       'cost',
-      'salesChannels',
+      'requirement',
+      'description',
+      'constraint',
       'created',
       'updated',
       'tickets',

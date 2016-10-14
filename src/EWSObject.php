@@ -190,7 +190,9 @@ abstract class EWSObject
      */
     public function getValueFromKey($key)
     {
+
         $getter = 'get' . ucfirst($key);
+        dpm($getter);
         if (method_exists($this, $getter)) {
             $value = $this->$getter();
             if (is_object($value)) {
