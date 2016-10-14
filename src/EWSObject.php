@@ -192,7 +192,6 @@ abstract class EWSObject
     {
 
         $getter = 'get' . ucfirst($key);
-        dpm($getter);
         if (method_exists($this, $getter)) {
             $value = $this->$getter();
             if (is_object($value)) {
