@@ -247,4 +247,10 @@ class Reservation extends EWSObject {
     ];
   }
 
+  public function addParticipant($ticket_id, $data) {
+    // @TODO: Move this call into a Ticket entity
+    $response = $this->client->requestJson('PATCH', "tickets/{$ticket_id}", ['json' => $data]);
+    return $this;
+  }
+
 }

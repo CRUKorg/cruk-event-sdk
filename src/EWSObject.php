@@ -99,6 +99,7 @@ abstract class EWSObject
     public function load()
     {
         $response = $this->client->requestJson('GET', $this->getUri());
+        dpm($response);
         $this->populate($response);
         return $this;
     }

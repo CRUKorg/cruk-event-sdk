@@ -16,6 +16,16 @@ class TicketTypeRequirement extends EWSObject {
   private $requireEmergencyContact;
 
   /**
+   * @var boolean
+   */
+  private $requireFundraisingRestrictions;
+
+  /**
+   * @var boolean
+   */
+  private $requireMotivation;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -57,6 +67,38 @@ class TicketTypeRequirement extends EWSObject {
   public function setRequireEmergencyContact($requireEmergencyContact)
   {
     $this->requireEmergencyContact = $requireEmergencyContact;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function getRequireFundraisingRestrictions()
+  {
+    return $this->requireEmergencyContact;
+  }
+
+  /**
+   * @param boolean $requireFundraisingRestrictions
+   */
+  public function setRequireFundraisingRestrictions($requireFundraisingRestrictions)
+  {
+    $this->requireFundraisingRestrictions = $requireFundraisingRestrictions;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function getRequireMotivation()
+  {
+    return $this->requireMotivation;
+  }
+
+  /**
+   * @param boolean $requireMotivation
+   */
+  public function setRequireMotivation($requireMotivation)
+  {
+    $this->requireMotivation = $requireMotivation;
   }
 
   /**
@@ -126,6 +168,8 @@ class TicketTypeRequirement extends EWSObject {
     return [
       'id',
       'requireEmergencyContact',
+      'requireFundraisingRestrictions',
+      'requireMotivation'
     ];
   }
 

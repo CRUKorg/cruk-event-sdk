@@ -124,7 +124,7 @@ class Registration extends EWSObject {
   /**
    * @param string $donation
    */
-  public function setReservation($reservations) {
+  public function setReservations($reservations) {
     $this->reservations = array();
     foreach ($reservations as $reservation) {
       if (is_array($reservation)) {
@@ -134,6 +134,8 @@ class Registration extends EWSObject {
         $this->reservations[] = $reservation;
       }
     }
+
+
 
     return $this;
   }
@@ -196,7 +198,7 @@ class Registration extends EWSObject {
   public function createReservation($data) {
     $reservation = new Reservation($this->client, $data, $this);
     $reservation->create();
-    $this->setReservation($reservation);
+    $this->setReservations($reservation);
     return $reservation;
   }
 }
