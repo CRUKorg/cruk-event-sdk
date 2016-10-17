@@ -35,9 +35,7 @@ class Registration extends EWSObject {
    * @param mixed $data
    * @param Event $event
    */
-  public function __construct(EWSClient $client, $data, Event $event)
-  {
-    $this->event = $event;
+  public function __construct(EWSClient $client, $data) {
     $this->reservations = array();
     parent::__construct($client, $data);
   }
@@ -47,8 +45,7 @@ class Registration extends EWSObject {
    *
    * @return string
    */
-  public function getId()
-  {
+  public function getId() {
     return $this->id;
   }
 
@@ -58,8 +55,7 @@ class Registration extends EWSObject {
    * @param \DateTime $created
    * @return Registration
    */
-  public function setCreated($created)
-  {
+  public function setCreated($created) {
     $this->created = $created;
 
     return $this;
@@ -70,8 +66,7 @@ class Registration extends EWSObject {
    *
    * @return \DateTime
    */
-  public function getCreated()
-  {
+  public function getCreated() {
     return $this->created;
   }
 
@@ -81,8 +76,7 @@ class Registration extends EWSObject {
    * @param \DateTime $updated
    * @return Registration
    */
-  public function setUpdated($updated)
-  {
+  public function setUpdated($updated) {
     $this->updated = $updated;
 
     return $this;
@@ -93,8 +87,7 @@ class Registration extends EWSObject {
    *
    * @return \DateTime
    */
-  public function getUpdated()
-  {
+  public function getUpdated() {
     return $this->updated;
   }
 
@@ -104,8 +97,7 @@ class Registration extends EWSObject {
    * @param RegistrationStatus|null $registrationStatus
    * @return Registration
    */
-  public function setRegistrationStatus($registrationStatus = null)
-  {
+  public function setRegistrationStatus($registrationStatus = NULL) {
     $this->registrationStatus = $registrationStatus;
 
     return $this;
@@ -116,8 +108,7 @@ class Registration extends EWSObject {
    *
    * @return RegistrationStatus
    */
-  public function getRegistrationStatus()
-  {
+  public function getRegistrationStatus() {
     return $this->registrationStatus;
   }
 
@@ -126,17 +117,25 @@ class Registration extends EWSObject {
    *
    * @return ArrayCollection|Reservation[]
    */
-  public function getReservations()
-  {
+  public function getReservations() {
     return $this->reservations;
   }
 
   /**
    * @param string $donation
    */
-  public function setReservation($donation)
-  {
-    // TODO:
+  public function setReservation($reservations) {
+    $this->reservations = array();
+    foreach ($reservations as $reservation) {
+      if (is_array($reservation)) {
+        $this->reservations[] = new Reservation($this->client, $reservation, $this);
+      }
+      elseif (is_object($reservation)) {
+        $this->reservations[] = $reservation;
+      }
+    }
+
+    return $this;
   }
 
   /**
@@ -194,9 +193,8 @@ class Registration extends EWSObject {
     ];
   }
 
-  public function createReservation($data)
-  {
-    $reservation = new Reservation($this->client, $data, $this->event, $this);
+  public function createReservation($data) {
+    $reservation = new Reservation($this->client, $data, $this);
     $reservation->create();
     $this->setReservation($reservation);
     return $reservation;

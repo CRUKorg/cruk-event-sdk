@@ -384,7 +384,17 @@ class Event extends EWSObject {
   }
 
   public function setWaves($waves) {
-    $this->waves = $waves;
+    $this->waves = array();
+    foreach ($waves as $wave) {
+      if (is_array($wave)) {
+        $this->waves[] = new Wave($this->client, $wave, $this);
+      }
+      elseif (is_object($capacityGroup)) {
+        $this->waves[] = $wave;
+      }
+    }
+
+    return $this;
   }
 
   public function getAllowedOpenWaves() {
@@ -420,22 +430,6 @@ class Event extends EWSObject {
   }
 
   /**
-   * Create a new registration for an event
-   *
-   * @param integer $numTickets
-   *   Number of tickets required (must be an integer between 1 and 10).
-   * @return Registration
-   *   Response body containing the new registration
-   */
-  public function createRegistration($numTickets = 1)
-  {
-    $registration = new Registration($this->client, ['tickets' => $numTickets], $this);
-    $this->registrations[] = $registration;
-    $registration->create();
-    return $registration;
-  }
-
-  /**
    * Simple function to return the URI for creating the Event.
    *
    * @return string
@@ -445,113 +439,113 @@ class Event extends EWSObject {
     return $this->client->getPath() . "/events";
   }
 
-    /**
-     * Simple function to return the URI that should be used to search for objects
-     * from the EWS.
-     *
-     * @return string
-     */
-    protected function getSearchUri() {
-      // Should possibly throw an error here, as this does not exist.
-      return $this->client->getPath() . "/events";
-    }
+  /**
+   * Simple function to return the URI that should be used to search for objects
+   * from the EWS.
+   *
+   * @return string
+   */
+  protected function getSearchUri() {
+    // Should possibly throw an error here, as this does not exist.
+    return $this->client->getPath() . "/events";
+  }
 
-    /**
-     * Get the availability for this event. We do not store this locally, as it is a volatile value.
-     *
-     * @return array
-     *   Array containing the event capacity and remaining ticket capacity
-     */
-    public function getAvailability($channel = 'web') {
-      $uri = $this->client->getPath() . "/events/{$this->eventCode}/availability?salesChannel={$channel}";
-      return $this->client->requestJson('GET', $uri);
-    }
+  /**
+   * Get the availability for this event. We do not store this locally, as it is a volatile value.
+   *
+   * @return array
+   *   Array containing the event capacity and remaining ticket capacity
+   */
+  public function getAvailability($channel = 'web') {
+    $uri = $this->client->getPath() . "/events/{$this->eventCode}/availability?salesChannel={$channel}";
+    return $this->client->requestJson('GET', $uri);
+  }
 
-    /**
-     * Simple function to return the idKey of a class. This allows us to use
-     * a common populate function across all objects/classes.
-     */
-    protected function getIdKey() {
-      return 'eventCode';
-    }
+  /**
+   * Simple function to return the idKey of a class. This allows us to use
+   * a common populate function across all objects/classes.
+   */
+  protected function getIdKey() {
+    return 'eventCode';
+  }
 
-    /**
-     * Simple function to return the structure of the class. This defines how the
-     * object should be built and delivered as an array.
-     */
-    protected function getArrayStructure() {
-      return [
-        'id',
-        'eventName',
-        'eventCode',
-        'previousEventCode',
-        'organiserCategory',
-        'eventStatus',
-        'cancellationReason',
-        'cancellationReasonDescription',
-        'description',
-        'criticalAmendMessage',
-        'owner',
-        'startDateTime',
-        'endDateTime',
-        'venueReference',
-        'subPropositionReference',
-        'fundraisingRestriction',
-        'fundraisingProduct',
-        'eventTypes',
-        'venueInfo',
-        'distance',
-        'distanceUnit',
-        'ageFrom',
-        'ageTo',
-        'gender',
-        'financialYear',
-        'runningNumberRequired',
-        'waves',
-        'allowedOpenWaves',
-        'configs',
-        'created',
-        'updated',
-      ];
-    }
+  /**
+   * Simple function to return the structure of the class. This defines how the
+   * object should be built and delivered as an array.
+   */
+  protected function getArrayStructure() {
+    return [
+      'id',
+      'eventName',
+      'eventCode',
+      'previousEventCode',
+      'organiserCategory',
+      'eventStatus',
+      'cancellationReason',
+      'cancellationReasonDescription',
+      'description',
+      'criticalAmendMessage',
+      'owner',
+      'startDateTime',
+      'endDateTime',
+      'venueReference',
+      'subPropositionReference',
+      'fundraisingRestriction',
+      'fundraisingProduct',
+      'eventTypes',
+      'venueInfo',
+      'distance',
+      'distanceUnit',
+      'ageFrom',
+      'ageTo',
+      'gender',
+      'financialYear',
+      'runningNumberRequired',
+      'waves',
+      'allowedOpenWaves',
+      'configs',
+      'created',
+      'updated',
+    ];
+  }
 
-    /**
-     * Simple function to return an array of Events based on search criteria.
-     *
-     * @param EWSClient $client
-     *   Client.
-     * @param array $query
-     *   Query array for building the query string.
-     * @param string $class
-     *   Class name of the objects to create with the results.
-     * @param string $path
-     *   Path to the API.
-     *
-     * @return array
-     *
-     * @throws EWSClientError
-     */
-    public static function search($client, $query, $class = '\Cruk\EventSdk\Event', $path = '/events') {
-      return parent::search($client, $query, $class, $path);
-    }
+  /**
+   * Simple function to return an array of Events based on search criteria.
+   *
+   * @param EWSClient $client
+   *   Client.
+   * @param array $query
+   *   Query array for building the query string.
+   * @param string $class
+   *   Class name of the objects to create with the results.
+   * @param string $path
+   *   Path to the API.
+   *
+   * @return array
+   *
+   * @throws EWSClientError
+   */
+  public static function search($client, $query, $class = '\Cruk\EventSdk\Event', $path = '/events') {
+    return parent::search($client, $query, $class, $path);
+  }
 
-    /**
-     * Simple function to return an array of Events based on search criterias.
-     *
-     * @param EWSClient $client
-     *   Client.
-     * @param array $queries
-     *   Array of query arrays for building the query string.
-     * @param string $class
-     *   Class name of the objects to create with the results.
-     * @param string $path
-     *   Path to the API.
-     *
-     * @return array
-     *
-     * @throws EWSClientError
-     */
-    public static function searches($client, $queries, $class = '\Cruk\EventSdk\Event', $path = '/events') {
-      return parent::searches($client, $queries, $class, $path);
-    }
+  /**
+   * Simple function to return an array of Events based on search criterias.
+   *
+   * @param EWSClient $client
+   *   Client.
+   * @param array $queries
+   *   Array of query arrays for building the query string.
+   * @param string $class
+   *   Class name of the objects to create with the results.
+   * @param string $path
+   *   Path to the API.
+   *
+   * @return array
+   *
+   * @throws EWSClientError
+   */
+  public static function searches($client, $queries, $class = '\Cruk\EventSdk\Event', $path = '/events') {
+    return parent::searches($client, $queries, $class, $path);
+  }
 }

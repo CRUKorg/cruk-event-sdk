@@ -54,7 +54,7 @@ class Reservation extends EWSObject {
   public function __construct(EWSClient $client, $data, Registration $registration) {
     $this->registration = $registration;
     parent::__construct($client, $data);
-  }you
+  }
 
   public function setId($id) {
     $this->id = $id;
@@ -65,8 +65,7 @@ class Reservation extends EWSObject {
    *
    * @return string
    */
-  public function getId()
-  {
+  public function getId() {
     return $this->id;
   }
 
@@ -76,8 +75,7 @@ class Reservation extends EWSObject {
    * @param \DateTime $timeoutDateTime
    * @return Reservation
    */
-  public function setTimeoutDateTime($timeoutDateTime)
-  {
+  public function setTimeoutDateTime($timeoutDateTime) {
     $this->timeoutDateTime = $timeoutDateTime;
 
     return $this;
@@ -88,8 +86,7 @@ class Reservation extends EWSObject {
    *
    * @return \DateTime
    */
-  public function getTimeoutDateTime()
-  {
+  public function getTimeoutDateTime() {
     return $this->timeoutDateTime;
   }
 
@@ -100,8 +97,7 @@ class Reservation extends EWSObject {
    *
    * @return Reservation
    */
-  public function setSalesChannel($salesChannel = null)
-  {
+  public function setSalesChannel($salesChannel = NULL) {
     $this->salesChannel = $salesChannel;
 
     return $this;
@@ -112,8 +108,7 @@ class Reservation extends EWSObject {
    *
    * @return SalesChannel
    */
-  public function getSalesChannel()
-  {
+  public function getSalesChannel() {
     return $this->salesChannel;
   }
 
@@ -124,8 +119,7 @@ class Reservation extends EWSObject {
    * @param \DateTime $created
    * @return Reservation
    */
-  public function setCreated($created)
-  {
+  public function setCreated($created) {
     $this->created = $created;
 
     return $this;
@@ -136,8 +130,7 @@ class Reservation extends EWSObject {
    *
    * @return \DateTime
    */
-  public function getCreated()
-  {
+  public function getCreated() {
     return $this->created;
   }
 
@@ -147,8 +140,7 @@ class Reservation extends EWSObject {
    * @param \DateTime $updated
    * @return Reservation
    */
-  public function setUpdated($updated)
-  {
+  public function setUpdated($updated) {
     $this->updated = $updated;
 
     return $this;
@@ -159,8 +151,7 @@ class Reservation extends EWSObject {
    *
    * @return \DateTime
    */
-  public function getUpdated()
-  {
+  public function getUpdated() {
     return $this->updated;
   }
 
@@ -170,8 +161,7 @@ class Reservation extends EWSObject {
    * @param ReservationStatus|null $reservationStatus
    * @return Reservation
    */
-  public function setReservationStatus($reservationStatus = null)
-  {
+  public function setReservationStatus($reservationStatus = NULL) {
     $this->reservationStatus = $reservationStatus;
 
     return $this;
@@ -182,17 +172,27 @@ class Reservation extends EWSObject {
    *
    * @return ReservationStatus
    */
-  public function getReservationStatus()
-  {
+  public function getReservationStatus() {
     return $this->reservationStatus;
   }
 
   /**
    * @return Ticket[]
    */
-  public function getTickets()
-  {
+  public function getTickets() {
     return $this->tickets;
+  }
+
+  /**
+   * Set tickets
+   *
+   * @param ReservationStatus|null $reservationStatus
+   * @return Reservation
+   */
+  public function setTickets($tickets) {
+    $this->tickets = $tickets;
+
+    return $this;
   }
 
   /**
@@ -212,7 +212,7 @@ class Reservation extends EWSObject {
    */
   public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/registrations/{$this->registration->getId()}/reservations";
+    return $this->client->getPath() . "/registrations/{$this->registration->getId()}/reservations?salesChannel={$this->salesChannel}";
   }
 
   /**
@@ -239,7 +239,11 @@ class Reservation extends EWSObject {
    */
   protected function getArrayStructure() {
     return [
-      ''
+      'id',
+      'status',
+      'timeoutDateTime',
+      'salesChannel',
+      'tickets'
     ];
   }
 

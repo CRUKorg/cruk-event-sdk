@@ -89,6 +89,11 @@ class Wave extends EWSObject {
    */
   private $updated;
 
+
+  public function __construct(EWSClient $client, $data, Event $event = NULL) {
+    parent::__construct($client, $data);
+  }
+
   /**
    * Simple function to return the URI for loading the Event.
    *
