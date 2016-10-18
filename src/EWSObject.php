@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  *
  * Simple file to create the EWS interface that all other EWS classes will implement.
  */
-abstract class EWSObject
+abstract class EWSObject implements \JsonSerializable
 {
 
     /** @var EWSClient */
@@ -22,7 +22,7 @@ abstract class EWSObject
      * @var array
      */
     protected $fieldsToPatch;
-    
+
     /**
      * Create a new EWSObject
      *
@@ -327,5 +327,13 @@ abstract class EWSObject
             }
         }
         return $objects;
+    }
+
+    /**
+     * Returns data for a JSON representation of this object
+     */
+    public function jsonSerialize()
+    {
+       return $this->asArray();
     }
 }
