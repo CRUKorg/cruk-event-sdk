@@ -26,6 +26,11 @@ class TicketTypeRequirement extends EWSObject {
   private $requireMotivation;
 
   /**
+   * @var string
+   */
+  private $requireEventKit;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -100,6 +105,19 @@ class TicketTypeRequirement extends EWSObject {
   {
     $this->requireMotivation = $requireMotivation;
   }
+  /**
+   * @return string
+   */
+  public function getRequireEventKit() {
+    return $this->requireEventKit;
+  }
+
+  /**
+   * @param string $requireEventKit
+   */
+  public function setRequireEventKit($requireEventKit) {
+    $this->requireEventKit = $requireEventKit;
+  }
 
   /**
    * @return \DateTime
@@ -169,7 +187,8 @@ class TicketTypeRequirement extends EWSObject {
       'id',
       'requireEmergencyContact',
       'requireFundraisingRestrictions',
-      'requireMotivation'
+      'requireMotivation',
+      'requireEventKit'
     ];
   }
 
