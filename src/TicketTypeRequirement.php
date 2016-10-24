@@ -26,6 +26,16 @@ class TicketTypeRequirement extends EWSObject {
   private $requireMotivation;
 
   /**
+   * @var boolean
+   */
+  private $requireParentalConsent;
+
+  /**
+   * @var boolean
+   */
+  private $requireParentalConsentContact;
+
+  /**
    * @var string
    */
   private $requireEventKit;
@@ -105,6 +115,35 @@ class TicketTypeRequirement extends EWSObject {
   {
     $this->requireMotivation = $requireMotivation;
   }
+
+  /**
+   * @return boolean
+   */
+  public function getRequireParentalConsent() {
+    return $this->requireParentalConsent;
+  }
+
+  /**
+   * @param boolean $requireParentalConsent
+   */
+  public function setRequireParentalConsent($requireParentalConsent) {
+    $this->requireParentalConsent = $requireParentalConsent;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getRequireParentalConsentContact() {
+    return $this->requireParentalConsentContact;
+  }
+
+  /**
+   * @param mixed $requireParentalConsentContact
+   */
+  public function setRequireParentalConsentContact($requireParentalConsentContact) {
+    $this->requireParentalConsentContact = $requireParentalConsentContact;
+  }
+
   /**
    * @return string
    */
@@ -187,6 +226,8 @@ class TicketTypeRequirement extends EWSObject {
       'id',
       'requireEmergencyContact',
       'requireFundraisingRestrictions',
+      'requireParentalConsent',
+      'requireParentalConsentContact',
       'requireMotivation',
       'requireEventKit'
     ];
