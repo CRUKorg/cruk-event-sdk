@@ -89,7 +89,7 @@ class TicketTypeRequirement extends EWSObject {
    */
   public function getRequireFundraisingRestrictions()
   {
-    return $this->requireEmergencyContact;
+    return $this->requireFundraisingRestrictions;
   }
 
   /**
