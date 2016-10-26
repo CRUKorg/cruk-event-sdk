@@ -191,7 +191,7 @@ class EWSClient implements LoggerAwareInterface
 
         // Throw an error if we didn't get a 200 code
         if ($response->getStatusCode() !== 200) {
-            throw new EWSClientError($response->getStatusCode().' error', 0, null, []);
+            throw new EWSClientError($response->getStatusCode().' error', 0, null, drupal_json_decode($body));
         }
 
         $body = json_decode($body, true);

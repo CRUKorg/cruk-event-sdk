@@ -2,6 +2,10 @@
 
 namespace Cruk\EventSdk;
 
+/**
+ * Class Reservation
+ * @package Cruk\EventSdk
+ */
 class Reservation extends EWSObject {
 
 
@@ -247,10 +251,16 @@ class Reservation extends EWSObject {
     ];
   }
 
+  /**
+   * Post participant / person data to the tickets
+   * @param $ticket_id
+   * @param $data
+   * @return mixed
+   */
   public function addParticipant($ticket_id, $data) {
     // @TODO: Move this call into a Ticket entity
-    $response = $this->client->requestJson('PATCH', "tickets/{$ticket_id}", ['json' => $data]);
-    return $this;
+    $response = $this->client->requestJson('POST', $this->client->getPath() . "/tickets/{$ticket_id}/participants", ['json' => $data]);
+    return $response;
   }
 
 }
