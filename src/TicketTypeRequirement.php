@@ -28,6 +28,26 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * @var boolean
    */
+  private $requireFundraisingTarget;
+
+  /**
+   * @var boolean
+   */
+  private $requireMinimumFundraisingTarget;
+
+  /**
+   * @var integer
+   */
+  private $minimumFundraisingTarget;
+
+  /**
+   * @var string
+   */
+  private $fundraisingTargetSupportingCopy;
+
+  /**
+   * @var boolean
+   */
   private $requireParentalConsent;
 
   /**
@@ -89,7 +109,7 @@ class TicketTypeRequirement extends EWSObject {
    */
   public function getRequireFundraisingRestrictions()
   {
-    return $this->requireEmergencyContact;
+    return $this->requireFundraisingRestrictions;
   }
 
   /**
@@ -114,6 +134,62 @@ class TicketTypeRequirement extends EWSObject {
   public function setRequireMotivation($requireMotivation)
   {
     $this->requireMotivation = $requireMotivation;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function isRequireFundraisingTarget() {
+    return $this->requireFundraisingTarget;
+  }
+
+  /**
+   * @param boolean $requireFundraisingTarget
+   */
+  public function setRequireFundraisingTarget($requireFundraisingTarget) {
+    $this->requireFundraisingTarget = $requireFundraisingTarget;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function isRequireMinimumFundraisingTarget() {
+    return $this->requireMinimumFundraisingTarget;
+  }
+
+  /**
+   * @param boolean $requireMinimumFundraisingTarget
+   */
+  public function setRequireMinimumFundraisingTarget($requireMinimumFundraisingTarget) {
+    $this->requireMinimumFundraisingTarget = $requireMinimumFundraisingTarget;
+  }
+
+  /**
+   * @return int
+   */
+  public function getMinimumFundraisingTarget() {
+    return $this->minimumFundraisingTarget;
+  }
+
+  /**
+   * @param int $minimumFundraisingTarget
+   */
+  public function setMinimumFundraisingTarget($minimumFundraisingTarget) {
+    $this->minimumFundraisingTarget = $minimumFundraisingTarget;
+  }
+
+  /**
+   * @return string
+   */
+  public function getFundraisingTargetSupportingCopy() {
+    return $this->fundraisingTargetSupportingCopy;
+  }
+
+  /**
+   * @param string $fundraisingTargetSupportingCopy
+   */
+  public function setFundraisingTargetSupportingCopy($fundraisingTargetSupportingCopy) {
+    $this->fundraisingTargetSupportingCopy = $fundraisingTargetSupportingCopy;
   }
 
   /**
@@ -229,6 +305,10 @@ class TicketTypeRequirement extends EWSObject {
       'requireParentalConsent',
       'requireParentalConsentContact',
       'requireMotivation',
+      'requireFundraisingTarget',
+      'requireMinimumFundraisingTarget',
+      'minimumFundraisingTarget',
+      'fundraisingTargetSupportingCopy',
       'requireEventKit'
     ];
   }
