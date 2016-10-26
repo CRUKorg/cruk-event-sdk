@@ -139,7 +139,7 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * @return boolean
    */
-  public function isRequireFundraisingTarget() {
+  public function getRequireFundraisingTarget() {
     return $this->requireFundraisingTarget;
   }
 
@@ -153,7 +153,7 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * @return boolean
    */
-  public function isRequireMinimumFundraisingTarget() {
+  public function getRequireMinimumFundraisingTarget() {
     return $this->requireMinimumFundraisingTarget;
   }
 
