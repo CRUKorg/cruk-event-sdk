@@ -39,6 +39,10 @@ class SubProposition extends EWSObject {
    */
   private $deleted;
 
+  public function __construct(EWSClient $client, $data, Proposition $proposition = NULL) {
+    parent::__construct($client, $data);
+  }
+
   /**
    * Get id
    *
@@ -194,9 +198,8 @@ class SubProposition extends EWSObject {
    *
    * @return string
    */
-  public function getCreateUri($propositionId) {
-    // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/propositions/{$propositionId}/sub-propositions";
+  public function getCreateUri() {
+    return $this->client->getPath() . "/propositions/{$this->proposition}/sub-propositions";
   }
 
   /**
@@ -206,8 +209,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   protected function getSearchUri() {
-    // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/propositions/{$propositionId}/sub-propositions";
+    return $this->client->getPath() . "/propositions/{$this->proposition}/sub-propositions";
   }
 
   /**
@@ -246,7 +248,7 @@ class SubProposition extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function search($client, $query, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$propositionId}/sub-propositions') {
+  public static function search($client, $query, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$this->propositionId}/sub-propositions') {
     return parent::search($client, $query, $class, $path);
   }
 
@@ -266,7 +268,7 @@ class SubProposition extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function searches($client, $queries, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$propositionId}/sub-propositions') {
+  public static function searches($client, $queries, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$this->propositionId}/sub-propositions') {
     return parent::searches($client, $queries, $class, $path);
   }
 }

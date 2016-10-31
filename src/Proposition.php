@@ -39,11 +39,6 @@ class Proposition extends EWSObject {
    */
   private $deleted;
 
-  public function __construct()
-  {
-    $this->subPropositions = new array();
-  }
-
   /**
    * Get id
    *
@@ -94,7 +89,12 @@ class Proposition extends EWSObject {
   {
     $this->subPropositions = array();
     foreach ($subPropositions as $subProposition) {
-      $this->SubPropositions[] = $subProposition;
+      if (is_array($subProposition)) {
+        $this->SubPropositions[] = new SubProposition($this->client, $subProposition, $this);
+      }
+      elseif (is_object($subProposition)) {
+        $this->SubPropositions[] = $wave;
+      }
     }
 
     return $this;
@@ -175,9 +175,9 @@ class Proposition extends EWSObject {
    *
    * @return string
    */
-  public function getCreateUri($propositionId) {
+  public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/propositions/{$propositionId}";
+    return $this->client->getPath() . "/propositions";
   }
 
   /**
