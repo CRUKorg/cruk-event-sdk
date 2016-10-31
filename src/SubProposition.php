@@ -40,6 +40,7 @@ class SubProposition extends EWSObject {
   private $deleted;
 
   public function __construct(EWSClient $client, $data, Proposition $proposition = NULL) {
+    $this->proposition = $proposition;
     parent::__construct($client, $data);
   }
 
@@ -186,7 +187,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/sub-propositions/{$this->id}";
+    return $this->client->getPath() . "/propositions/{$this->proposition->getId()}/sub-propositions/{$this->id}";
   }
 
   public function setId($id) {
@@ -199,7 +200,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   public function getCreateUri() {
-    return $this->client->getPath() . "/propositions/{$this->proposition}/sub-propositions";
+    return $this->client->getPath() . "/propositions/{$this->proposition->getId()}/sub-propositions";
   }
 
   /**
@@ -209,7 +210,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   protected function getSearchUri() {
-    return $this->client->getPath() . "/propositions/{$this->proposition}/sub-propositions";
+    return $this->client->getPath() . "/propositions/{$this->proposition->getId()}/sub-propositions";
   }
 
   /**
