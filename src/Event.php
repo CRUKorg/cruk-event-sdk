@@ -134,6 +134,11 @@ class Event extends EWSObject {
   private $runningNumberRequired;
 
   /**
+   * @var boolean
+   */
+  private $paidTicketsRequired;
+
+  /**
    * @var ArrayCollection|Wave[]
    */
   private $waves;
@@ -379,6 +384,20 @@ class Event extends EWSObject {
     $this->runningNumberRequired = $runningNumberRequired;
   }
 
+  /**
+   * @return boolean
+   */
+  public function getPaidTicketsRequired() {
+    return $this->paidTicketsRequired;
+  }
+
+  /**
+   * @param boolean $paidTicketsRequired
+   */
+  public function setPaidTicketsRequired($paidTicketsRequired) {
+    $this->paidTicketsRequired = $paidTicketsRequired;
+  }
+
   public function getWaves() {
     return $this->waves;
   }
@@ -501,6 +520,7 @@ class Event extends EWSObject {
       'gender',
       'financialYear',
       'runningNumberRequired',
+      'paidTicketsRequired',
       'waves',
       'allowedOpenWaves',
       'configs',
