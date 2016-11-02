@@ -116,6 +116,13 @@ class Venue extends EWSObject {
   /**
    * {@inheritdoc}
    */
+  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/venues') {
+    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function searches($client, $queries, $class = __CLASS__, $path = '/venues') {
     return parent::searches($client, $queries, $class, $path);
   }

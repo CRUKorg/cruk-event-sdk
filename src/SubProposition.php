@@ -249,8 +249,28 @@ class SubProposition extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function search($client, $query, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$this->propositionId}/sub-propositions') {
+  public static function search($client, $query, $class = __CLASS__, $path = '/propositions/{$this->propositionId}/sub-propositions') {
     return parent::search($client, $query, $class, $path);
+  }
+
+  /**
+   * Repeatedly perform a search of a paginated resource until there are no more results
+   *
+   * @param EWSClient $client
+   *   Client.
+   * @param array $query
+   *   Query array for building the query string.
+   * @param integer $pageSize
+   *   Number of results to request per page.
+   * @param string $class
+   *   Class name of the objects to create with the results.
+   * @param string $path
+   *   Path to the API.
+   *
+   * @return array
+   */
+  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/propositions/{$this->propositionId}/sub-propositions') {
+    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
   }
 
   /**
