@@ -53,6 +53,11 @@ class Reservation extends EWSObject {
   private $updated;
 
   /**
+   * @var
+   */
+  private $payment;
+
+  /**
    * Inital Setup
    */
   public function __construct(EWSClient $client, $data, Registration $registration) {
@@ -261,6 +266,18 @@ class Reservation extends EWSObject {
     // @TODO: Move this call into a Ticket entity
     $response = $this->client->requestJson('POST', $this->client->getPath() . "/tickets/{$ticket_id}/participants", ['json' => $data]);
     return $response;
+  }
+
+  /**
+   * @param $data
+   *
+   * @return mixed
+   */
+  public function createPayment($data) {
+    $payment = new Payment($this->client, $data, $this);
+    $this->payment = $payment;
+    $payment->create();
+    return $payment;
   }
 
 }
