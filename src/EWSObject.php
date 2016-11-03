@@ -300,6 +300,41 @@ abstract class EWSObject implements \JsonSerializable
     }
 
     /**
+     * Repeatedly perform a search of a paginated resource until there are no more results
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     * @param integer $pageSize
+     *   Number of results to request per page.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     */
+    public static function searchPaginated($client, $query, $pageSize, $class = '', $path = '') {
+      $page = 0;
+      $results = array();
+
+      if ($pageSize <= 0) {
+        return $results;
+      }
+
+      do {
+        $query['limit'] = $pageSize;
+        $query['offset'] = $pageSize * $page;
+        $pageResults = self::search($client, $query, $class, $path);
+        $results = array_merge($results, $pageResults);
+        $page++;
+      } while (count($pageResults) >= $pageSize);
+
+      return $results;
+    }
+
+    /**
      * Simple function to return an array of Participants based on search criteria.
      *
      * @param EWSClient $client
