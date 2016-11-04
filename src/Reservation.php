@@ -58,7 +58,7 @@ class Reservation extends EWSObject {
   private $payment;
 
   /**
-   * Inital Setup
+   * Initial Setup
    */
   public function __construct(EWSClient $client, $data, Registration $registration) {
     $this->registration = $registration;
@@ -67,6 +67,20 @@ class Reservation extends EWSObject {
 
   public function setId($id) {
     $this->id = $id;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getPayment() {
+    return $this->payment;
+  }
+
+  /**
+   * @param mixed $payment
+   */
+  public function setPayment($payment) {
+    $this->payment = $payment;
   }
 
   /**
@@ -252,7 +266,8 @@ class Reservation extends EWSObject {
       'status',
       'timeoutDateTime',
       'salesChannel',
-      'tickets'
+      'tickets',
+      'payment'
     ];
   }
 
@@ -280,4 +295,10 @@ class Reservation extends EWSObject {
     return $payment;
   }
 
+  /**
+   * @return string
+   */
+  public function completeReservation() {
+    return $this->client->getPath() . "/reservations/{$this->getId()}/complete";
+  }
 }
