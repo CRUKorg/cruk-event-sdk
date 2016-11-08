@@ -299,6 +299,6 @@ class Reservation extends EWSObject {
    * @return string
    */
   public function completeReservation() {
-    return $this->client->getPath() . "/reservations/{$this->getId()}/complete";
+    return $this->client->requestJson('POST', $this->client->getPath() . "/reservations/{$this->getId()}/complete");
   }
 }

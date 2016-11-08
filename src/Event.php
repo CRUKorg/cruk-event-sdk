@@ -94,7 +94,7 @@ class Event extends EWSObject {
   private $eventTypes;
 
   /**
-   * @var VenueInfo
+   * @var ArrayCollection|Venue[]
    */
   private $venueInfo;
 
@@ -326,6 +326,7 @@ class Event extends EWSObject {
 
   public function setVenueInfo($venueInfo) {
     $this->venueInfo = $venueInfo;
+    return $this;
   }
 
   public function getDistance() {
