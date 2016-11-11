@@ -36,7 +36,7 @@ class TicketTypeRequirement extends EWSObject {
   private $requireMinimumFundraisingTarget;
 
   /**
-   * @var integer
+   * @var float
    */
   private $minimumFundraisingTarget;
 
@@ -165,14 +165,14 @@ class TicketTypeRequirement extends EWSObject {
   }
 
   /**
-   * @return int
+   * @return float
    */
   public function getMinimumFundraisingTarget() {
     return $this->minimumFundraisingTarget;
   }
 
   /**
-   * @param int $minimumFundraisingTarget
+   * @param float $minimumFundraisingTarget
    */
   public function setMinimumFundraisingTarget($minimumFundraisingTarget) {
     $this->minimumFundraisingTarget = $minimumFundraisingTarget;
