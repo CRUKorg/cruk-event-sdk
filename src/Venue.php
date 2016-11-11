@@ -10,81 +10,56 @@ class Venue extends EWSObject {
   private $id;
 
   /**
-   * @var float
+   * @var string
    */
-  private $meetingPointLongitude;
-
-  /**
-   * @var float
-   */
-  private $meetingPointLatitude;
+  private $name;
 
   /**
    * @var string
    */
-  private $meetingPointDescription;
+  private $line1;
 
   /**
    * @var string
    */
-  private $courseDescription;
+  private $line2;
 
   /**
    * @var string
    */
-  private $accessibilityDescription;
+  private $line3;
 
   /**
    * @var string
    */
-  private $travelNotes;
+  private $city;
 
   /**
    * @var string
    */
-  private $spectatorAccessNotes;
+  private $postalCode;
 
   /**
-   * @var boolean
+   * @var string
    */
-  private $disabilityAccessible;
+  private $country;
 
   /**
-   * @var boolean
+   * @var string
    */
-  private $parkingAvailable;
+  private $latitude;
 
   /**
-   * @var boolean
+   * @var string
    */
-  private $dogsAllowed;
+  private $longitude;
 
   /**
-   * @var boolean
+   * @var string
    */
-  private $suitableForPushchairs;
+  private $status;
 
   /**
-   * @var boolean
-   */
-  private $showersAvailable;
-
-  /**
-   * @var boolean
-   */
-  private $toiletsAvailable;
-
-  /**
-   * @var boolean
-   */
-  private $bagDropAvailable;
-
-  /**
-   * @var boolean
-   */
-  private $refreshmentsAvailable;
-
-   /**
    * {@inheritdoc}
    */
   public function getUri() {
@@ -92,241 +67,17 @@ class Venue extends EWSObject {
   }
 
   /**
-   * @return string
-   */
-  public function getId() {
-    return $this->id;
-  }
-
-  /**
-   * @param string $id
-   */
-  public function setId($id) {
-    $this->id = $id;
-  }
-
-  /**
-   * @return float
-   */
-  public function getMeetingPointLongitude() {
-    return $this->meetingPointLongitude;
-  }
-
-  /**
-   * @param float $meetingPointLongitude
-   */
-  public function setMeetingPointLongitude($meetingPointLongitude) {
-    $this->meetingPointLongitude = $meetingPointLongitude;
-  }
-
-  /**
-   * @return float
-   */
-  public function getMeetingPointLatitude() {
-    return $this->meetingPointLatitude;
-  }
-
-  /**
-   * @param float $meetingPointLatitude
-   */
-  public function setMeetingPointLatitude($meetingPointLatitude) {
-    $this->meetingPointLatitude = $meetingPointLatitude;
-  }
-
-  /**
-   * @return string
-   */
-  public function getMeetingPointDescription() {
-    return $this->meetingPointDescription;
-  }
-
-  /**
-   * @param string $meetingPointDescription
-   */
-  public function setMeetingPointDescription($meetingPointDescription) {
-    $this->meetingPointDescription = $meetingPointDescription;
-  }
-
-  /**
-   * @return string
-   */
-  public function getCourseDescription() {
-    return $this->courseDescription;
-  }
-
-  /**
-   * @param string $courseDescription
-   */
-  public function setCourseDescription($courseDescription) {
-    $this->courseDescription = $courseDescription;
-  }
-
-  /**
-   * @return string
-   */
-  public function getAccessibilityDescription() {
-    return $this->accessibilityDescription;
-  }
-
-  /**
-   * @param string $accessibilityDescription
-   */
-  public function setAccessibilityDescription($accessibilityDescription) {
-    $this->accessibilityDescription = $accessibilityDescription;
-  }
-
-  /**
-   * @return string
-   */
-  public function getTravelNotes() {
-    return $this->travelNotes;
-  }
-
-  /**
-   * @param string $travelNotes
-   */
-  public function setTravelNotes($travelNotes) {
-    $this->travelNotes = $travelNotes;
-  }
-
-  /**
-   * @return string
-   */
-  public function getSpectatorAccessNotes() {
-    return $this->spectatorAccessNotes;
-  }
-
-  /**
-   * @param string $spectatorAccessNotes
-   */
-  public function setSpectatorAccessNotes($spectatorAccessNotes) {
-    $this->spectatorAccessNotes = $spectatorAccessNotes;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getDisabilityAccessible() {
-    return $this->disabilityAccessible;
-  }
-
-  /**
-   * @param boolean $disabilityAccessible
-   */
-  public function setDisabilityAccessible($disabilityAccessible) {
-    $this->disabilityAccessible = $disabilityAccessible;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getParkingAvailable() {
-    return $this->parkingAvailable;
-  }
-
-  /**
-   * @param boolean $parkingAvailable
-   */
-  public function setParkingAvailable($parkingAvailable) {
-    $this->parkingAvailable = $parkingAvailable;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getDogsAllowed() {
-    return $this->dogsAllowed;
-  }
-
-  /**
-   * @param boolean $dogsAllowed
-   */
-  public function setDogsAllowed($dogsAllowed) {
-    $this->dogsAllowed = $dogsAllowed;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getSuitableForPushchairs() {
-    return $this->suitableForPushchairs;
-  }
-
-  /**
-   * @param boolean $suitableForPushchairs
-   */
-  public function setSuitableForPushchairs($suitableForPushchairs) {
-    $this->suitableForPushchairs = $suitableForPushchairs;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getShowersAvailable() {
-    return $this->showersAvailable;
-  }
-
-  /**
-   * @param boolean $showersAvailable
-   */
-  public function setShowersAvailable($showersAvailable) {
-    $this->showersAvailable = $showersAvailable;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getToiletsAvailable() {
-    return $this->toiletsAvailable;
-  }
-
-  /**
-   * @param boolean $toiletsAvailable
-   */
-  public function setToiletsAvailable($toiletsAvailable) {
-    $this->toiletsAvailable = $toiletsAvailable;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getBagDropAvailable() {
-    return $this->bagDropAvailable;
-  }
-
-  /**
-   * @param boolean $bagDropAvailable
-   */
-  public function setBagDropAvailable($bagDropAvailable) {
-    $this->bagDropAvailable = $bagDropAvailable;
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getRefreshmentsAvailable() {
-    return $this->refreshmentsAvailable;
-  }
-
-  /**
-   * @param boolean $refreshmentsAvailable
-   */
-  public function setRefreshmentsAvailable($refreshmentsAvailable) {
-    $this->refreshmentsAvailable = $refreshmentsAvailable;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getCreateUri() {
-    throw new EWSClientError('Unable to create Venues');
+    return $this->client->getPath() . "/venues";
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getSearchUri() {
-    throw new EWSClientError('Unable to search for Venues');
+    return $this->client->getPath() . "/venues";
   }
 
   /**
@@ -342,22 +93,125 @@ class Venue extends EWSObject {
   protected function getArrayStructure() {
     return [
       'id',
-      'meetingPointLongitude',
-      'meetingPointLatitude',
-      'meetingPointDescription',
-      'courseDescription',
-      'accessibilityDescription',
-      'travelNotes',
-      'spectatorAccessNotes',
-      'disabilityAccessible',
-      'parkingAvailable',
-      'dogsAllowed',
-      'suitableForPushchairs',
-      'showersAvailable',
-      'toiletsAvailable',
-      'bagDropAvailable',
-      'refreshmentsAvailable',
+      'name',
+      'line1',
+      'line2',
+      'line3',
+      'city',
+      'postalCode',
+      'country',
+      'latitude',
+      'longitude',
+      'status',
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function search($client, $query, $class = __CLASS__, $path = '/venues') {
+    return parent::search($client, $query, $class, $path);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/venues') {
+    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function searches($client, $queries, $class = __CLASS__, $path = '/venues') {
+    return parent::searches($client, $queries, $class, $path);
+  }
+
+  public function getId() {
+    return $this->id;
+  }
+
+  public function setId($id) {
+    $this->id = $id;
+  }
+
+  public function getName() {
+    return $this->name;
+  }
+
+  public function setName($name) {
+    $this->name = $name;
+  }
+
+  public function getLine1() {
+    return $this->line1;
+  }
+
+  public function setLine1($line1) {
+    $this->line1 = $line1;
+  }
+
+  public function getLine2() {
+    return $this->line2;
+  }
+
+  public function setLine2($line2) {
+    $this->line2 = $line2;
+  }
+
+  public function getLine3() {
+    return $this->line3;
+  }
+
+  public function setLine3($line3) {
+    $this->line3 = $line3;
+  }
+
+  public function getCity() {
+    return $this->city;
+  }
+
+  public function setCity($city) {
+    $this->city = $city;
+  }
+
+  public function getPostalCode() {
+    return $this->postalCode;
+  }
+
+  public function setPostalCode($postalCode) {
+    $this->postalCode = $postalCode;
+  }
+
+  public function getCountry() {
+    return $this->country;
+  }
+
+  public function setCountry($country) {
+    $this->country = $country;
+  }
+
+  public function getLatitude() {
+    return $this->latitude;
+  }
+
+  public function setLatitude($latitude) {
+    $this->latitude = $latitude;
+  }
+
+  public function getLongitude() {
+    return $this->longitude;
+  }
+
+  public function setLongitude($longitude) {
+    $this->longitude = $longitude;
+  }
+
+  public function getStatus() {
+    return $this->status;
+  }
+
+  public function setStatus($status) {
+    $this->status = $status;
+  }
 }
