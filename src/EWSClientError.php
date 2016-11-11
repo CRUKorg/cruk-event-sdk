@@ -33,9 +33,7 @@ class EWSClientError extends \Exception
     public function __construct($message = '', $code = 0, \Exception $previous = null, array $data = [])
     {
         $this->data = $data;
-        if (DEBUG) {
-            dpm($data);
-        }
+
         parent::__construct($message, $code, $previous);
     }
 }
