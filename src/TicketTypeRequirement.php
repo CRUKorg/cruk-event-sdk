@@ -61,6 +61,26 @@ class TicketTypeRequirement extends EWSObject {
   private $requireEventKit;
 
   /**
+   * @var boolean
+   */
+  private $requireAgeRestriction;
+
+  /**
+   * @var string
+   */
+  private $ageRestrictionApplicableOn;
+
+  /**
+   * @var integer
+   */
+  private $minimumAge;
+
+  /**
+   * @var integer
+   */
+  private $maximumAge;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -235,6 +255,62 @@ class TicketTypeRequirement extends EWSObject {
   }
 
   /**
+   * @return boolean
+   */
+  public function getRequireAgeRestriction() {
+    return $this->requireAgeRestriction;
+  }
+
+  /**
+   * @param boolean $requireAgeRestriction
+   */
+  public function setRequireAgeRestriction($requireAgeRestriction) {
+    $this->requireAgeRestriction = $requireAgeRestriction;
+  }
+
+  /**
+   * @return string
+   */
+  public function getAgeRestrictionApplicableOn() {
+    return $this->ageRestrictionApplicableOn;
+  }
+
+  /**
+   * @param string $ageRestrictionApplicableOn
+   */
+  public function setAgeRestrictionApplicableOn($ageRestrictionApplicableOn) {
+    $this->ageRestrictionApplicableOn = $ageRestrictionApplicableOn;
+  }
+
+  /**
+   * @return int
+   */
+  public function getMinimumAge() {
+    return $this->minimumAge;
+  }
+
+  /**
+   * @param int $minimumAge
+   */
+  public function setMinimumAge($minimumAge) {
+    $this->minimumAge = $minimumAge;
+  }
+
+  /**
+   * @return int
+   */
+  public function getMaximumAge() {
+    return $this->maximumAge;
+  }
+
+  /**
+   * @param int $maximumAge
+   */
+  public function setMaximumAge($maximumAge) {
+    $this->maximumAge = $maximumAge;
+  }
+
+  /**
    * @return \DateTime
    */
   public function getCreated()
@@ -309,9 +385,14 @@ class TicketTypeRequirement extends EWSObject {
       'requireMinimumFundraisingTarget',
       'minimumFundraisingTarget',
       'fundraisingTargetSupportingCopy',
-      'requireEventKit'
+      'requireEventKit',
+      'requireAgeRestriction',
+      'ageRestrictionApplicableOn',
+      'minimumAge',
+      'maximumAge',
     ];
   }
+
 
   /**
    * Simple function to return the URI for creating the Event.
