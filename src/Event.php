@@ -94,9 +94,14 @@ class Event extends EWSObject {
   private $eventTypes;
 
   /**
-   * @var ArrayCollection|Venue[]
+   * @var ArrayCollection|VenueInfo[]
    */
   private $venueInfo;
+
+  /**
+   * @var ArrayCollection|ConfirmationPageSettings[]:
+   */
+  private $confirmationPageSettings;
 
   /**
    * @var float
@@ -329,6 +334,23 @@ class Event extends EWSObject {
     return $this;
   }
 
+  /**
+   * @return ArrayCollection|ConfirmationPageSettings[]
+   */
+  public function getConfirmationPageSettings() {
+    return $this->confirmationPageSettings;
+  }
+
+  /**
+   * @param $confirmationPageSettings
+   *
+   * @return $this
+   */
+  public function setConfirmationPageSettings($confirmationPageSettings) {
+    $this->confirmationPageSettings = $confirmationPageSettings;
+    return $this;
+  }
+
   public function getDistance() {
     return $this->distance;
   }
@@ -514,6 +536,7 @@ class Event extends EWSObject {
       'fundraisingProduct',
       'eventTypes',
       'venueInfo',
+      'confirmationPageSettings',
       'distance',
       'distanceUnit',
       'ageFrom',
