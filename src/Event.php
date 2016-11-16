@@ -141,6 +141,11 @@ class Event extends EWSObject {
   /**
    * @var boolean
    */
+  private $fundraisingEnabled;
+
+  /**
+   * @var boolean
+   */
   private $paidTicketsRequired;
 
   /**
@@ -410,6 +415,20 @@ class Event extends EWSObject {
   /**
    * @return boolean
    */
+  public function getFundraisingEnabled() {
+    return $this->fundraisingEnabled;
+  }
+
+  /**
+   * @param boolean $fundraisingEnabled
+   */
+  public function setFundraisingEnabled($fundraisingEnabled) {
+    $this->fundraisingEnabled = $fundraisingEnabled;
+  }
+
+  /**
+   * @return boolean
+   */
   public function getPaidTicketsRequired() {
     return $this->paidTicketsRequired;
   }
@@ -544,6 +563,7 @@ class Event extends EWSObject {
       'gender',
       'financialYear',
       'runningNumberRequired',
+      'fundraisingEnabled',
       'paidTicketsRequired',
       'waves',
       'allowedOpenWaves',
