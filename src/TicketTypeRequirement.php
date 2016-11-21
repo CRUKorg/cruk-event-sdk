@@ -81,6 +81,11 @@ class TicketTypeRequirement extends EWSObject {
   private $maximumAge;
 
   /**
+   * @var string
+   */
+  private $gender;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -93,8 +98,7 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * TicketType constructor.
    */
-  public function __construct(EWSClient $client, $data, TicketType $ticketType)
-  {
+  public function __construct(EWSClient $client, $data, TicketType $ticketType) {
     parent::__construct($client, $data);
   }
 
@@ -103,56 +107,49 @@ class TicketTypeRequirement extends EWSObject {
    *
    * @return string
    */
-  public function getId()
-  {
+  public function getId() {
     return $this->id;
   }
 
   /**
    * @return boolean
    */
-  public function getRequireEmergencyContact()
-  {
+  public function getRequireEmergencyContact() {
     return $this->requireEmergencyContact;
   }
 
   /**
    * @param boolean $requireEmergencyContact
    */
-  public function setRequireEmergencyContact($requireEmergencyContact)
-  {
+  public function setRequireEmergencyContact($requireEmergencyContact) {
     $this->requireEmergencyContact = $requireEmergencyContact;
   }
 
   /**
    * @return boolean
    */
-  public function getRequireFundraisingRestrictions()
-  {
+  public function getRequireFundraisingRestrictions() {
     return $this->requireFundraisingRestrictions;
   }
 
   /**
    * @param boolean $requireFundraisingRestrictions
    */
-  public function setRequireFundraisingRestrictions($requireFundraisingRestrictions)
-  {
+  public function setRequireFundraisingRestrictions($requireFundraisingRestrictions) {
     $this->requireFundraisingRestrictions = $requireFundraisingRestrictions;
   }
 
   /**
    * @return boolean
    */
-  public function getRequireMotivation()
-  {
+  public function getRequireMotivation() {
     return $this->requireMotivation;
   }
 
   /**
    * @param boolean $requireMotivation
    */
-  public function setRequireMotivation($requireMotivation)
-  {
+  public function setRequireMotivation($requireMotivation) {
     $this->requireMotivation = $requireMotivation;
   }
 
@@ -313,8 +310,7 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * @return \DateTime
    */
-  public function getCreated()
-  {
+  public function getCreated() {
     return $this->created;
   }
 
@@ -322,8 +318,7 @@ class TicketTypeRequirement extends EWSObject {
    * @param \DateTime $created
    * @return Requirement
    */
-  public function setCreated($created)
-  {
+  public function setCreated($created) {
     $this->created = $created;
 
     return $this;
@@ -332,8 +327,7 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * @return \DateTime
    */
-  public function getUpdated()
-  {
+  public function getUpdated() {
     return $this->updated;
   }
 
@@ -341,11 +335,24 @@ class TicketTypeRequirement extends EWSObject {
    * @param \DateTime $updated
    * @return TicketType
    */
-  public function setUpdated($updated)
-  {
+  public function setUpdated($updated) {
     $this->updated = $updated;
 
     return $this;
+  }
+
+  /**
+   * @return string
+   */
+  public function getGender() {
+    return $this->gender;
+  }
+
+  /**
+   * @param string $gender
+   */
+  public function setGender($gender) {
+    $this->gender = $gender;
   }
 
   /**
@@ -390,9 +397,9 @@ class TicketTypeRequirement extends EWSObject {
       'ageRestrictionApplicableOn',
       'minimumAge',
       'maximumAge',
+      'gender',
     ];
   }
-
 
   /**
    * Simple function to return the URI for creating the Event.
