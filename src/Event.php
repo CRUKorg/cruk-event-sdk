@@ -79,12 +79,22 @@ class Event extends EWSObject {
   private $subPropositionReference;
 
   /**
-   * @var FundraisingRestriction
+   * @var string Reference to Proposition ID
+   */
+  private $_propositionReference;
+
+  /**
+   * @var string
+   */
+  private $eventPageUrl;
+
+  /**
+   * @var string FundraisingRestriction
    */
   private $fundraisingRestriction;
 
   /**
-   * @var FundraisingProduct
+   * @var string FundraisingProduct
    */
   private $fundraisingProduct;
 
@@ -304,6 +314,34 @@ class Event extends EWSObject {
 
   public function setSubPropositionReference($subPropositionReference) {
     $this->subPropositionReference = $subPropositionReference;
+  }
+
+  /**
+   * @return string
+   */
+  public function get_propositionReference() {
+    return $this->_propositionReference;
+  }
+
+  /**
+   * @param string $propositionReference
+   */
+  public function set_propositionReference($propositionReference) {
+    $this->_propositionReference = $propositionReference;
+  }
+
+  /**
+   * @return string
+   */
+  public function getEventPageUrl() {
+    return $this->eventPageUrl;
+  }
+
+  /**
+   * @param string $eventPageUrl
+   */
+  public function setEventPageUrl($eventPageUrl) {
+    $this->eventPageUrl = $eventPageUrl;
   }
 
   public function getFundraisingRestriction() {
@@ -551,6 +589,8 @@ class Event extends EWSObject {
       'endDateTime',
       'venueReference',
       'subPropositionReference',
+      '_propositionReference',
+      'eventPageUrl',
       'fundraisingRestriction',
       'fundraisingProduct',
       'eventTypes',
