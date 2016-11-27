@@ -174,6 +174,11 @@ class Event extends EWSObject {
   private $configs;
 
   /**
+   * @var string
+   */
+  private $registrantDeclaration;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -512,6 +517,20 @@ class Event extends EWSObject {
     $this->configs = $configs;
   }
 
+  /**
+   * @return string
+   */
+  public function getRegistrantDeclaration() {
+    return $this->registrantDeclaration;
+  }
+
+  /**
+   * @param string $registrantDeclaration
+   */
+  public function setRegistrantDeclaration($registrantDeclaration) {
+    $this->registrantDeclaration = $registrantDeclaration;
+  }
+
   public function getCreated() {
     return $this->created;
   }
@@ -608,6 +627,7 @@ class Event extends EWSObject {
       'waves',
       'allowedOpenWaves',
       'configs',
+      'registrantDeclaration',
       'created',
       'updated',
     ];
