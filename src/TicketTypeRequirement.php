@@ -81,9 +81,20 @@ class TicketTypeRequirement extends EWSObject {
   private $maximumAge;
 
   /**
+   * @var boolean
+   */
+  private $requireGender;
+
+  /**
    * @var string
    */
-  private $gender;
+  private $defaultGender;
+
+  /**
+   * @var boolean
+   */
+  private $requireTitle;
+
 
   /**
    * @var \DateTime Created timestamp
@@ -342,17 +353,45 @@ class TicketTypeRequirement extends EWSObject {
   }
 
   /**
-   * @return string
+   * @return boolean
    */
-  public function getGender() {
-    return $this->gender;
+  public function getRequireGender() {
+    return $this->requireGender;
   }
 
   /**
-   * @param string $gender
+   * @param boolean $requireGender
    */
-  public function setGender($gender) {
-    $this->gender = $gender;
+  public function setRequireGender($requireGender) {
+    $this->requireGender = $requireGender;
+  }
+
+  /**
+   * @return string
+   */
+  public function getDefaultGender() {
+    return $this->defaultGender;
+  }
+
+  /**
+   * @param string $defaultGender
+   */
+  public function setDefaultGender($defaultGender) {
+    $this->defaultGender = $defaultGender;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function getRequireTitle() {
+    return $this->requireTitle;
+  }
+
+  /**
+   * @param boolean $requireTitle
+   */
+  public function setRequireTitle($requireTitle) {
+    $this->requireTitle = $requireTitle;
   }
 
   /**
@@ -397,7 +436,9 @@ class TicketTypeRequirement extends EWSObject {
       'ageRestrictionApplicableOn',
       'minimumAge',
       'maximumAge',
-      'gender',
+      'requireGender',
+      'defaultGender',
+      'requireTitle',
     ];
   }
 

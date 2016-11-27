@@ -10,6 +10,11 @@ class Wave extends EWSObject {
   private $id;
 
   /**
+   * @var string
+   */
+  private $_eventId;
+
+  /**
    * @var integer A (unique within the context of the parent event) ordering for waves
    */
   private $orderingNumber;
@@ -110,6 +115,20 @@ class Wave extends EWSObject {
    */
   public function getId() {
     return $this->id;
+  }
+
+  /**
+   * @return string
+   */
+  public function get_eventId() {
+    return $this->_eventId;
+  }
+
+  /**
+   * @param string $eventId
+   */
+  public function set_eventId($eventId) {
+    $this->_eventId = $eventId;
   }
 
   /**
@@ -470,6 +489,7 @@ class Wave extends EWSObject {
   protected function getArrayStructure() {
     return [
       'id',
+      '_eventId',
       'orderingNumber',
       'waveCode',
       'waveName',
