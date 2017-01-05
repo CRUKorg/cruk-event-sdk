@@ -74,6 +74,11 @@ class Payment extends EWSObject {
   private $toBeGiftAided;
 
   /**
+   * @var string
+   */
+  private $transactionId;
+
+  /**
    * Payment constructor.
    *
    * @param EWSClient        $client
@@ -254,6 +259,20 @@ class Payment extends EWSObject {
   }
 
   /**
+   * @return string
+   */
+  public function getTransactionId() {
+    return $this->transactionId;
+  }
+
+  /**
+   * @param string $transactionId
+   */
+  public function setTransactionId($transactionId) {
+    $this->transactionId = $transactionId;
+  }
+
+  /**
    * Simple function to return the URI for loading the Payment.
    *
    * @return string
@@ -307,6 +326,7 @@ class Payment extends EWSObject {
       "paymentStatus",
       "personalGiftAid",
       "toBeGiftAided",
+      "transactionId",
     ];
   }
 }
