@@ -76,7 +76,7 @@ class Payment extends EWSObject {
   /**
    * @var string
    */
-  private $transactionId;
+  private $paymentProviderTransactionId;
 
   /**
    * Payment constructor.
@@ -261,15 +261,15 @@ class Payment extends EWSObject {
   /**
    * @return string
    */
-  public function getTransactionId() {
-    return $this->transactionId;
+  public function getPaymentProviderTransactionId() {
+    return $this->paymentProviderTransactionId;
   }
 
   /**
-   * @param string $transactionId
+   * @param string $paymentProviderTransactionId
    */
-  public function setTransactionId($transactionId) {
-    $this->transactionId = $transactionId;
+  public function setPaymentProviderTransactionId($paymentProviderTransactionId) {
+    $this->paymentProviderTransactionId = $paymentProviderTransactionId;
   }
 
   /**
@@ -326,7 +326,7 @@ class Payment extends EWSObject {
       "paymentStatus",
       "personalGiftAid",
       "toBeGiftAided",
-      "transactionId",
+      "paymentProviderTransactionId",
     ];
   }
 }
