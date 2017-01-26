@@ -179,6 +179,11 @@ class Event extends EWSObject {
   private $registrantDeclaration;
 
   /**
+   * @var boolean
+   */
+  private $vouchersCanBeApplied;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -531,6 +536,20 @@ class Event extends EWSObject {
     $this->registrantDeclaration = $registrantDeclaration;
   }
 
+  /**
+   * @return bool
+   */
+  public function getVouchersCanBeApplied() {
+    return $this->vouchersCanBeApplied;
+  }
+
+  /**
+   * @param bool $vouchersCanBeApplied
+   */
+  public function setVouchersCanBeApplied($vouchersCanBeApplied) {
+    $this->vouchersCanBeApplied = $vouchersCanBeApplied;
+  }
+
   public function getCreated() {
     return $this->created;
   }
@@ -628,6 +647,7 @@ class Event extends EWSObject {
       'allowedOpenWaves',
       'configs',
       'registrantDeclaration',
+      'vouchersCanBeApplied',
       'created',
       'updated',
     ];
