@@ -49,8 +49,7 @@ class PricingConstraint {
     if (!empty($quantity)) {
       $coupon['quantity'] = $quantity;
     }
-    $this->data['coupons'][$couponCode]= $coupon;
-    return $couponCode;
+    $this->data['coupons'][]= $coupon;
   }
 
   public function getCoupons() {
