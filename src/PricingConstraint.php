@@ -9,13 +9,40 @@
 namespace Cruk\EventSdk;
 
 
-class PricingConstraint {
-  protected $data = [];
+class PricingConstraint extends EWSObject {
+  protected $tickets = [];
+  protected $coupons = [];
 
-  public function __construct() {
-    $this->data = array(
-      'tickets' => [],
-    );
+  /**
+   * @return array
+   */
+  public function getTickets() {
+    return $this->tickets;
+  }
+
+  /**
+   * @param array $tickets
+   * @return PricingConstraint
+   */
+  public function setTickets($tickets) {
+    $this->tickets = $tickets;
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getCoupons() {
+    return $this->coupons;
+  }
+
+  /**
+   * @param array $coupons
+   * @return PricingConstraint
+   */
+  public function setCoupons($coupons) {
+    $this->coupons = $coupons;
+    return $this;
   }
 
   /**
@@ -25,13 +52,12 @@ class PricingConstraint {
    * @throws \Exception
    */
   public function addTicket($ticketTypeId, $quantity) {
-    if (!is_int($quantity) || $quantity <= 0) {
-      throw new \Exception("Quantity must be an integer and greater than 0");
+    if (is_int($quantity) && $quantity > 0) {
+      $this->tickets[$ticketTypeId] = array(
+        'ticketTypeId' => $ticketTypeId,
+        'quantity' => $quantity,
+      );
     }
-    $this->data['tickets'][] = array(
-      'ticketTypeId' => $ticketTypeId,
-      'quantity' => $quantity,
-    );
   }
 
   /**
@@ -41,7 +67,7 @@ class PricingConstraint {
    * @param $quantity
    * @throws \Exception
    */
-  public function addCouponCode($couponCode, $ticketTypeId = NULL, $quantity = NULL) {
+  public function addCoupon($couponCode, $ticketTypeId = NULL, $quantity = NULL) {
     $coupon = array('couponCode' => $couponCode);
     if (!empty($ticketTypeId)) {
       $coupon['ticketTypeId'] = $ticketTypeId;
@@ -49,22 +75,99 @@ class PricingConstraint {
     if (!empty($quantity)) {
       $coupon['quantity'] = $quantity;
     }
-    $this->data['coupons'][]= $coupon;
-  }
-
-  public function getCoupons() {
-    return empty($this->data['coupons']) ? [] : $this->data['coupons'];
+    $this->coupons[$couponCode] = $coupon;
   }
 
   /**
-   * Get constraint as an array.
+   * Remove coupon from constraint.
+   * @param $couponCode
+   * @return bool
+   */
+  public function removeCoupon($couponCode) {
+    if (!empty($this->coupons[$couponCode])) {
+     unset($this->coupons[$couponCode]);
+      return TRUE;
+    }
+    return FALSE;
+  }
+  /**
+   * Check whether coupon code is in the constraint.
+   * @param $couponCode
+   * @return bool
+   */
+  public function couponExists($couponCode) {
+    return !empty($this->coupons[$couponCode]);
+  }
+
+  /**
+   * Get constraint in format usuable for a request.
    * @return array
    */
-  public function asArray() {
-    $data = $this->data;
-    if (!empty($data['coupons'])) {
-      $data['coupons'] = array_values($data['coupons']);
+  public function asRequest() {
+    $data = [];
+    if (!empty($this->coupons)) {
+      $data['coupons'] = array_values($this->coupons);
     }
-    return $this->data;
+    if (!empty($this->tickets)) {
+      $data['tickets'] = array_values($this->tickets);
+    }
+    return $data;
+  }
+
+  /**
+   * Simple function to return the idKey of a class. This allows us to use
+   * a common populate function across all objects/classes.
+   *
+   * @codeCoverageIgnore
+   *
+   * @return string
+   */
+  protected function getIdKey()
+  {
+    // We do not actually need this for this particular class, although it's staying as it's required, and it's also
+    // possible that the EWS could be altered to allow this (creating a single address for multiple participants).
+    throw new EWSClientError('Unable to update pricing directly');
+  }
+
+  /**
+   * Simple function to return the URI that should be used to GET this object
+   * from the EWS.
+   *
+   * @codeCoverageIgnore
+   *
+   * @return string
+   */
+  protected function getUri()
+  {
+    // Same issue as getIdKey().
+    throw new EWSClientError('Unable to update pricing directly');
+  }
+
+  /**
+   * Simple function to return the URI that should be used to POST/UPDATE this object
+   * from the EWS.
+   *
+   * @codeCoverageIgnore
+   *
+   * @return string
+   */
+  protected function getCreateUri()
+  {
+    // Same issue as getIdKey().
+    throw new EWSClientError('Unable to update pricing directly');
+  }
+
+  /**
+   * Simple function to return the structure of the class. This defines how the
+   * object should be built and delivered as an array.
+   *
+   * @return array
+   */
+  protected function getArrayStructure()
+  {
+    return [
+      'coupons',
+      'tickets',
+    ];
   }
 }

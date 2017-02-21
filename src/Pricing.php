@@ -13,6 +13,44 @@ class Pricing extends EWSObject {
   protected $price;
   protected $discount;
   /**
+   * @var PricingConstraint
+   */
+  protected $constraint;
+
+  /**
+   * Pricing constructor.
+   * @param \Cruk\EventSdk\EWSClient $client
+   * @param mixed $data
+   */
+  public function __construct(\Cruk\EventSdk\EWSClient $client, $data) {
+    parent::__construct($client, $data);
+    if (!$this->constraint) {
+      $this->constraint = new PricingConstraint($this->client, []);
+    }
+  }
+
+  /**
+   * @return PricingConstraint
+   */
+  public function getConstraint() {
+    return $this->constraint;
+  }
+
+  /**
+   * @param mixed $constraint
+   * @return Pricing
+   */
+  public function setConstraint($constraint) {
+    if (is_array($constraint)) {
+      $this->constraint = new PricingConstraint($this->client, $constraint);
+    }
+    elseif($constraint instanceof PricingConstraint) {
+      $this->constraint = $constraint;
+    }
+    return $this;
+  }
+
+  /**
    * @var TicketPrice
    */
   protected $tickets;
@@ -90,8 +128,8 @@ class Pricing extends EWSObject {
    * @param \Cruk\EventSdk\PricingConstraint $constraint
    * @return mixed
    */
-  public function loadTicketPrices(PricingConstraint $constraint) {
-    $data = json_encode($constraint->asArray());
+  public function loadTicketPrices() {
+    $data = json_encode($this->constraint->asRequest());
     $uri = $this->client->getPath() . '/pricing/calculate';
     try {
       $response = (object) $this->client->requestJson('POST', $uri, array('body' => $data));
@@ -163,6 +201,7 @@ class Pricing extends EWSObject {
       'price',
       'discount',
       'tickets',
+      'constraint',
     ];
   }
 
@@ -175,6 +214,9 @@ class Pricing extends EWSObject {
       foreach ($data['tickets'] as $delta => $ticket) {
         $data['tickets'][$delta] = $ticket->asArray();
       }
+    }
+    if ($this->constraint) {
+      $data['constraint'] = $this->constraint->asArray();
     }
     return $data;
   }
