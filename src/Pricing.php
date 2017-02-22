@@ -12,6 +12,7 @@ namespace Cruk\EventSdk;
 class Pricing extends EWSObject {
   protected $price;
   protected $discount;
+  protected $lastErrors;
   /**
    * @var PricingConstraint
    */
@@ -27,6 +28,7 @@ class Pricing extends EWSObject {
     if (!$this->constraint) {
       $this->constraint = new PricingConstraint($this->client, []);
     }
+    $this->lastErrors = [];
   }
 
   /**
@@ -47,6 +49,22 @@ class Pricing extends EWSObject {
     elseif($constraint instanceof PricingConstraint) {
       $this->constraint = $constraint;
     }
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getLastErrors() {
+    return $this->lastErrors;
+  }
+
+  /**
+   * @param array $lastErrors
+   * @return Pricing
+   */
+  public function setLastErrors($lastErrors) {
+    $this->lastErrors = $lastErrors;
     return $this;
   }
 
@@ -129,6 +147,7 @@ class Pricing extends EWSObject {
    * @return mixed
    */
   public function loadTicketPrices() {
+    $this->lastError = [];
     $data = json_encode($this->constraint->asRequest());
     $uri = $this->client->getPath() . '/pricing/calculate';
     try {
@@ -141,7 +160,16 @@ class Pricing extends EWSObject {
       }
       return $this->tickets;
     }
-    catch(\Exception $e) {
+    catch(EWSClientError $exception) {
+      $error = $exception->getData();
+      foreach ($error['data'] as $data) {
+        if (empty($data['errorMessages'])) {
+          continue;
+        }
+        foreach ($data['errorMessages'] as $message) {
+          $this->lastErrors[] = $message;
+        }
+      }
       return FALSE;
     }
   }

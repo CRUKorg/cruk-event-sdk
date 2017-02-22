@@ -115,7 +115,7 @@ class PricingConstraint extends EWSObject {
       $data['coupons'] = $this->coupons;
     }
     if (!empty($this->tickets)) {
-      $data['tickets'] = $this->tickets;
+      $data['tickets'] = array_values($this->tickets);
     }
     return $data;
   }
