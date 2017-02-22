@@ -75,7 +75,7 @@ class PricingConstraint extends EWSObject {
     if (!empty($quantity)) {
       $coupon['quantity'] = $quantity;
     }
-    $this->coupons[$couponCode] = $coupon;
+    $this->coupons[]= $coupon;
   }
 
   /**
@@ -84,19 +84,25 @@ class PricingConstraint extends EWSObject {
    * @return bool
    */
   public function removeCoupon($couponCode) {
-    if (!empty($this->coupons[$couponCode])) {
-     unset($this->coupons[$couponCode]);
-      return TRUE;
+    foreach ($this->coupons as $index => $coupon) {
+      if ($coupon['couponCode'] == $couponCode) {
+        unset($this->coupons[$index]);
+      }
     }
-    return FALSE;
   }
+
   /**
    * Check whether coupon code is in the constraint.
    * @param $couponCode
    * @return bool
    */
   public function couponExists($couponCode) {
-    return !empty($this->coupons[$couponCode]);
+    foreach ($this->coupons as $index => $coupon) {
+      if ($coupon['couponCode'] == $couponCode) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
   /**
@@ -106,10 +112,10 @@ class PricingConstraint extends EWSObject {
   public function asRequest() {
     $data = [];
     if (!empty($this->coupons)) {
-      $data['coupons'] = array_values($this->coupons);
+      $data['coupons'] = $this->coupons;
     }
     if (!empty($this->tickets)) {
-      $data['tickets'] = array_values($this->tickets);
+      $data['tickets'] = $this->tickets;
     }
     return $data;
   }
