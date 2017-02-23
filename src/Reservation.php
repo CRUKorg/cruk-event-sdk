@@ -41,6 +41,10 @@ class Reservation extends EWSObject {
    * @var Ticket[]
    */
   private $tickets;
+  /**
+   * @var array
+   */
+  private $coupons;
 
   /**
    * @var \DateTime Created timestamp
@@ -207,6 +211,20 @@ class Reservation extends EWSObject {
   }
 
   /**
+   * @return array
+   */
+  public function getCoupons() {
+    return $this->coupons;
+  }
+
+  /**
+   * @param array $coupons
+   */
+  public function setCoupons($coupons) {
+    $this->coupons = $coupons;
+  }
+
+  /**
    * Set tickets
    *
    * @param ReservationStatus|null $reservationStatus
@@ -267,6 +285,7 @@ class Reservation extends EWSObject {
       'timeoutDateTime',
       'salesChannel',
       'tickets',
+      'coupons',
       'payment'
     ];
   }
