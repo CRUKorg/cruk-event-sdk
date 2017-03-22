@@ -54,6 +54,11 @@ class Event extends EWSObject {
   private $criticalAmendMessage;
 
   /**
+   * @var string
+   */
+  private $criticalAmendCode;
+
+  /**
    * @var Owner Optional owner of the event
    */
   private $owner;
@@ -284,6 +289,14 @@ class Event extends EWSObject {
 
   public function setCriticalAmendMessage($criticalAmendMessage) {
     $this->criticalAmendMessage = $criticalAmendMessage;
+  }
+
+  public function getCriticalAmendCode() {
+    return $this->criticalAmendCode;
+  }
+
+  public function setCriticalAmendCode($criticalAmendCode) {
+    $this->criticalAmendCode = $criticalAmendCode;
   }
 
   public function getOwner() {
