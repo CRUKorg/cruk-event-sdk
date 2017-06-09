@@ -54,6 +54,11 @@ class Event extends EWSObject {
   private $criticalAmendMessage;
 
   /**
+   * @var string
+   */
+  private $criticalAmendCode;
+
+  /**
    * @var Owner Optional owner of the event
    */
   private $owner;
@@ -179,6 +184,16 @@ class Event extends EWSObject {
   private $registrantDeclaration;
 
   /**
+   * @var boolean
+   */
+  private $vouchersCanBeApplied;
+
+  /**
+   * @var integer
+   */
+  private $bankAccountCode;
+
+  /**
    * @var \DateTime Created timestamp
    */
   private $created;
@@ -279,6 +294,14 @@ class Event extends EWSObject {
 
   public function setCriticalAmendMessage($criticalAmendMessage) {
     $this->criticalAmendMessage = $criticalAmendMessage;
+  }
+
+  public function getCriticalAmendCode() {
+    return $this->criticalAmendCode;
+  }
+
+  public function setCriticalAmendCode($criticalAmendCode) {
+    $this->criticalAmendCode = $criticalAmendCode;
   }
 
   public function getOwner() {
@@ -483,6 +506,20 @@ class Event extends EWSObject {
     $this->paidTicketsRequired = $paidTicketsRequired;
   }
 
+  /**
+   * @return int
+   */
+  public function getBankAccountCode() {
+    return $this->bankAccountCode;
+  }
+
+  /**
+   * @param int $bankAccountCode
+   */
+  public function setBankAccountCode($bankAccountCode) {
+    $this->bankAccountCode = $bankAccountCode;
+  }
+
   public function getWaves() {
     return $this->waves;
   }
@@ -529,6 +566,20 @@ class Event extends EWSObject {
    */
   public function setRegistrantDeclaration($registrantDeclaration) {
     $this->registrantDeclaration = $registrantDeclaration;
+  }
+
+  /**
+   * @return bool
+   */
+  public function getVouchersCanBeApplied() {
+    return $this->vouchersCanBeApplied;
+  }
+
+  /**
+   * @param bool $vouchersCanBeApplied
+   */
+  public function setVouchersCanBeApplied($vouchersCanBeApplied) {
+    $this->vouchersCanBeApplied = $vouchersCanBeApplied;
   }
 
   public function getCreated() {
@@ -628,6 +679,8 @@ class Event extends EWSObject {
       'allowedOpenWaves',
       'configs',
       'registrantDeclaration',
+      'vouchersCanBeApplied',
+      'bankAccountCode',
       'created',
       'updated',
     ];

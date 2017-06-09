@@ -15,6 +15,11 @@ class Proposition extends EWSObject {
   private $name;
 
   /**
+   * @var string Proposition immutable code
+   */
+  private $propositionCode;
+
+  /**
    * @var Collection|SubProposition[]
    */
   private $subPropositions;
@@ -71,6 +76,20 @@ class Proposition extends EWSObject {
   public function getName()
   {
     return $this->name;
+  }
+
+  /**
+   * @return string
+   */
+  public function getPropositionCode() {
+    return $this->propositionCode;
+  }
+
+  /**
+   * @param string $propositionCode
+   */
+  public function setPropositionCode($propositionCode) {
+    $this->propositionCode = $propositionCode;
   }
 
   /**
@@ -208,6 +227,7 @@ class Proposition extends EWSObject {
       'id',
       'name',
       'status',
+      'propositionCode',
       'subPropositions',
     ];
   }
