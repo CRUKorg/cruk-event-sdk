@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  *
  * Simple file to create the EWS interface that all other EWS classes will implement.
  */
-abstract class EWSObject
+abstract class EWSObject implements \JsonSerializable
 {
 
     /** @var EWSClient */
@@ -22,7 +22,7 @@ abstract class EWSObject
      * @var array
      */
     protected $fieldsToPatch;
-    
+
     /**
      * Create a new EWSObject
      *
@@ -158,9 +158,18 @@ abstract class EWSObject
         foreach ($structure as $array_key => $key) {
             if (is_array($key)) {
                 foreach ($key as $key2) {
-                    $value = $this->getValueFromKey($key2);
-                    if (!is_null($value)) {
-                        $returnArray[$array_key][$key2] = $value;
+                    if (is_array($key2)) {
+                        foreach ($key2 as $key3) {
+                            $value = $this->getValueFromKey($key3);
+                            if (!is_null($value)) {
+                                $returnArray[$array_key][$key3] = $value;
+                            }
+                        }
+                    } else {
+                        $value = $this->getValueFromKey($key2);
+                        if (!is_null($value)) {
+                            $returnArray[$key2] = $value;
+                        }
                     }
                 }
             } else {
@@ -181,6 +190,7 @@ abstract class EWSObject
      */
     public function getValueFromKey($key)
     {
+
         $getter = 'get' . ucfirst($key);
         if (method_exists($this, $getter)) {
             $value = $this->$getter();
@@ -290,6 +300,41 @@ abstract class EWSObject
     }
 
     /**
+     * Repeatedly perform a search of a paginated resource until there are no more results
+     *
+     * @param EWSClient $client
+     *   Client.
+     * @param array $query
+     *   Query array for building the query string.
+     * @param integer $pageSize
+     *   Number of results to request per page.
+     * @param string $class
+     *   Class name of the objects to create with the results.
+     * @param string $path
+     *   Path to the API.
+     *
+     * @return array
+     */
+    public static function searchPaginated($client, $query, $pageSize, $class = '', $path = '') {
+      $page = 0;
+      $results = array();
+
+      if ($pageSize <= 0) {
+        return $results;
+      }
+
+      do {
+        $query['limit'] = $pageSize;
+        $query['offset'] = $pageSize * $page;
+        $pageResults = self::search($client, $query, $class, $path);
+        $results = array_merge($results, $pageResults);
+        $page++;
+      } while (count($pageResults) >= $pageSize);
+
+      return $results;
+    }
+
+    /**
      * Simple function to return an array of Participants based on search criteria.
      *
      * @param EWSClient $client
@@ -317,5 +362,13 @@ abstract class EWSObject
             }
         }
         return $objects;
+    }
+
+    /**
+     * Returns data for a JSON representation of this object
+     */
+    public function jsonSerialize()
+    {
+       return $this->asArray();
     }
 }

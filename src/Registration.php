@@ -2,335 +2,203 @@
 
 namespace Cruk\EventSdk;
 
-class Registration extends EWSObject
-{
-    /**
-     * registrationId
-     *
-     * @var integer
-     */
-    private $registrationId;
-    /**
-     * timeOut
-     *
-     * @var string
-     */
-    private $timeOut;
-    /**
-     * unixTimeOut
-     *
-     * @var integer
-     */
-    private $unixTimeOut;
-    /**
-     * status
-     *
-     * @var string
-     */
-    private $status;
-    /**
-     * event
-     *
-     * @var Event
-     */
-    private $event;
-    /**
-     * donation
-     *
-     * @var Donation
-     */
-    private $donation;
-    /**
-     * donationId
-     *
-     * @var string
-     */
-    private $donationId;
+class Registration extends EWSObject {
 
-    /**
-     * tickets
-     *
-     * @var integer
-     */
-    private $tickets;
+  /**
+   * @var string
+   */
+  private $id;
 
-    /**
-     * participants
-     *
-     * @var array
-     */
-    private $participants;
+  /**
+   * @var \DateTime Created timestamp
+   */
+  private $created;
 
-    /**
-     * Registration constructor.
-     * @param EWSClient $client
-     * @param mixed $data
-     * @param Event $event
-     */
-    public function __construct(EWSClient $client, $data, Event $event)
-    {
-        $this->event = $event;
-        parent::__construct($client, $data);
+  /**
+   * @var \DateTime Updated timestamp
+   */
+  private $updated;
+
+  /**
+   * @var RegistrationStatus
+   */
+  private $registrationStatus;
+
+  /**
+   * @var Reservation[]
+   */
+  private $reservations;
+
+  /**
+   * Registration constructor.
+   * @param EWSClient $client
+   * @param mixed $data
+   * @param Event $event
+   */
+  public function __construct(EWSClient $client, $data) {
+    $this->reservations = array();
+    parent::__construct($client, $data);
+  }
+
+  /**
+   * Get id
+   *
+   * @return string
+   */
+  public function getId() {
+    return $this->id;
+  }
+
+  /**
+   * Set created
+   *
+   * @param \DateTime $created
+   * @return Registration
+   */
+  public function setCreated($created) {
+    $this->created = $created;
+
+    return $this;
+  }
+
+  /**
+   * Get created
+   *
+   * @return \DateTime
+   */
+  public function getCreated() {
+    return $this->created;
+  }
+
+  /**
+   * Set updated
+   *
+   * @param \DateTime $updated
+   * @return Registration
+   */
+  public function setUpdated($updated) {
+    $this->updated = $updated;
+
+    return $this;
+  }
+
+  /**
+   * Get updated
+   *
+   * @return \DateTime
+   */
+  public function getUpdated() {
+    return $this->updated;
+  }
+
+  /**
+   * Set registrationStatus
+   *
+   * @param RegistrationStatus|null $registrationStatus
+   * @return Registration
+   */
+  public function setRegistrationStatus($registrationStatus = NULL) {
+    $this->registrationStatus = $registrationStatus;
+
+    return $this;
+  }
+
+  /**
+   * Get registrationStatus
+   *
+   * @return RegistrationStatus
+   */
+  public function getRegistrationStatus() {
+    return $this->registrationStatus;
+  }
+
+  /**
+   * Get reservation
+   *
+   * @return ArrayCollection|Reservation[]
+   */
+  public function getReservations() {
+    return $this->reservations;
+  }
+
+  /**
+   * @param string $donation
+   */
+  public function setReservations($reservations) {
+    $this->reservations = array();
+    foreach ($reservations as $reservation) {
+      if (is_array($reservation)) {
+        $this->reservations[] = new Reservation($this->client, $reservation, $this);
+      }
+      elseif (is_object($reservation)) {
+        $this->reservations[] = $reservation;
+      }
     }
 
-    /**
-     * Simple function to create a participant associated with this registration
-     *
-     * @param mixed $data
-     *
-     * @return Participant
-     */
-    public function createParticipant($data)
-    {
-        $participant = new Participant($this->client, $data, $this->event, $this);
-        $this->participants[] = $participant;
-        $participant->create();
-        return $participant;
-    }
 
-    /**
-     * Update an event registration's status
-     *
-     * @param string $eventCode
-     *   Event code
-     * @param string $registrationId
-     *   Registration ID for the event
-     * @param string $statusCode
-     *   New status code for the registration
-     * @return array
-     */
-    public function updateStatus($statusCode)
-    {
-        $data = [
-            'status' => $statusCode,
-        ];
-        $response = $this->client->requestJson('PATCH', $this->getStatusUri(), ['json' => $data]);
-        $this->populate($response);
-        return $this;
-    }
 
-    /**
-     * Override the patch function and throw an error.
-     */
-    public function patch($data = false)
-    {
-        throw new EWSClientError('Unable to PATCH Registration objects.');
-    }
+    return $this;
+  }
 
-    /**
-     * @return int
-     */
-    public function getRegistrationId()
-    {
-        return $this->registrationId;
-    }
+  /**
+   * Simple function to return the URI for loading the Registration.
+   *
+   * @return string
+   */
+  public function getUri() {
+    return $this->client->getPath() . "/registrations/{$this->id}";
+  }
 
-    /**
-     * @return int
-     */
-    public function getTickets()
-    {
-        return $this->tickets;
-    }
+  public function setId($id) {
+    $this->id = $id;
+  }
 
-    /**
-     * @param int $tickets
-     */
-    public function setTickets($tickets)
-    {
-        $this->tickets = $tickets;
-    }
+  /**
+   * Simple function to return the URI for creating the Event.
+   *
+   * @return string
+   */
+  public function getCreateUri() {
+    // Should possibly throw an error here, as this does not exist.
+    return $this->client->getPath() . "/registrations";
+  }
 
-    /**
-     * @return array
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
+  /**
+   * Simple function to return the URI that should be used to search for objects
+   * from the EWS.
+   *
+   * @return string
+   */
+  protected function getSearchUri() {
+    throw new EWSClientError('Unable to update Registration directly');
+  }
 
-    /**
-     * @param mixed $participants
-     */
-    public function setParticipants(array $participants)
-    {
-        $this->participants = $participants;
-    }
+  /**
+   * Simple function to return the idKey of a class. This allows us to use
+   * a common populate function across all objects/classes.
+   */
+  protected function getIdKey() {
+    return 'id';
+  }
 
-    /**
-     * @param int $registrationId
-     */
-    public function setRegistrationId($registrationId)
-    {
-        $this->registrationId = $registrationId;
-    }
+  /**
+   * Simple function to return the structure of the class. This defines how the
+   * object should be built and delivered as an array.
+   */
+  protected function getArrayStructure() {
+    return [
+      'id',
+      'created',
+      'updated',
+      'registrationStatus',
+      'reservations',
+    ];
+  }
 
-    /**
-     * @return string
-     */
-    public function getTimeOut()
-    {
-        return $this->timeOut;
-    }
-
-    /**
-     * @param string $timeOut
-     */
-    public function setTimeOut($timeOut)
-    {
-        $this->timeOut = $timeOut;
-        $this->unixTimeOut = strtotime($timeOut);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUnixTimeOut()
-    {
-        return $this->unixTimeOut;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string $status
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDonationId()
-    {
-        return $this->donationId;
-    }
-
-    /**
-     * @param string $donation
-     */
-    public function setDonationId($donationId)
-    {
-        $this->donationId = $donationId;
-    }
-
-    /**
-     * @return Donation
-     */
-    public function getDonation()
-    {
-        if (is_null($this->donation) && !is_null($this->donationId)) {
-            $this->donation = new Donation($this->client, $this->donationId, $this->event, $this);
-        }
-        return $this->donation;
-    }
-
-    /**
-     * @param string $donation
-     */
-    public function setDonation($donation)
-    {
-        if (is_numeric($donation)) {
-            $this->setDonationId($donation);
-            return;
-        }
-        elseif (is_array($donation)) {
-            $this->setDonationId($donation['id']);
-            return;
-        }
-        $this->setDonationId($donation->getId());
-        $this->donation = $donation;
-    }
-
-    /**
-     * Simple function to create a donation associated with this Registration
-     *
-     * @param array $data
-     * @return Donation
-     */
-    public function createDonation($data)
-    {
-        $donation = new Donation($this->client, $data, $this->event, $this);
-        $donation->create();
-        $this->setDonation($donation);
-        return $donation;
-    }
-
-    /**
-     * Simple function to return the structure of the class. This defines how the
-     * object should be built and delivered as an array.
-     *
-     * @return array
-     */
-    protected function getArrayStructure()
-    {
-        // We return a different array depending on whether we have the
-        // registrationId set.
-        if ($this->registrationId) {
-            return [
-                'registrationId',
-                'timeOut',
-                'status',
-                'donation',
-            ];
-        }
-        return [
-            'tickets',
-        ];
-    }
-
-    /**
-     * Simple function to return the idKey of a class. This allows us to use
-     * a common populate function across all objects/classes.
-     *
-     * @return string
-     */
-    protected function getIdKey()
-    {
-        return 'registrationId';
-    }
-
-    /**
-     * Simple function to return the URI that should be used to GET this object
-     * from the EWS.
-     *
-     * @return string
-     */
-    protected function getUri()
-    {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
-            . "/registrations/{$this->registrationId}.json";
-    }
-
-    /**
-     * Simple function to return the URI that should be used to GET the status of this object
-     * from the EWS.
-     *
-     * @return string
-     */
-    protected function getStatusUri()
-    {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}"
-            . "/registrations/{$this->registrationId}"
-            . "/status.json";
-    }
-
-    /**
-     * Simple function to return the URI that should be used to POST/UPDATE this object
-     * from the EWS.
-     *
-     * @return string
-     */
-    protected function getCreateUri()
-    {
-        return $this->client->getPath() . "/events/{$this->event->getEventCode()}/registrations.json";
-    }
+  public function createReservation($data) {
+    $reservation = new Reservation($this->client, $data, $this);
+    $reservation->create();
+    $this->setReservations($reservation);
+    return $reservation;
+  }
 }

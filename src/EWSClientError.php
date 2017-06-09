@@ -30,10 +30,10 @@ class EWSClientError extends \Exception
      * @param array $data
      *   Data array as sent from EWS. This can be retrieved, or is used
      */
-    public function __construct($message = '', $code = 0, \Exception $previous = null, array $data = [])
+    public function __construct($message = '', $code = 0, \Exception $previous = null, $data = NULL)
     {
         $this->data = $data;
-
+        watchdog('Event SDK debug', '<pre>Response '. $code .' from EWS - ' . print_r($data, TRUE) . '</pre>');
         parent::__construct($message, $code, $previous);
     }
 }

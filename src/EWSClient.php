@@ -33,7 +33,7 @@ class EWSClient implements LoggerAwareInterface
     /**
      * Base URL of API including version number
      */
-    protected $path = 'api/v2';
+    protected $path = 'api/v3';
 
     /** @var bool */
     private $loggingEnabled = false;
@@ -69,6 +69,7 @@ class EWSClient implements LoggerAwareInterface
         if (!$clientSecret) {
             $this->accessToken = $clientIdOrAccessToken;
         }
+
         $this->accessToken = self::requestAccessToken($http, $clientIdOrAccessToken, $clientSecret);
 
     }
@@ -99,7 +100,6 @@ class EWSClient implements LoggerAwareInterface
         );
 
         $body = (string) $response->getBody();
-
         $access_token = json_decode($body, true);
 
         return $access_token['access_token'];
@@ -191,7 +191,7 @@ class EWSClient implements LoggerAwareInterface
 
         // Throw an error if we didn't get a 200 code
         if ($response->getStatusCode() !== 200) {
-            throw new EWSClientError($response->getStatusCode().' error', 0, null, []);
+            throw new EWSClientError($response->getStatusCode().' error', 0, null, drupal_json_decode($body));
         }
 
         $body = json_decode($body, true);
