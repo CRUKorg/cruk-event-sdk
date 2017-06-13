@@ -60,6 +60,11 @@ class TicketTypeRequirement extends EWSObject {
    */
   private $requireEventKit;
 
+    /**
+     * @var boolean
+     */
+  private $requireTshirtName;
+
   /**
    * @var boolean
    */
@@ -262,6 +267,23 @@ class TicketTypeRequirement extends EWSObject {
     $this->requireEventKit = $requireEventKit;
   }
 
+    /**
+     * @return bool
+     */
+    public function getRequireTshirtName()
+    {
+        return $this->requireTshirtName;
+    }
+
+    /**
+     * @param bool $requireTshirtName
+     */
+    public function setRequireTshirtName($requireTshirtName)
+    {
+        $this->requireTshirtName = $requireTshirtName;
+    }
+
+
   /**
    * @return boolean
    */
@@ -432,6 +454,7 @@ class TicketTypeRequirement extends EWSObject {
       'minimumFundraisingTarget',
       'fundraisingTargetSupportingCopy',
       'requireEventKit',
+      'requireTshirtName',
       'requireAgeRestriction',
       'ageRestrictionApplicableOn',
       'minimumAge',
