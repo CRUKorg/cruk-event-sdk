@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Entity\MicroserviceClient\Data;
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+
 /**
  * Class Reservation
  * @package Cruk\EventSdk
@@ -64,9 +67,9 @@ class Reservation extends EWSObject {
   /**
    * Initial Setup
    */
-  public function __construct(EWSClient $client, $data, Registration $registration) {
+  public function __construct(MicroserviceClient $microserviceClient, $data, Registration $registration) {
     $this->registration = $registration;
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   public function setId($id) {
@@ -242,7 +245,7 @@ class Reservation extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/reservations/{$this->id}";
+    return "/reservations/{$this->id}";
   }
 
 
@@ -253,7 +256,7 @@ class Reservation extends EWSObject {
    */
   public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/registrations/{$this->registration->getId()}/reservations?salesChannel={$this->salesChannel}";
+    return "/registrations/{$this->registration->getId()}/reservations?salesChannel={$this->salesChannel}";
   }
 
   /**
@@ -298,8 +301,13 @@ class Reservation extends EWSObject {
    */
   public function addParticipant($ticket_id, $data) {
     // @TODO: Move this call into a Ticket entity
-    $response = $this->client->requestJson('POST', $this->client->getPath() . "/tickets/{$ticket_id}/participants", ['json' => $data]);
-    return $response;
+    $authenticationCredentials = $this->getMicroserviceClient()->getCredentials();
+    return $this->getMicroserviceClient()->call(
+      "/tickets/{$ticket_id}/participants",
+      'POST',
+      $authenticationCredentials,
+      new Data($data)
+    );
   }
 
   /**
@@ -308,7 +316,7 @@ class Reservation extends EWSObject {
    * @return mixed
    */
   public function createPayment($data) {
-    $payment = new Payment($this->client, $data, $this);
+    $payment = new Payment($this->getMicroserviceClient(), $data, $this);
     $this->payment = $payment;
     $payment->create();
     return $payment;
@@ -318,6 +326,11 @@ class Reservation extends EWSObject {
    * @return string
    */
   public function completeReservation() {
-    return $this->client->requestJson('POST', $this->client->getPath() . "/reservations/{$this->getId()}/complete");
+    $authenticationCredentials = $this->getMicroserviceClient()->getCredentials();
+    return $this->getMicroserviceClient()->call(
+      "/reservations/{$this->getId()}/complete",
+      'POST',
+      $authenticationCredentials
+    );
   }
 }

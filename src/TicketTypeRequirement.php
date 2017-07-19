@@ -2,6 +2,8 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+
 class TicketTypeRequirement extends EWSObject {
 
 
@@ -114,8 +116,8 @@ class TicketTypeRequirement extends EWSObject {
   /**
    * TicketType constructor.
    */
-  public function __construct(EWSClient $client, $data, TicketType $ticketType) {
-    parent::__construct($client, $data);
+  public function __construct(MicroserviceClient $microserviceClient, $data, TicketType $ticketType) {
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -349,7 +351,7 @@ class TicketTypeRequirement extends EWSObject {
 
   /**
    * @param \DateTime $created
-   * @return Requirement
+   * @return TicketTypeRequirement
    */
   public function setCreated($created) {
     $this->created = $created;
@@ -366,7 +368,7 @@ class TicketTypeRequirement extends EWSObject {
 
   /**
    * @param \DateTime $updated
-   * @return TicketType
+   * @return TicketTypeRequirement
    */
   public function setUpdated($updated) {
     $this->updated = $updated;

@@ -26,7 +26,7 @@ class TicketPrice extends EWSObject {
 
   /**
    * @param mixed $price
-   * @return TicketTPrice
+   * @return TicketPrice
    */
   public function setPrice($price) {
     $this->price = $price;
@@ -42,7 +42,7 @@ class TicketPrice extends EWSObject {
 
   /**
    * @param mixed $discount
-   * @return TicketTPrice
+   * @return TicketPrice
    */
   public function setDiscount($discount) {
     $this->discount = $discount;
@@ -58,7 +58,7 @@ class TicketPrice extends EWSObject {
 
   /**
    * @param mixed $ticketId
-   * @return TicketTPrice
+   * @return TicketPrice
    */
   public function setTicketId($ticketId) {
     $this->ticketId = $ticketId;
@@ -74,7 +74,7 @@ class TicketPrice extends EWSObject {
 
   /**
    * @param mixed $ticketTypeId
-   * @return TicketTPrice
+   * @return TicketPrice
    */
   public function setTicketTypeId($ticketTypeId) {
     $this->ticketTypeId = $ticketTypeId;
@@ -90,11 +90,11 @@ class TicketPrice extends EWSObject {
 
   /**
    * @param mixed $coupon
-   * @return TicketTPrice
+   * @return TicketPrice
    */
   public function setCoupon($coupon) {
     if ($coupon) {
-      $this->coupon = new Coupon($this->client, $coupon);
+      $this->coupon = new Coupon($this->getMicroserviceClient(), $coupon);
     }
     return $this;
   }

@@ -2,6 +2,8 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+
 class SubProposition extends EWSObject {
 
   /**
@@ -39,9 +41,9 @@ class SubProposition extends EWSObject {
    */
   private $deleted;
 
-  public function __construct(EWSClient $client, $data, Proposition $proposition = NULL) {
+  public function __construct(MicroserviceClient $microserviceClient, $data, Proposition $proposition = NULL) {
     $this->proposition = $proposition;
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -187,7 +189,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/propositions/{$this->proposition->getId()}/sub-propositions/{$this->id}";
+    return "/propositions/{$this->proposition->getId()}/sub-propositions/{$this->id}";
   }
 
   public function setId($id) {
@@ -200,7 +202,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   public function getCreateUri() {
-    return $this->client->getPath() . "/propositions/{$this->proposition->getId()}/sub-propositions";
+    return "/propositions/{$this->proposition->getId()}/sub-propositions";
   }
 
   /**
@@ -210,7 +212,7 @@ class SubProposition extends EWSObject {
    * @return string
    */
   protected function getSearchUri() {
-    return $this->client->getPath() . "/propositions/{$this->proposition->getId()}/sub-propositions";
+    return "/propositions/{$this->proposition->getId()}/sub-propositions";
   }
 
   /**
@@ -236,7 +238,7 @@ class SubProposition extends EWSObject {
   /**
    * Simple function to return an array of sub propositions based on search criteria.
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $query
    *   Query array for building the query string.
@@ -249,14 +251,14 @@ class SubProposition extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function search($client, $query, $class = __CLASS__, $path = '/propositions/{$this->propositionId}/sub-propositions') {
-    return parent::search($client, $query, $class, $path);
+  public static function search(MicroserviceClient $microserviceClient, $query, $class = __CLASS__, $path = '/propositions/{$this->propositionId}/sub-propositions') {
+    return parent::search($microserviceClient, $query, $class, $path);
   }
 
   /**
    * Repeatedly perform a search of a paginated resource until there are no more results
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $query
    *   Query array for building the query string.
@@ -269,14 +271,14 @@ class SubProposition extends EWSObject {
    *
    * @return array
    */
-  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/propositions/{$this->propositionId}/sub-propositions') {
-    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
+  public static function searchPaginated(MicroserviceClient $microserviceClient, $query, $pageSize, $class = __CLASS__, $path = '/propositions/{$this->propositionId}/sub-propositions') {
+    return parent::searchPaginated($microserviceClient, $query, $pageSize, $class, $path);
   }
 
   /**
    * Simple function to return an array of sub propositions based on search criterias.
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $queries
    *   Array of query arrays for building the query string.
@@ -289,7 +291,7 @@ class SubProposition extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function searches($client, $queries, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$this->propositionId}/sub-propositions') {
-    return parent::searches($client, $queries, $class, $path);
+  public static function searches(MicroserviceClient $microserviceClient, $queries, $class = '\Cruk\EventSdk\SubProposition', $path = '/propositions/{$this->propositionId}/sub-propositions') {
+    return parent::searches($microserviceClient, $queries, $class, $path);
   }
 }

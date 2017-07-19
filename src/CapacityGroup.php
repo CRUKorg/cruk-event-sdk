@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+use Doctrine\Common\Collections\ArrayCollection;
+
 class CapacityGroup extends EWSObject {
 
   /**
@@ -29,10 +32,16 @@ class CapacityGroup extends EWSObject {
    */
   private $updated;
 
-  public function __construct(EWSClient $client, $data, Wave $wave)
+  /**
+   * CapacityGroup constructor.
+   *
+   * @param MicroserviceClient $microserviceClient
+   * @param mixed $data
+   */
+  public function __construct(MicroserviceClient $microserviceClient, $data)
   {
     $this->ticketTypes = array();
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -86,7 +95,7 @@ class CapacityGroup extends EWSObject {
     $this->ticketTypes = array();
     foreach ($ticketTypes as $ticketType) {
       if (is_array($ticketType)) {
-        $this->ticketTypes[] = new TicketType($this->client, $ticketType, $this);
+        $this->ticketTypes[] = new TicketType($this->getMicroserviceClient(), $ticketType);
       }
       elseif (is_object($ticketType)) {
         $this->ticketTypes[] = $ticketType;
@@ -150,7 +159,7 @@ class CapacityGroup extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/capacity-groups/{$this->id}";
+    return "/capacity-groups/{$this->id}";
   }
 
   public function setId($id) {
@@ -165,7 +174,7 @@ class CapacityGroup extends EWSObject {
    */
   protected function getSearchUri($waveId) {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/waves/{$waveId}/capacity-groups";
+    return "/waves/{$waveId}/capacity-groups";
   }
 
   /**
@@ -175,7 +184,7 @@ class CapacityGroup extends EWSObject {
    */
   public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/waves/{$waveId}/capacity-groups";
+    return "/waves/{$waveId}/capacity-groups";
   }
 
   /**
@@ -199,5 +208,4 @@ class CapacityGroup extends EWSObject {
       'updated',
     ];
   }
-
 }

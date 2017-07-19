@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+use Doctrine\Common\Collections\ArrayCollection;
+
 class TicketType extends EWSObject {
 
   /**
@@ -63,11 +66,11 @@ class TicketType extends EWSObject {
   /**
    * TicketType constructor.
    */
-  public function __construct(EWSClient $client, $data)
+  public function __construct(MicroserviceClient $microserviceClient, $data)
   {
     $this->constraint = array();
     $this->requirement = array();
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -287,7 +290,7 @@ class TicketType extends EWSObject {
   public function setRequirement($requirement)
   {
     if (is_array($requirement)) {
-      $this->requirement = new TicketTypeRequirement($this->client, $requirement, $this);
+      $this->requirement = new TicketTypeRequirement($this->getMicroserviceClient(), $requirement, $this);
     }
     elseif (is_object($requirement)) {
       $this->requirement = $requirement;
@@ -314,7 +317,7 @@ class TicketType extends EWSObject {
     $this->constraint = array();
 
     if (is_array($constraint)) {
-      $this->constraint = new TicketTypeConstraint($this->client, $constraint, $this);
+      $this->constraint = new TicketTypeConstraint($this->getMicroserviceClient(), $constraint, $this);
     }
     elseif (is_object($constraint)) {
       $this->constraint = $constraint;
@@ -329,7 +332,7 @@ class TicketType extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/ticket-types/{$this->id}";
+    return "/ticket-types/{$this->id}";
   }
 
   public function setId($id) {

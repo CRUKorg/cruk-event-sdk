@@ -2,6 +2,8 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+
 class Registration extends EWSObject {
 
   /**
@@ -31,13 +33,13 @@ class Registration extends EWSObject {
 
   /**
    * Registration constructor.
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    * @param mixed $data
    * @param Event $event
    */
-  public function __construct(EWSClient $client, $data) {
+  public function __construct(MicroserviceClient $microserviceClient, $data) {
     $this->reservations = array();
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -128,7 +130,7 @@ class Registration extends EWSObject {
     $this->reservations = array();
     foreach ($reservations as $reservation) {
       if (is_array($reservation)) {
-        $this->reservations[] = new Reservation($this->client, $reservation, $this);
+        $this->reservations[] = new Reservation($this->getMicroserviceClient(), $reservation, $this);
       }
       elseif (is_object($reservation)) {
         $this->reservations[] = $reservation;
@@ -146,7 +148,7 @@ class Registration extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/registrations/{$this->id}";
+    return "/registrations/{$this->id}";
   }
 
   public function setId($id) {
@@ -160,7 +162,7 @@ class Registration extends EWSObject {
    */
   public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/registrations";
+    return "/registrations";
   }
 
   /**
@@ -196,7 +198,7 @@ class Registration extends EWSObject {
   }
 
   public function createReservation($data) {
-    $reservation = new Reservation($this->client, $data, $this);
+    $reservation = new Reservation($this->getMicroserviceClient(), $data, $this);
     $reservation->create();
     $this->setReservations($reservation);
     return $reservation;

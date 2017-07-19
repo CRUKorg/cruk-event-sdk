@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+use Doctrine\Common\Collections\ArrayCollection;
+
 class Event extends EWSObject {
   /**
    * @var string
@@ -209,7 +212,7 @@ class Event extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/events/{$this->eventCode}";
+    return "/events/{$this->eventCode}";
   }
 
   public function getId() {
@@ -276,7 +279,9 @@ class Event extends EWSObject {
     return $this->cancellationReasonDescription;
   }
 
-  public function setCancellationReasonDescription($cancellationReasonDescription) {
+  public function setCancellationReasonDescription(
+    $cancellationReasonDescription
+  ) {
     $this->cancellationReasonDescription = $cancellationReasonDescription;
   }
 
@@ -528,9 +533,9 @@ class Event extends EWSObject {
     $this->waves = array();
     foreach ($waves as $wave) {
       if (is_array($wave)) {
-        $this->waves[] = new Wave($this->client, $wave, $this);
+        $this->waves[] = new Wave($this->getMicroserviceClient(), $wave);
       }
-      elseif (is_object($capacityGroup)) {
+      elseif (is_object($wave)) {
         $this->waves[] = $wave;
       }
     }
@@ -605,7 +610,7 @@ class Event extends EWSObject {
    */
   public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/events";
+    return "/events";
   }
 
   /**
@@ -616,18 +621,22 @@ class Event extends EWSObject {
    */
   protected function getSearchUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/events";
+    return "/events";
   }
 
   /**
    * Get the availability for this event. We do not store this locally, as it is a volatile value.
    *
-   * @return array
-   *   Array containing the event capacity and remaining ticket capacity
+   * @param string $channel
+   * @return array Array containing the event capacity and remaining ticket capacity
    */
   public function getAvailability($channel = 'web') {
-    $uri = $this->client->getPath() . "/events/{$this->eventCode}/availability?salesChannel={$channel}";
-    return $this->client->requestJson('GET', $uri);
+    $authenticationCredentials = $this->getMicroserviceClient()->getCredentials();
+    return $this->getMicroserviceClient()->call(
+      "/events/{$this->eventCode}/availability?salesChannel={$channel}",
+      'GET',
+      $authenticationCredentials
+    );
   }
 
   /**
@@ -689,7 +698,7 @@ class Event extends EWSObject {
   /**
    * Simple function to return an array of Events based on search criteria.
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $query
    *   Query array for building the query string.
@@ -702,14 +711,19 @@ class Event extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function search($client, $query, $class = __CLASS__, $path = '/events') {
-    return parent::search($client, $query, $class, $path);
+  public static function search(
+    MicroserviceClient $microserviceClient,
+    $query,
+    $class = __CLASS__,
+    $path = '/events'
+  ) {
+    return parent::search($microserviceClient, $query, $class, $path);
   }
 
   /**
    * Repeatedly perform a search of a paginated resource until there are no more results
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $query
    *   Query array for building the query string.
@@ -722,14 +736,26 @@ class Event extends EWSObject {
    *
    * @return array
    */
-  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/events') {
-    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
+  public static function searchPaginated(
+    MicroserviceClient $microserviceClient,
+    $query,
+    $pageSize,
+    $class = __CLASS__,
+    $path = '/events'
+  ) {
+    return parent::searchPaginated(
+      $microserviceClient,
+      $query,
+      $pageSize,
+      $class,
+      $path
+    );
   }
 
   /**
    * Simple function to return an array of Events based on search criterias.
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $queries
    *   Array of query arrays for building the query string.
@@ -742,7 +768,12 @@ class Event extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function searches($client, $queries, $class = __CLASS__, $path = '/events') {
-    return parent::searches($client, $queries, $class, $path);
+  public static function searches(
+    MicroserviceClient $microserviceClient,
+    $queries,
+    $class = __CLASS__,
+    $path = '/events'
+  ) {
+    return parent::searches($microserviceClient, $queries, $class, $path);
   }
 }

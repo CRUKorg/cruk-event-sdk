@@ -100,7 +100,7 @@ class Coupon extends EWSObject {
    * @return string
    */
   protected function getUri() {
-    return $this->client->getPath() . "/pricing/coupons/{$this->code}";
+    return "/pricing/coupons/{$this->code}";
   }
 
   /**

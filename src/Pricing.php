@@ -8,6 +8,8 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Entity\MicroserviceClient\Data;
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
 
 class Pricing extends EWSObject {
   protected $price;
@@ -20,13 +22,13 @@ class Pricing extends EWSObject {
 
   /**
    * Pricing constructor.
-   * @param \Cruk\EventSdk\EWSClient $client
-   * @param mixed $data
+   * @param MicroserviceClient $microserviceClient
+   * @param mixed              $data
    */
-  public function __construct(\Cruk\EventSdk\EWSClient $client, $data) {
-    parent::__construct($client, $data);
+  public function __construct(MicroserviceClient $microserviceClient, $data) {
+    parent::__construct($microserviceClient, $data);
     if (!$this->constraint) {
-      $this->constraint = new PricingConstraint($this->client, []);
+      $this->constraint = new PricingConstraint($microserviceClient, []);
     }
     $this->lastErrors = [];
   }
@@ -44,7 +46,7 @@ class Pricing extends EWSObject {
    */
   public function setConstraint($constraint) {
     if (is_array($constraint)) {
-      $this->constraint = new PricingConstraint($this->client, $constraint);
+      $this->constraint = new PricingConstraint($this->getMicroserviceClient(), $constraint);
     }
     elseif($constraint instanceof PricingConstraint) {
       $this->constraint = $constraint;
@@ -69,7 +71,7 @@ class Pricing extends EWSObject {
   }
 
   /**
-   * @var TicketPrice
+   * @var TicketPrice[]
    */
   protected $tickets;
 
@@ -131,7 +133,7 @@ class Pricing extends EWSObject {
   public function setTickets($tickets) {
     foreach ($tickets as $ticket) {
       if (is_array($ticket)) {
-        $ticket = new TicketPrice($this->client, $ticket);
+        $ticket = new TicketPrice($this->getMicroserviceClient(), $ticket);
       }
       elseif(!is_object($ticket)) {
         throw new \Exception('Ticket must be array or instance of TicketPrice');
@@ -149,14 +151,20 @@ class Pricing extends EWSObject {
   public function loadTicketPrices() {
     $this->lastError = [];
     $data = json_encode($this->constraint->asRequest());
-    $uri = $this->client->getPath() . '/pricing/calculate';
+    $uri = '/pricing/calculate';
     try {
-      $response = (object) $this->client->requestJson('POST', $uri, array('body' => $data));
+      $authenticationCredentials = $this->getMicroserviceClient()->getCredentials();
+      $response = (object) $this->getMicroserviceClient()->call(
+        $uri,
+        'POST',
+        $authenticationCredentials,
+        new Data($data)
+      );
       $this->price = $response->price;
       $this->discount = $response->discount;
       $this->tickets = [];
       foreach ($response->ticketPrices as $price) {
-        $this->tickets[]= new TicketPrice($this->client, $price);
+        $this->tickets[]= new TicketPrice($this->getMicroserviceClient(), $price);
       }
       return $this->tickets;
     }

@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+use Doctrine\Common\Collections\ArrayCollection;
+
 class TicketTypeConstraint extends EWSObject {
 
   private $id;
@@ -49,11 +52,11 @@ class TicketTypeConstraint extends EWSObject {
   /**
    * TicketType constructor.
    */
-  public function __construct(EWSClient $client, $data, TicketType $ticketType)
+  public function __construct(MicroserviceClient $microserviceClient, $data, TicketType $ticketType)
   {
     $this->requiresTicketTypes = array();
     $this->salesChannels = array();
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -76,7 +79,7 @@ class TicketTypeConstraint extends EWSObject {
 
   /**
    * @param $salesChannels
-   * @return Constraint
+   * @return TicketTypeConstraint
    */
   public function setSalesChannels($salesChannels = [])
   {
@@ -95,7 +98,7 @@ class TicketTypeConstraint extends EWSObject {
 
   /**
    * @param TicketType[]|ArrayCollection $requiresTicketTypes
-   * @return Constraint
+   * @return TicketTypeConstraint
    */
   public function setRequiresTicketTypes($requiresTicketTypes = [])
   {
@@ -139,7 +142,7 @@ class TicketTypeConstraint extends EWSObject {
    * Set registrationOpenDate
    *
    * @param \DateTime|null $registrationOpenDate
-   * @return Constraint
+   * @return TicketTypeConstraint
    */
   public function setRegistrationOpenDate($registrationOpenDate = null)
   {
@@ -162,7 +165,7 @@ class TicketTypeConstraint extends EWSObject {
    * Set registrationCloseDate
    *
    * @param \DateTime|null $registrationCloseDate
-   * @return Constraint
+   * @return TicketTypeConstraint
    */
   public function setRegistrationCloseDate($registrationCloseDate = null)
   {
@@ -191,7 +194,7 @@ class TicketTypeConstraint extends EWSObject {
 
   /**
    * @param \DateTime $created
-   * @return Constraint
+   * @return TicketTypeConstraint
    */
   public function setCreated($created)
   {
@@ -210,7 +213,7 @@ class TicketTypeConstraint extends EWSObject {
 
   /**
    * @param \DateTime $updated
-   * @return Constraint
+   * @return TicketTypeConstraint
    */
   public function setUpdated($updated)
   {

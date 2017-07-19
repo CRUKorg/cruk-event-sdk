@@ -2,6 +2,8 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+
 /**
  * Class Payment
  * @package Cruk\EventSdk
@@ -81,13 +83,13 @@ class Payment extends EWSObject {
   /**
    * Payment constructor.
    *
-   * @param EWSClient        $client
-   * @param mixed            $data
-   * @param Reservation|NULL $reservation
+   * @param MicroserviceClient $microserviceClient
+   * @param mixed              $data
+   * @param Reservation|NULL   $reservation
    */
-  public function __construct(EWSClient $client, $data, Reservation $reservation = NULL) {
+  public function __construct(MicroserviceClient $microserviceClient, $data, Reservation $reservation = NULL) {
     $this->reservation = $reservation;
-    parent::__construct($client, $data);
+    parent::__construct($microserviceClient, $data);
   }
 
   /**
@@ -278,7 +280,7 @@ class Payment extends EWSObject {
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/payments/{$this->getId()}";
+    return "/payments/{$this->getId()}";
   }
 
   /**
@@ -287,7 +289,7 @@ class Payment extends EWSObject {
    * @return string
    */
   public function getCreateUri() {
-    return $this->client->getPath() . "/reservations/{$this->reservation->getId()}/payments";
+    return "/reservations/{$this->reservation->getId()}/payments";
   }
 
   /**

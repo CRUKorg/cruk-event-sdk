@@ -2,6 +2,8 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+
 class Venue extends EWSObject {
 
   /**
@@ -109,22 +111,22 @@ class Venue extends EWSObject {
   /**
    * {@inheritdoc}
    */
-  public static function search($client, $query, $class = __CLASS__, $path = '/venues') {
-    return parent::search($client, $query, $class, $path);
+  public static function search(MicroserviceClient $microserviceClient, $query, $class = __CLASS__, $path = '/venues') {
+    return parent::search($microserviceClient, $query, $class, $path);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/venues') {
-    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
+  public static function searchPaginated(MicroserviceClient $microserviceClient, $query, $pageSize, $class = __CLASS__, $path = '/venues') {
+    return parent::searchPaginated($microserviceClient, $query, $pageSize, $class, $path);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function searches($client, $queries, $class = __CLASS__, $path = '/venues') {
-    return parent::searches($client, $queries, $class, $path);
+  public static function searches(MicroserviceClient $microserviceClient, $queries, $class = __CLASS__, $path = '/venues') {
+    return parent::searches($microserviceClient, $queries, $class, $path);
   }
 
   public function getId() {

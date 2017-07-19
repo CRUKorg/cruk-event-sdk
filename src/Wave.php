@@ -2,6 +2,9 @@
 
 namespace Cruk\EventSdk;
 
+use Cruk\MicroserviceBundle\Service\MicroserviceClient;
+use Doctrine\Common\Collections\ArrayCollection;
+
 class Wave extends EWSObject {
 
   /**
@@ -94,18 +97,13 @@ class Wave extends EWSObject {
    */
   private $updated;
 
-
-  public function __construct(EWSClient $client, $data, Event $event = NULL) {
-    parent::__construct($client, $data);
-  }
-
   /**
    * Simple function to return the URI for loading the Event.
    *
    * @return string
    */
   public function getUri() {
-    return $this->client->getPath() . "/waves/{$this->waveCode}";
+    return "/waves/{$this->waveCode}";
   }
 
   /**
@@ -235,7 +233,9 @@ class Wave extends EWSObject {
    * @param string|null $cancellationReasonDescription
    * @return Wave
    */
-  public function setCancellationReasonDescription($cancellationReasonDescription) {
+  public function setCancellationReasonDescription(
+    $cancellationReasonDescription
+  ) {
     $this->cancellationReasonDescription = $cancellationReasonDescription;
 
     return $this;
@@ -277,7 +277,10 @@ class Wave extends EWSObject {
     $this->capacityGroups = array();
     foreach ($capacityGroups as $capacityGroup) {
       if (is_array($capacityGroup)) {
-        $this->capacityGroups[] = new CapacityGroup($this->client, $capacityGroup, $this);
+        $this->capacityGroups[] = new CapacityGroup(
+          $this->getMicroserviceClient(),
+          $capacityGroup
+        );
       }
       elseif (is_object($capacityGroup)) {
         $this->capacityGroups[] = $capacityGroup;
@@ -449,29 +452,28 @@ class Wave extends EWSObject {
    */
   public function getCreateUri() {
     // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/waves";
-  }
-
-  /**
-   * Simple function to return the URI that should be used to search for objects
-   * from the EWS.
-   *
-   * @return string
-   */
-  protected function getSearchUri() {
-    // Should possibly throw an error here, as this does not exist.
-    return $this->client->getPath() . "/waves";
+    return '/waves';
   }
 
   /**
    * Get the availability for this event. We do not store this locally, as it is a volatile value.
    *
-   * @return array
-   *   Array containing the event capacity and remaining ticket capacity
+   * @param string $channel
+   * @return array Array containing the event capacity and remaining ticket capacity
+   * @throws \GuzzleHttp\Exception\RequestException
+   * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+   * @throws \RuntimeException
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Exception
    */
   public function getAvailability($channel = 'web') {
-    $uri = $this->client->getPath() . "/waves/{$this->waveCode}/availability?salesChannel={$channel}";
-    return $this->client->requestJson('GET', $uri);
+    $authenticationCredentials = $this->getMicroserviceClient()->getCredentials(
+    );
+    return $this->getMicroserviceClient()->call(
+      "/waves/{$this->waveCode}/availability?salesChannel={$channel}",
+      'GET',
+      $authenticationCredentials
+    );
   }
 
   /**
@@ -512,7 +514,7 @@ class Wave extends EWSObject {
   /**
    * Simple function to return an array of Waves based on search criteria.
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $query
    *   Query array for building the query string.
@@ -525,14 +527,19 @@ class Wave extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function search($client, $query, $class = __CLASS__, $path = '/waves') {
-    return parent::search($client, $query, $class, $path);
+  public static function search(
+    MicroserviceClient $microserviceClient,
+    $query,
+    $class = __CLASS__,
+    $path = '/waves'
+  ) {
+    return parent::search($microserviceClient, $query, $class, $path);
   }
 
   /**
    * Repeatedly perform a search of a paginated resource until there are no more results
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $query
    *   Query array for building the query string.
@@ -545,14 +552,26 @@ class Wave extends EWSObject {
    *
    * @return array
    */
-  public static function searchPaginated($client, $query, $pageSize, $class = __CLASS__, $path = '/waves') {
-    return parent::searchPaginated($client, $query, $pageSize, $class, $path);
+  public static function searchPaginated(
+    MicroserviceClient $microserviceClient,
+    $query,
+    $pageSize,
+    $class = __CLASS__,
+    $path = '/waves'
+  ) {
+    return parent::searchPaginated(
+      $microserviceClient,
+      $query,
+      $pageSize,
+      $class,
+      $path
+    );
   }
 
   /**
    * Simple function to return an array of Waves based on search criterias.
    *
-   * @param EWSClient $client
+   * @param MicroserviceClient $microserviceClient
    *   Client.
    * @param array $queries
    *   Array of query arrays for building the query string.
@@ -565,7 +584,12 @@ class Wave extends EWSObject {
    *
    * @throws EWSClientError
    */
-  public static function searches($client, $queries, $class = __CLASS__, $path = '/waves') {
-    return parent::searches($client, $queries, $class, $path);
+  public static function searches(
+    MicroserviceClient $microserviceClient,
+    $queries,
+    $class = __CLASS__,
+    $path = '/waves'
+  ) {
+    return parent::searches($microserviceClient, $queries, $class, $path);
   }
 }
