@@ -1,0 +1,23 @@
+name: Satis build
+on:
+    push:
+        tags:
+            - '[0-9]+.[0-9]+.[0-9]+'
+            - '[0-9]+.[0-9]+.[0-9]+.[0-9]+'
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            -   name: Install SSH key
+                uses: shimataro/ssh-key-action@v2
+                with:
+                    key: ${{ secrets.SATIS_DEPLOY_KEY }}
+                    known_hosts: ${{ secrets.SATIS_DEPLOY_KNOWN_HOSTS }}
+            -   name: Checkout and build Satis
+                run: |
+                    git clone git@github.com:CRUKorg/cruk-php-packages.git
+                    cd cruk-php-packages
+                    git config --global user.email "elionscrumteam@cancer.org.uk"
+                    git config --global user.name "CRUK Satis Update Bot"
+                    ./cruk-php-packages.sh
